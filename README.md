@@ -1,2 +1,2 @@
 # pys-script
-A language of the computer
+_A language of the computer_
