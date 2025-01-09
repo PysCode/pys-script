@@ -1,2 +1,4 @@
 # pys-script
-_A language of the computer_
+__A language of the computer__
+
+"you can build your own world of program, "
