@@ -2,7 +2,7 @@
 __A language of the computer__
 
 The code is as follows:
-'''python
+python'''
 import sys, re
 print(sys.version)
 
