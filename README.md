@@ -17,8 +17,7 @@
    - **@run**：运行
    - ……
 3. **功能详情**
-   - **#content**：内容
-   - **style**：样式（颜色、显示相关）
+   - **set**：设置
    - **variable**：变量
    - **run**：运行
    - **send**：发送信息
@@ -35,17 +34,24 @@
 
 ```python
 main_1 = "@XXX"
+
 parameter_1 = "XXX XXX XXX => into XXX"
+
 main_2 = "@XXX"
+
 parameter_2 = "XXX XXX XXX => into XXX"
+
+
 instruction_1 = [
     main_1,
     parameter_1
 ]
+
 instruction_2 = [
     main_2,
     parameter_2
 ]
+
 root = [
     instruction_1,
     instruction_2
