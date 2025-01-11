@@ -1,4 +1,4 @@
-# pys script
+## pys script
 __A language of the computer__
 
 
@@ -67,6 +67,7 @@ __其中，日志是以程序主环境、单脚本区、日志主功能、日志
 
 __如下方代码展示__
 
+python```
 
 main_1 = "@XXX"
 
@@ -120,3 +121,5 @@ root [
     ]
 
 ]
+
+```
