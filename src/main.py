@@ -102,37 +102,35 @@ root = []
 
 event = ""
 
-def match(text):
-    matches = re.findall(r'%([^%]+)%', text)
-    if not matches:  # 如果没有匹配项
-        return text  # 返回原始文本
-    for i in matches:
-        return get_variable(i)  # 否则返回匹配到的内容
-
 # 添加变量
 def add_variable(name, content):
     # 将变量名和内容添加到字典中
     variables[name] = content
 
-# 获取变量
-def get_variable(name):
-    # 从字典中获取变量内容
-    return variables.get(name)
+def match(text):
+    
+    # 使用 re.sub 替换 % 括起来的部分
+    def get_variable(match):
+        return variables.get(match.group(1), match.group(0))  # 如果变量不存在，返回原匹配字符串
+    
+    return re.sub(r'%([^%]+)%', get_variable, text)
 
-def receive_condition(condition):
-    if condition.split(":")[0] == "true":
-        if match(condition.split(":")[1]) == match(event):
-            return True
-        else:
-            return False
+
+def receive_condition(condition, event):
+    if match(condition) == match(event):
+        return True
+    else:
+        return False
 
 # 文本函数
 def content_function(p, event):
-    text = code.split("<!receive>")[0]
-    receive = code.split("<!receive>")[1]
-    if receive_condition(receive):
-        pass
-    
+    if len(code.split("<!receive>")) > 1:
+        text = code.split("<!receive>")[0]
+        receive = code.split("<!receive>")[1]
+        if receive_condition(receive, event):
+            return match(text)
+    else:
+        return match(p)
     
 #设置函数
 def set_function(p, event):
@@ -164,8 +162,10 @@ def judging_main(main, parameter, event):
         if main == "@send":
             event = send_function(parameter, event)
         if main == "@add":
-            add_variable(, parameter.replace(f"{parameter.split("=")[0]}＝", ""))
-            print(get_variable(parameter.split("=")[0].replace(" ", " ")))
+            name = parameter.split("=")[0].replace(" ", "")
+            key = parameter.split("=")[0]
+            value = parameter.replace(f"{key}=", "").strip()
+            add_variable(name, value)
     else:
         if main == "":
             print(error("StructuralError", "MainName"))
@@ -223,22 +223,45 @@ class Help:
                 if i == j:
                     print(f"    {i}: {Help.help_dic[j]}")
 
+def edit():
+    while True:
+        print("\033cEdit UI")
+        ARROW = "" #锁定时为<<
+        num = 0
+        for i in root:
+            num += 1
+            text = ""
+            for j in i:
+                text += f" {j}"
+            print(f"{num} | {text}{ARROW}")
+        command = input(">>|")
+        if command.split()[0] == "run" and int(command.split()[1]) <= num:
+            location = int(command.split()[1]) - 1
+            if locaion > -1:
+                unpack(event)
+        if command.split()[0] == "remove":
+            pass
+
 if __name__ == "__main__":
     while True:
         code = input(f"{' '*(3 - len(str(line)))}{line}|")
+
         line += 1
+        
+        if code.strip() == "edit":
+            edit(event)
+            line = 1
         
         if code == "exit":
             break
-        
         if len(code) > 0 and code.split()[0] == "help":
             HelpProgram = Help(code.split()[1:])
             code = ""
-            
         if code == "run":
-            line = unpack(event)
+            unpack(event)
+            line = 1
         else:
             if code.replace(" ", "") != "":
                 create_note(code)
         
-        print(root)
+        # print(root)
