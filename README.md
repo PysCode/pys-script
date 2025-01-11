@@ -51,15 +51,27 @@ root = [
     instruction_2
 ]
 
-# 原代码此处存在语法错误，以下是修正后的结构示例（假设这是意图）
+# JSON 格式
 root = [
-    {"instruction": [
-        "main",
-        "parameter"
-    ]},
-    {"instruction": [
-        "main",
-        "parameter"
-    ]}
+    {
+        "instruction": {
+            "main": {
+                "content": "",
+            },
+            "parameter": {
+                "content": "",
+            }
+        }
+    },
+    {
+        "instruction": {
+            "main": {
+                "content": "",
+            },
+            "parameter": {
+                "content": "",
+            }
+        }
+    }
 ]
 ```
