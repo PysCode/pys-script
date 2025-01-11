@@ -67,46 +67,58 @@ __其中，日志是以程序主环境、单脚本区、日志主功能、日志
 
 __如下方代码展示__
 
-###
+'''
 main_1 = "@XXX"
+
 parameter_2 = "XXX XXX XXX => into XXX"
 
 main_2 = "@XXX"
+
 parameter_2 = "XXX XXX XXX => into XXX"
 
 instruction_1 = [
+
     main_1,
+
     parameter_1
+
 ]
 
 instruction_2 = [
+
     main_2,
+
     parameter_2
+
 ]
 
 root = [
+
     instruction_1,
+
     instruction_2
+
 ]
 
-__
+
 root [
+
     instruction [
+
         main,
+
         parameter
+
     ],
     
     insrtruction [
+
         main,
+
         parameter
+
     ]
+
 ]
-
-__
-
-#解析
-
-for instructions in root:
-    for 
 
 ###
