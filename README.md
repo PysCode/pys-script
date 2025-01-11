@@ -81,3 +81,163 @@ root = [
     }
 ]
 ```
+
+## 四、具体代码
+ - 具体全部代码如下：
+
+```python
+import sys, re
+print(sys.version)
+
+line = 1
+
+# 创建一个空字典来存储变量
+variables = {}
+
+roots = ["@content", "@set", "@input", "@send", "@add", ""]
+
+root = []
+
+event = ""
+
+def match(text):
+    matches = re.findall(r'%([^%]+)%', text)
+    if not matches:  # 如果没有匹配项
+        return text  # 返回原始文本
+    for i in matches:
+        return get_variable(i)  # 否则返回匹配到的内容
+
+# 添加变量
+def add_variable(name, content):
+    # 将变量名和内容添加到字典中
+    variables[name] = content
+
+# 获取变量
+def get_variable(name):
+    # 从字典中获取变量内容
+    return variables.get(name)
+
+def receive_condition(condition):
+    if condition.split(":")[0] == "true":
+        if match(condition.split(":")[1]) == match(event):
+            return True
+        else:
+            return False
+
+# 文本函数
+def content_function(p, event):
+    text = code.split("<!receive>")[0]
+    receive = code.split("<!receive>")[1]
+    if receive_condition(receive):
+        pass
+    
+    
+#设置函数
+def set_function(p, event):
+    pass
+
+#输入函数
+def input_function(p, event):
+    pass
+
+def send_function(p, event):
+    pass
+
+#报错函数
+def error(ErrorReason, ErrorContent):
+    print("Traceback (most recent call last):")
+    print(f"  {ErrorReason}: name '{ErrorContent}' is not exist")
+
+# 判断主函数区
+def judging_main(main, parameter, event):
+    # print(main, parameter)
+    result = ""
+    if main in roots:
+        if main == "@content":
+            result = content_function(parameter, event)
+        if main == "@set":
+            result = set_function(parameter, event)
+        if main == "@input":
+            result = input_function(parameter, event)
+        if main == "@send":
+            event = send_function(parameter, event)
+        if main == "@add":
+            add_variable(, parameter.replace(f"{parameter.split("=")[0]}＝", ""))
+            print(get_variable(parameter.split("=")[0].replace(" ", " ")))
+    else:
+        if main == "":
+            print(error("StructuralError", "MainName"))
+        else:
+            print(error("NameNotFound", main))
+    print()
+    return result
+
+# 创建日志
+def create_note(code):
+    main = ""
+    parameter = ""
+        
+    for num in range(len(code.split("::"))):
+        if num == 0:
+            main = code.split("::")[num]
+        else:
+            parameter += code.split("::")[num]
+    instruction = [main, parameter]
+    root.append(instruction)
+
+# 解包
+def unpack(event):
+    program_result = ""
+    print("\033c[The program starts]\n")
+    program_result = ""
+    main = ""
+    i = ""
+    for instructions in root:
+        for i in instructions:
+            if len(i.split("@")) == 2:
+                main = i
+            else:
+                program_result += str(judging_main(main, i, event))
+    print(f"Program result:\n{program_result}\n")
+    input("[Process completed - press Enter]")
+    print(f"\033c{sys.version}")
+    return 1
+
+class Help:
+    
+    infor = ""
+    roots = ["@content", "@set", "@input"]
+    help_dic = {"@content":"Create a content for the window.", "@set":"A setting of the class and the parameter.", "@input":"It can allow the window to recive your information thet you input."}
+    
+    def __init__(self, information_class):
+        Help.infor = information_class
+        
+        for i in Help.infor:
+            if i == "?":
+                for j in Help.roots:
+                    print(f"    {j}: {Help.help_dic[j]}")
+                return    
+            for j in Help.infor:
+                if i == j:
+                    print(f"    {i}: {Help.help_dic[j]}")
+
+if __name__ == "__main__":
+    while True:
+        code = input(f"{' '*(3 - len(str(line)))}{line}|")
+        line += 1
+        
+        if code == "exit":
+            break
+        
+        if len(code) > 0 and code.split()[0] == "help":
+            HelpProgram = Help(code.split()[1:])
+            code = ""
+            
+        if code == "run":
+            line = unpack(event)
+        else:
+            if code.replace(" ", "") != "":
+                create_note(code)
+        
+        print(root)
+```
