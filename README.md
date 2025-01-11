@@ -67,7 +67,7 @@ __其中，日志是以程序主环境、单脚本区、日志主功能、日志
 
 __如下方代码展示__
 
-python ‘‘‘
+###
 main_1 = "@XXX"
 parameter_2 = "XXX XXX XXX => into XXX"
 
@@ -89,7 +89,7 @@ root = [
     instruction_2
 ]
 
-###
+__
 root [
     instruction [
         main,
@@ -102,11 +102,11 @@ root [
     ]
 ]
 
-###
+__
 
 #解析
 
 for instructions in root:
     for 
 
-’’’
+###
