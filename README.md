@@ -94,7 +94,7 @@ line = 1
 # 创建一个空字典来存储变量
 variables = {}
 
-roots = ["@content", "@set", "@input", "@send", "@add", ""]
+roots = ["@content", "@set", "@input", "@send", "@add"]
 
 root = []
 
@@ -239,5 +239,5 @@ if __name__ == "__main__":
             if code.replace(" ", "") != "":
                 create_note(code)
         
-        print(root)
+        # print(root)
 ```
