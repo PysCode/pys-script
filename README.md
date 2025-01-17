@@ -1,4 +1,4 @@
-# Pys - script (1.0)
+# Pys - Script
 
 - # 项目一：**PYS 语言**
 
