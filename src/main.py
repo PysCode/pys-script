@@ -1,3 +1,5 @@
+'''PYS 程序语言'''
+
 import sys, re
 print(sys.version)
 
