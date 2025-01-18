@@ -6,16 +6,16 @@
     <title>俄罗斯方块</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden; /* 禁止页面滚动 */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden; /* 禁止页面滚动 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 /* 修改后的游戏容器宽度和高度 */
 #game-container {
@@ -236,7 +236,7 @@
         <button id="restart-button" class="control-button"><i class="fas fa-redo"></i></button>
         <!--<button id="drop-button" class="control-button"><i class="fas fa-angle-double-down"></i></button>-->
     </div>
-    <div class="button-container">
+    <div class="button-container" style="display:none;">
         <button id="left-button" class="control-button"><i class="fas fa-arrow-left"></i></button>
         <button id="down-button" class="control-button"><i class="fas fa-arrow-down"></i></button>
         <button id="drop-button" class="control-button"><i class="fas fa-angle-double-down"></i></button>
@@ -281,6 +281,41 @@ let gameInterval = null;
 
 let highScore = 6800;  // 用于存储最高分
 
+// 新增变量用于记录上次按下下键的时间
+let lastDownKeyPressTime = 0;
+
+// 新增键盘事件监听函数
+function handleKeyDown(event) {
+    switch (event.key) {
+        case 'a':
+            movePiece(-1, 0);
+            break;
+        case 'd':
+            movePiece(1, 0);
+            break;
+        case 's':
+            movePiece(0, 1);
+            break;
+        case 'Shift': // Shift键
+            // 检查是否是左Shift键
+            if (event.code === 'ShiftLeft') {
+                // 点击左Shift键，方块旋转
+                rotatePiece();
+            }
+            break;
+        case 'Enter': // Enter键
+            // 点击Enter键，方块直接到底
+            while (!checkCollision(currentPiece, currentPiece.x, currentPiece.y + 1)) {
+                currentPiece.y++;
+            }
+            placePiece();
+            break;
+        default:
+            // 其他按键不做处理
+            break;
+    }
+}
+
 function updateHighScore() {
     if (score > highScore) {
         highScore = score;
@@ -291,6 +326,7 @@ function updateHighScore() {
 // 确保在游戏开始时显示当前最高分
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('high-score-display').textContent = `Best: ${highScore}`;
+    document.addEventListener('keydown', handleKeyDown);
 });
 
 
@@ -450,9 +486,14 @@ function clearRows() {
     if (rowsCleared > 0) {
         score += 100 * rowsCleared; // 根据清除的行数增加得分
         scoreDisplay.textContent = `得分：${score}`;
-        alert(speed(score));
+        
+        // 更新游戏速度
+        const newSpeed = speed(score);
+        clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, newSpeed);
     }
 }
+
 
 function gameOver() {
     const text = '游戏结束！ 得分：' + score;
