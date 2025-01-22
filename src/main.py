@@ -98,41 +98,45 @@ line = 1
 # 创建一个空字典来存储变量
 variables = {}
 
-roots = ["@content", "@set", "@input", "@send", "@add", ""]
+roots = ["@content", "@set", "@input", "@send", "@add"]
 
 root = []
 
 event = ""
+
+def match(text):
+    matches = re.findall(r'%([^%]+)%', text)
+    if not matches:  # 如果没有匹配项
+        return text.replace("\\n", "\n")  # 返回原始文本
+    for i in matches:
+        return get_variable(i).replace("\\n", "\n")  # 否则返回匹配到的内容
 
 # 添加变量
 def add_variable(name, content):
     # 将变量名和内容添加到字典中
     variables[name] = content
 
-def match(text):
-    
-    # 使用 re.sub 替换 % 括起来的部分
-    def get_variable(match):
-        return variables.get(match.group(1), match.group(0))  # 如果变量不存在，返回原匹配字符串
-    
-    return re.sub(r'%([^%]+)%', get_variable, text)
+# 获取变量
+def get_variable(name):
+    # 从字典中获取变量内容
+    return variables.get(name)
 
-
-def receive_condition(condition, event):
-    if match(condition) == match(event):
-        return True
-    else:
-        return False
+def receive_condition(condition):
+    if condition.split(":")[0] == "true":
+        if match(condition.split(":")[1]) == match(event):
+            return True
+        else:
+            return False
 
 # 文本函数
 def content_function(p, event):
-    if len(code.split("<!receive>")) > 1:
-        text = code.split("<!receive>")[0]
+    text = code.split("<!receive>")[0]
+    if code.split("<!receive>") == 2:
         receive = code.split("<!receive>")[1]
-        if receive_condition(receive, event):
-            return match(text)
+        if receive_condition(receive):
+            print(text)
     else:
-        return match(p)
+        print(text)
     
 #设置函数
 def set_function(p, event):
@@ -164,10 +168,10 @@ def judging_main(main, parameter, event):
         if main == "@send":
             event = send_function(parameter, event)
         if main == "@add":
-            name = parameter.split("=")[0].replace(" ", "")
-            key = parameter.split("=")[0]
-            value = parameter.replace(f"{key}=", "").strip()
-            add_variable(name, value)
+            key = parameter.split("=")[0] + "="
+            name = parameter.split("=")[0].strip()
+            content = parameter.replace(key, "")
+            add_variable(name, content)
     else:
         if main == "":
             print(error("StructuralError", "MainName"))
@@ -210,60 +214,37 @@ def unpack(event):
 class Help:
     
     infor = ""
-    roots = ["@content", "@set", "@input"]
-    help_dic = {"@content":"Create a content for the window.", "@set":"A setting of the class and the parameter.", "@input":"It can allow the window to recive your information thet you input."}
+    roots = ["@content", "@set", "@input", "@add"]
+    help_dic = {"@content":"Create a content for the window.", "@set":"A setting of the class and the parameter.", "@input":"It can allow the window to recive your information thet you input.", "@add":"Add a variable."}
     
     def __init__(self, information_class):
+        
+        print() # start
+        
         Help.infor = information_class
+        
+        if len(Help.infor) == 1 and Help.infor[0] == "?":
+            print("Help: All Types")
+        else:
+            if len(Help.infor) != 1:
+                j = ""
+                for i in Help.infor:
+                    j += f" {i}"
+                print(f"Help:{j}")
+            else:
+                print(f"Help: {Help.infor[0]}")
+        
         
         for i in Help.infor:
             if i == "?":
                 for j in Help.roots:
-                    print(f"    {j}: {Help.help_dic[j]}")
+                    print(f"   |{j}: {Help.help_dic[j]}")
                 return    
             for j in Help.infor:
                 if i == j:
-                    print(f"    {i}: {Help.help_dic[j]}")
-
-def edit():
-    while True:
-        print("\033cEdit UI")
-        ARROW = "" #锁定时为<<
-        num = 0
-        for i in root:
-            num += 1
-            text = ""
-            for j in i:
-                text += f" {j}"
-            print(f"{num} | {text}{ARROW}")
-        command = input(">>|")
-        if command.split()[0] == "run" and int(command.split()[1]) <= num:
-            location = int(command.split()[1]) - 1
-            if locaion > -1:
-                unpack(event)
-        if command.split()[0] == "remove":
-            pass
+                    print(f"   |{i}: {Help.help_dic[j]}")
+        
 
 if __name__ == "__main__":
     while True:
-        code = input(f"{' '*(3 - len(str(line)))}{line}|")
-
-        line += 1
-        
-        if code.strip() == "edit":
-            edit(event)
-            line = 1
-        
-        if code == "exit":
-            break
-        if len(code) > 0 and code.split()[0] == "help":
-            HelpProgram = Help(code.split()[1:])
-            code = ""
-        if code == "run":
-            unpack(event)
-            line = 1
-        else:
-            if code.replace(" ", "") != "":
-                create_note(code)
-        
-        # print(root)
+        code = inp
