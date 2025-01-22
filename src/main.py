@@ -247,4 +247,25 @@ class Help:
 
 if __name__ == "__main__":
     while True:
-        code = inp
+        code = input(f"{' '*(3 - len(str(line)))}{line}|")
+        line += 1
+        
+        if code == "clear":
+            root = []
+        
+        if code == "exit":
+            break
+        
+        if len(code) > 0 and code.split()[0] == "help":
+            HelpProgram = Help(code.split()[1:])
+            code = ""
+            print()
+            
+        if code == "run":
+            print("\033cRun")
+            line = unpack(event)
+        else:
+            if code.replace(" ", "") != "":
+                create_note(code)
+        
+        print(root)
