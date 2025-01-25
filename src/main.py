@@ -114,7 +114,7 @@ def match(text):
 # 添加变量
 def add_variable(name, content):
     # 将变量名和内容添加到字典中
-    variables[name] = content
+    variables[name] = match(content)
 
 # 获取变量
 def get_variable(name):
@@ -129,15 +129,17 @@ def receive_condition(condition):
             return False
 
 # 文本函数
-def content_function(p, event):
+def content_function(code, event):
     text = code.split("<!receive>")[0]
+    result = ""
     if code.split("<!receive>") == 2:
         receive = code.split("<!receive>")[1]
         if receive_condition(receive):
-            print(text)
+            result = match(text)
     else:
-        print(text)
-    
+        result = match(text)
+    return result
+
 #设置函数
 def set_function(p, event):
     pass
@@ -170,7 +172,7 @@ def judging_main(main, parameter, event):
         if main == "@add":
             key = parameter.split("=")[0] + "="
             name = parameter.split("=")[0].strip()
-            content = parameter.replace(key, "")
+            content = parameter.replace(key, "").strip()
             add_variable(name, content)
     else:
         if main == "":
@@ -184,7 +186,7 @@ def judging_main(main, parameter, event):
 def create_note(code):
     main = ""
     parameter = ""
-        
+
     for num in range(len(code.split("::"))):
         if num == 0:
             main = code.split("::")[num]
@@ -194,7 +196,7 @@ def create_note(code):
     root.append(instruction)
 
 # 解包
-def unpack(event):
+def unpack(root, event):
     program_result = ""
     print("\033c[The program starts]\n")
     program_result = ""
@@ -212,17 +214,17 @@ def unpack(event):
     return 1
 
 class Help:
-    
+
     infor = ""
     roots = ["@content", "@set", "@input", "@add"]
     help_dic = {"@content":"Create a content for the window.", "@set":"A setting of the class and the parameter.", "@input":"It can allow the window to recive your information thet you input.", "@add":"Add a variable."}
-    
+
     def __init__(self, information_class):
-        
+
         print() # start
-        
+
         Help.infor = information_class
-        
+
         if len(Help.infor) == 1 and Help.infor[0] == "?":
             print("Help: All Types")
         else:
@@ -233,8 +235,8 @@ class Help:
                 print(f"Help:{j}")
             else:
                 print(f"Help: {Help.infor[0]}")
-        
-        
+
+
         for i in Help.infor:
             if i == "?":
                 for j in Help.roots:
@@ -243,29 +245,74 @@ class Help:
             for j in Help.infor:
                 if i == j:
                     print(f"   |{i}: {Help.help_dic[j]}")
-        
+
+
+def edit():
+    lock = [1]
+    while True:
+        print("\033cEdit UI\n")
+        ARROW = "" #锁定时为<<
+        num=0
+        for i in root:
+            num += 1
+            text=""
+            if num in lock:
+                ARROW = "<<"
+            else:
+                ARROW = ""
+            for j in i:
+                text += f" {j}"
+            print(f"{num}| {text}{ARROW}")
+        command = input(">>|")
+        if command.strip() == ""
+        if command.strip() != "" and command.split()[0] == "locate" and len(command.split()) > 1:
+            parameter = ""
+            lock = []
+            for part in command.split()[1:]:
+                parameter += part
+            if len(parameter.split(",")) > 1:
+                for lock_num in parameter.split(","):
+                    lock.append(int(lock_num))
+            else:
+                lock.append(int(parameter))
+        if command.strip() != "" and command.split()[0] == "remove" and len(command.split()) > 1:
+            parameter = ""
+            for part in command.split()[1:]:
+                parameter += part
+            if len(parameter.split(",")) > 1:
+                for remove_num in parameter.split(","):
+                    del root[int(emove_num) - 1]
+            else:
+                del root[int(parameter) - 1]
+        if command.strip() == "exit":
+            print("\033c")
+            break
 
 if __name__ == "__main__":
     while True:
         code = input(f"{' '*(3 - len(str(line)))}{line}|")
         line += 1
-        
+
         if code == "clear":
             root = []
-        
+
+        if code.strip() == "edit":
+            edit()
+            line = 1
+
         if code == "exit":
             break
-        
+
         if len(code) > 0 and code.split()[0] == "help":
             HelpProgram = Help(code.split()[1:])
             code = ""
             print()
-            
+
         if code == "run":
             print("\033cRun")
-            line = unpack(event)
+            line = unpack(root, event)
         else:
             if code.replace(" ", "") != "":
                 create_note(code)
-        
+
         print(root)
