@@ -1,6 +1,6 @@
 '''程序名：PYS 程序语言'''
 
-import sys, re
+import sys, re, time
 print(sys.version)
 
 '''
@@ -152,13 +152,22 @@ def send_function(p, event):
     pass
 
 #报错函数
-def error(ErrorReason, ErrorContent):
-    print("Traceback (most recent call last):")
-    print(f"  {ErrorReason}: name '{ErrorContent}' is not exist")
+def error(ErrorReason, ErrorContent, allow):
+    error_list = ["NameNotFound", "StructuralError", "KeyError"]
+    # if allow:
+    #     print("Traceback (most recent call last):")
+    #     allow = False
+    # 想法未能实现
+    if ErrorReason in error_list:
+        if ErrorReason == "NameNotFound":
+            print(f"{ErrorReason}: name '{ErrorContent}' is not exist")
+        if ErrorReason == "StructuralError":
+            print(f"{ErrorReason}: '{ErrorContent}' is not exist.")
+        if ErrorReason == "KeyError":
+            print(f"{ErrorReason}: Statements do not have the keyword '@'")
 
 # 判断主函数区
-def judging_main(main, parameter, event):
-    # print(main, parameter)
+def judging_main(main, parameter, event, allow):
     result = ""
     if main in roots:
         if main == "@content":
@@ -175,10 +184,15 @@ def judging_main(main, parameter, event):
             content = parameter.replace(key, "").strip()
             add_variable(name, content)
     else:
-        if main == "":
-            print(error("StructuralError", "MainName"))
+        if parameter == "":
+            if error("StructuralError", main, allow):
+                print(error("StructuralError", main, allow))
         else:
-            print(error("NameNotFound", main))
+            if error("NameNotFound", main, allow):
+                print(error("NameNotFound", main, allow))
+        if main == "":
+            if error("KeyError", main, allow):
+                print(error("KeyError", main, allow))
     print()
     return result
 
@@ -197,6 +211,7 @@ def create_note(code):
 
 # 解包
 def unpack(root, event):
+    allow = True
     program_result = ""
     print("\033c[The program starts]\n")
     program_result = ""
@@ -207,7 +222,7 @@ def unpack(root, event):
             if len(i.split("@")) == 2:
                 main = i
             else:
-                program_result += str(judging_main(main, i, event))
+                program_result += str(judging_main(main, i, event, allow))
     print(f"Program result:\n{program_result}\n")
     input("[Process completed - press Enter]")
     print(f"\033c{sys.version}")
@@ -263,9 +278,14 @@ def edit():
             for j in i:
                 text += f" {j}"
             print(f"{num}| {text}{ARROW}")
+        if root == []:
+            input("|You have not added a code,\n|Press the Enter to exit.\n|")
+            print("\033c")
+            break
         command = input(">>|")
-        if command.strip() == ""
-        if command.strip() != "" and command.split()[0] == "locate" and len(command.split()) > 1:
+        if command.strip() == "run":
+            unpack(root, event)
+        if command.strip() != "" and command.split()[0] == "loc" and len(command.split()) > 1:
             parameter = ""
             lock = []
             for part in command.split()[1:]:
@@ -275,7 +295,7 @@ def edit():
                     lock.append(int(lock_num))
             else:
                 lock.append(int(parameter))
-        if command.strip() != "" and command.split()[0] == "remove" and len(command.split()) > 1:
+        if command.strip() != "" and command.split()[0] == "rm" and len(command.split()) > 1:
             parameter = ""
             for part in command.split()[1:]:
                 parameter += part
@@ -312,7 +332,7 @@ if __name__ == "__main__":
             print("\033cRun")
             line = unpack(root, event)
         else:
-            if code.replace(" ", "") != "":
+            if code.strip() != "" and code.strip() != "edit" and code.strip() != "clear":
                 create_note(code)
 
         print(root)
