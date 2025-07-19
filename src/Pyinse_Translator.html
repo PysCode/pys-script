@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KimiPys 单词助手</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f9f9f9;
+color: #333;
+margin: 0;
+padding: 0;
+display: flex;
+justify-content: center;
+align-items: flex-start;
+min-height: 100vh;
+}
+.container {
+width: 90%;
+margin: 10px auto;
+padding: 20px;
+background-color: #fff;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+border-radius: 8px;
+position: relative;
+}
+.search-bar {
+display: flex;
+align-items: center;
+margin-bottom: 20px;
+}
+.toggle-sidebar {
+padding: 10px;
+font-size: 16px;
+border: none;
+border-radius: 4px;
+background-color: #333;
+color: #fff;
+cursor: pointer;
+outline: none;
+margin-right: 10px;
+z-index: 101;
+}
+.search-bar input[type="text"] {
+width: calc(100% - 40px);
+padding: 15px;
+font-size: 14px;
+border: 1px solid #ddd;
+border-radius: 4px;
+outline: none;
+background-color: #f9f9f9;
+z-index: 101;
+}
+.search-results {
+top: -100%;
+position: absolute;
+width: 92%;
+max-height: 350px;
+overflow-y: auto;
+background-color: #fff;
+border: 1px solid #ddd;
+border-radius: 4px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+z-index: 100;
+transition: top 0.5s ease;
+}
+.search-results.active {
+top: 80px;
+}
+.search-results ul {
+list-style-type: none;
+padding: 0;
+margin: 0;
+}
+.search-results ul li {
+padding: 10px;
+border-bottom: 1px solid #eee;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.search-results ul li:last-child {
+border-bottom: none;
+}
+.search-results ul li:hover {
+background-color: #f0f0f0;
+}
+.bold {
+font-weight: bold;
+}
+.no-results {
+padding: 10px;
+text-align: center;
+color: #888;
+}
+.word-display {
+display: block;
+margin-top: 20px;
+padding: 15px;
+background-color: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 4px;
+position: relative;
+}
+.word-display h2 {
+margin: 0 0 10px;
+}
+.word-display p {
+margin: 5px 0;
+color: #555;
+}
+.word-display .favorite {
+position: absolute;
+top: 5px;
+right: 5px;
+padding: 5px;
+font-size: 16px;
+border: none;
+border-radius: 4px;
+background-color: #333;
+color: #fff;
+cursor: pointer;
+}
+.sidebar {
+position: fixed;
+top: 0;
+left: -250px;
+width: 250px;
+height: 100vh;
+background-color: #333;
+color: white;
+padding: 15px;
+box-sizing: border-box;
+transition: left 0.3s ease;
+z-index: 1000;
+overflow-y: auto;
+}
+.sidebar.active {
+left: 0;
+}
+.sidebar h3 {
+margin: 0 0 10px;
+}
+.sidebar ul {
+list-style-type: none;
+padding: 0;
+max-height: 240px;
+overflow-y: auto;
+}
+.sidebar ul li {
+margin: 10px 0;
+}
+.sidebar ul li a {
+color: white;
+text-decoration: none;
+}
+.sidebar ul li a:hover {
+text-decoration: underline;
+}
+.overlay {
+position: fixed;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+z-index: 999;
+transition: left 0.6s ease;
+}
+.overlay.active {
+left: 0;
+}
+.favorites-list {
+list-style-type: none;
+padding: 0;
+}
+.favorites-list li {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px;
+border-bottom: 1px solid #444;
+}
+.favorites-list li:last-child {
+border-bottom: none;
+}
+.favorites-list li span {
+color: #888;
+}
+.favorites-list li button {
+background-color: #555;
+color: white;
+border: none;
+border-radius: 4px;
+padding: 5px;
+font-size: 14px;
+cursor: pointer;
+}
+.history-list {
+list-style-type: none;
+padding: 0;
+}
+.history-list li {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px;
+border-bottom: 1px solid #444;
+}
+.history-list li:last-child {
+border-bottom: none;
+}
+.history-list li span {
+color: #888;
+}
+.history-list li button {
+background-color: #555;
+color: white;
+border: none;
+border-radius: 4px;
+padding: 5px;
+font-size: 18px;
+cursor: pointer;
+}
+.game-display {
+display: block;
+margin-top: 20px;
+padding: 15px;
+background-color: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 4px;
+}
+.game-display .poem {
+color: #555;
+font-size: 15px;
+margin-bottom: 10px;
+}
+.game-display .question {
+font-size: 18px;
+margin-bottom: 15px;
+}
+.game-display .options {
+margin-bottom: 15px;
+}
+.game-display .option {
+display: block;
+margin-bottom: 10px;
+padding: 10px;
+background-color: #ddd;
+border: none;
+cursor: pointer;
+width: 100%;
+text-align: left;
+}
+.game-display .option:hover {
+background-color: #ccc;
+}
+.game-display .result {
+font-size: 16px;
+margin-bottom: 15px;
+}
+.game-display .submit-button {
+background-color: #ddd;
+color: #333;
+padding: 10px 20px;
+border: none;
+cursor: pointer;
+}
+.game-display .submit-button:hover {
+background-color: #ccc;
+}
+.game-display .footer {
+text-align: center;
+margin-top: 20px;
+color: #333;
+font-size: 14px;
+}
+.about-overlay, .note-overlay, .phonetic-overlay, .updates-overlay {
+display: block;
+position: fixed;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background-color: #fff;
+z-index: 1001;
+transition: left 0.6s ease;
+}
+.about-overlay.active, .note-overlay.active, .phonetic-overlay.active, .updates-overlay.active {
+left: 0;
+}
+.about-overlay .close-button, .note-overlay .close-button, .phonetic-overlay .close-button, .updates-overlay .close-button {
+position: absolute;
+top: 10px;
+left: 10px;
+font-size: 24px;
+cursor: pointer;
+}
+.about-overlay .about-content, .note-overlay .note-content, .phonetic-overlay .phonetic-content, .updates-overlay .updates-content {
+padding: 10px;
+text-align: center;
+}
+.about-content, .note-content, .phonetic-content, .updates-content {
+font-weight: 300;
+}
+.title-display {
+text-align: center;
+font-size: 25px;
+font-weight: 100;
+margin-bottom: 15px;
+}
+.date-left,
+.date-right {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+.date-right {
+  transform: translateX(100%);
+}
+.date-left.animate-in,
+.date-right.animate-in {
+  opacity: 1;
+  transform: translateX(0);
+}
+.splash-screen {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: #fff;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+z-index: 1002;
+transition: left 0.5s ease;
+}
+.splash-screen.active {
+left: -100%;
+}
+.date-container {
+display: flex;
+align-items: center;
+margin-top: 70px;
+font-size: 3.3em;
+}
+.date-left {
+transform: translateX(-100%);
+margin-right: 10px;
+padding-right: 30px;
+}
+.date-right {
+transform: translateX(100%);
+padding-left: 20px;
+}
+.date-divider {
+transform: translateX(-10px);
+width: 2px;
+height: 120px;
+background-color: black;
+margin: 0 20px;
+}
+.week {
+font-size: 0.3em;
+text-align: right;
+}
+.month {
+font-size: 2em;
+}
+.day {
+font-size: 1.5em;
+}
+.year {
+font-size: 0.5em;
+}
+.word-container {
+text-align: left;
+padding: 50px;
+margin-top: 100px;
+margin-left: 0px;
+}
+.word {
+font-size: 3em;
+font-weight: bold;
+}
+.definition {
+margin-top: 10px;
+margin-bottom: 30px;
+font-size: 0.9em;
+}
+.example {
+margin-top: 10px;
+font-size: 1em;
+}
+.switch {
+position: relative;
+display: inline-block;
+width: 63px;
+height: 30px;
+}
+.switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 32px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 22px;
+width: 22px;
+left: 4px;
+bottom: 4px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #90EE90;
+}
+input:focus + .slider {
+box-shadow: 0 0 1px #90EE90;
+}
+input:checked + .slider:before {
+transform: translateX(22px);
+}
+.splash-toggle-container {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-top: 10px;
+}
+.splash-toggle-container span {
+margin-right: 10px;
+}
+.splash-toggle-title {
+font-size: 20px;
+font-weight: bold;
+}
+.container-help {
+transform: translateY(-20px);
+width: 90%;
+height: calc(80vh);
+margin: 20px auto;
+padding: 20px;
+background-color: #fff;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+border-radius: 8px;
+position: relative;
+overflow: auto;
+}
+h1-help {
+text-align: center;
+font-size: 28px;
+font-weight: 300;
+margin-bottom: 20px;
+color: #4a4a4a;
+}
+.section-help {
+margin-bottom: 30px;
+}
+.section-help h2-help {
+font-size: 22px;
+font-weight: 500;
+margin-bottom: 10px;
+color: #2c3e50;
+}
+.section-help p-help {
+font-size: 14px;
+line-height: 1.6;
+color: #7f8c8d;
+}
+.section-help ol-help, .section-help ul-help {
+font-size: 14px;
+line-height: 1.6;
+margin-left: 20px;
+color: #7f8c8d;
+}
+.section-help li-help {
+margin-bottom: 5px;
+}
+.section-help pre-help {
+background-color: #ecf0f1;
+border: 1px solid #bdc3c7;
+border-radius: 4px;
+padding: 10px;
+font-size: 12px;
+overflow-x: auto;
+}
+.section-help pre-help code-help {
+font-family: 'Courier New', Courier, monospace;
+color: #2c3e50;
+}
+table {
+border-radius: 8px;
+}
+.phonetic-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+}
+.phonetic-table th, .phonetic-table td {
+border: 1px solid #ddd;
+padding: 8px;
+text-align: left;
+}
+.phonetic-table th {
+background-color: #f2f2f2;
+font-weight: bold;
+}
+.phonetic-table tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+.phonetic-table tr:hover {
+background-color: #f1f1f1;
+}
+.updates-list {
+text-align: left;
+max-width: 600px;
+margin: 0 auto;
+padding: 20px;
+}
+.updates-list h3 {
+color: #333;
+border-bottom: 1px solid #eee;
+padding-bottom: 5px;
+margin-top: 20px;
+}
+.updates-list p {
+margin: 8px 0;
+font-size: 14px;
+color: #555;
+}
+</style>
+</head>
+<body>
+<!-- 开屏页面 -->
+<div class="splash-screen" id="splash-screen">
+<div class="date-container">
+<div class="date-left">
+<div class="month" id="month"></div>
+<div class="week" id="week"></div>
+</div>
+<div class="date-divider"></div>
+<div class="date-right">
+<div class="year" id="year"></div>
+<div class="day" id="day"></div>
+</div>
+</div>
+<div class="word-container" id="splash-word-container">
+<div class="word" id="splash-word"></div>
+<div class="definition" id="splash-definition"></div>
+<div class="example" id="splash-example"></div>
+</div>
+</div>
+
+<!-- 主页面内容 -->
+<div class="container" id="main-container">
+<div class="search-bar">
+<button class="toggle-sidebar" id="toggle-sidebar">☰</button>
+<input type="text" id="search-input" placeholder="请输入搜索内容">
+</div>
+<div class="search-results" id="search-results">
+<ul>
+<!-- 搜索结果列表 -->
+</ul>
+<div class="no-results" id="no-results" style="display: none;">· 暂无相关词汇 ·</div>
+</div>
+<div class="word-display" id="word-display">
+<button class="favorite" id="favorite-button">☆</button>
+<h2 id="word">-</h2>
+<p id="pronunciation">音标: /-/</p>
+<p id="part-of-speech">词性: -</p>
+<p id="interpretation">释义: -</p>
+<p id="example">例句: -</p>
+<p id="derivative">衍生词: <span id="derivative-word" style="color: #333; cursor: pointer;">-</span></p>
+</div>
+
+<div class="game-display" id="game-display">
+<div class="title-display">-= 卡片配对 =-</div>
+<div class="poem" id="poem">书山有路勤为径，学海无涯苦作舟</div>
+<div class="question" id="question"></div>
+<div class="options" id="options"></div>
+<div class="result" id="result"></div>
+<button class="submit-button" onclick="checkAnswer()">提交答案</button>
+<div class="footer">· 学如春起之苗 不见其增 日有所长 ·</div>
+</div>
+</div>
+<div class="sidebar" id="sidebar">
+<h3>收藏</h3>
+<ul class="favorites-list" id="favorites-list">
+<!-- 收藏列表 -->
+</ul>
+<h3>历史记录</h3>
+<ul class="history-list" id="history-list">
+<!-- 历史记录列表 -->
+</ul>
+<div class="splash-toggle-container">
+<span class="splash-toggle-title">开屏动画</span>
+<label class="switch">
+<input type="checkbox" id="splash-toggle">
+<span class="slider"></span>
+</label>
+</div>
+<br>
+<h3 id="phonetic-button">音标学习</h3>
+<h3 id="note-button">帮助</h3>
+<h3 id="about-button">关于</h3>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="about-overlay" id="about-overlay">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+<div class="close-button" id="close-about">◁</div>
+<button id="view-updates" style="background: #333; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px;text-align: right;position: absolute;top: 20px;right: 20px;">更新内容</button>
+</div>
+<div class="about-content">
+<h2 class="about-content">关于 KimiPys 单词助手</h2>
+<p class="about-content" id="about-con">V1.0.0</p><br>
+<p class="about-content">这是一个能够帮助你学习单词的纯净简约工具。</p>
+</div>
+</div>
+<div class="note-overlay" id="note-overlay">
+<div class="close-button" id="close-note">◁</div>
+<div class="note-content">
+<h1-help>KimiPys 单词助手使用说明</h1-help>
+<p class="note-content">
+<div class="container-help">
+<div class="section-help">
+<h2-help>1. 使用搜索功能</h2-help>
+<ol-help>
+<li-help>在页面顶部的搜索框中输入单词或释义。例如，输入“a”或“字母表中的字母”。</li-help>
+<li-help>搜索结果会实时显示在搜索框下方的列表中。如果没有找到匹配的单词，会显示“暂无相关词汇”。如果搜索框为空，会显示历史记录中的最近搜索内容。</li-help>
+<li-help>点击搜索结果中的单词，查看该单词的详细信息。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>2. 查看单词详细信息</h2-help>
+<ol-help>
+<li-help>在搜索结果中点击一个单词，单词的详细信息会显示在页面中间的“单词显示”区域。</li-help>
+<li-help>单词详细信息包括：
+<ul-help>
+<li-help>音标：单词的音标。</li-help>
+<li-help>词性：单词的词性。</li-help>
+<li-help>释义：单词的释义。</li-help>
+<li-help>例句：单词的例句，如果有多个例句，会换行显示。</li-help>
+<li-help>衍生词：单词的衍生词，点击衍生词可以跳转到该衍生词的详细信息。</li-help>
+</ul-help>
+</li-help>
+<li-help>如果需要收藏该单词，点击“收藏”按钮（☆）。收藏的单词会出现在侧边栏的“收藏”列表中。如果单词已经收藏，按钮会显示为“★”。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>3. 查看收藏和历史记录</h2-help>
+<ol-help>
+<li-help>查看收藏列表：
+<ul-help>
+<li-help>点击侧边栏中的“收藏”按钮，可以查看所有收藏的单词。</li-help>
+<li-help>在收藏列表中点击单词，可以直接跳转到该单词的详细信息。</li-help>
+<li-help>如果需要移除收藏的单词，点击单词旁边的“—”按钮。</li-help>
+</ul-help>
+</li-help>
+<li-help>查看历史记录：
+<ul-help>
+<li-help>点击侧边栏中的“历史记录”按钮，可以查看最近搜索过的单词。</li-help>
+<li-help>在历史记录中点击单词，可以直接跳转到该单词的详细信息。</li-help>
+<li-help>如果需要移除历史记录中的单词，点击单词旁边的“—”按钮。</li-help>
+</ul-help>
+</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>4. 查看关于页面</h2-help>
+<ol-help>
+<li-help>点击侧边栏中的“关于”按钮，会弹出一个白色的区域，显示软件的介绍信息。</li-help>
+<li-help>关于页面会显示软件的版本号、功能介绍等信息。</li-help>
+<li-help>点击关于区域左上角的关闭按钮（◁），可以关闭关于页面。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>5. 使用单词游戏</h2-help>
+<ol-help>
+<li-help>查看题目：
+<ul-help>
+<li-help>在页面中间的“单词游戏”区域，会显示一个单词的释义选择题。</li-help>
+<li-help>题目格式为：“第X题：单词的释义是？”</li-help>
+</ul-help>
+</li-help>
+<li-help>选择答案：
+<ul-help>
+<li-help>选择一个选项后，点击“提交答案”按钮。</li-help>
+</ul-help>
+</li-help>
+<li-help>查看结果：
+<ul-help>
+<li-help>如果答案正确，会显示“✓ 正确！”并高亮显示正确选项。</li-help>
+<li-help>如果答案错误，会显示“✗ 错误！正确答案是：正确答案”并高亮显示正确选项。</li-help>
+<li-help>错误的题目会被记录下来，下次游戏会优先复习这些错题。</li-help>
+</ul-help>
+</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>6. 控制开屏动画</h2-help>
+<ol-help>
+<li-help>找到开关：
+<ul-help>
+<li-help>在侧边栏中找到“开屏动画”开关。</li-help>
+</ul-help>
+</li-help>
+<li-help>打开或关闭开屏动画：
+<ul-help>
+<li-help>如果想在下次打开页面时显示开屏动画，确保开关处于打开状态（绿色）。</li-help>
+<li-help>如果不想显示开屏动画，将开关切换到关闭状态（灰色）。</li-help>
+</ul-help>
+</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>7. 使用范围与限制</h2-help>
+<ol-help>
+<li-help>本软件是一款离线查单词工具，仅供个人使用。用户不得将软件用于商业用途或其他未经授权的场景。</li-help>
+<li-help>软件未设置账号登录功能，所有数据均存储于用户设备本地，不会上传至任何服务器或第三方平台。</li-help>
+<li-help>用户在使用过程中应确保软件的纯净性，不得安装或使用任何可能篡改软件功能的插件或附加组件。</li-help>
+<li-help>软件方不提供任何形式的在线服务，用户应自行负责软件的安装、更新和维护。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>8. 用户数据保护</h2-help>
+<ol-help>
+<li-help>本软件不会收集用户的任何个人信息，包括但不限于姓名、联系方式、使用习惯等。所有数据均存储在用户设备本地，软件方无法访问或获取。</li-help>
+<li-help>用户在使用过程中输入的单词、查询历史等数据，仅用于软件的本地功能实现，不会被用于任何其他目的。</li-help>
+<li-help>软件方不会通过软件向用户推送任何形式的广告或商业信息。</li-help>
+<li-help>用户有权随时删除本地存储的数据，软件方不会对此进行干预。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>9. 软件更新与技术支持</h2-help>
+<ol-help>
+<li-help>软件方会不定期发布更新版本，以修复已知问题、优化功能或增加新内容。用户应定期检查更新，以确保软件的正常使用。</li-help>
+<li-help>由于软件为离线版，用户在使用过程中遇到问题时，可通过软件内置的帮助文档或官方网站获取技术支持信息。</li-help>
+<li-help>软件方不保证软件的无间断运行，但会尽力确保软件的稳定性和兼容性。</li-help>
+<li-help>用户在使用过程中发现的任何问题或建议，可通过软件提供的反馈渠道向软件方提出。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>10. 禁止行为与法律责任</h2-help>
+<ol-help>
+<li-help>用户不得对软件进行反向工程、解码、修改或破解，否则将承担相应的法律责任。</li-help>
+<li-help>用户不得利用软件进行任何形式的非法活动，包括但不限于侵犯他人版权、传播非法内容等。</li-help>
+<li-help>用户不得将软件用于任何可能损害软件方或第三方利益的行为。</li-help>
+<li-help>如用户违反上述条款，软件方有权终止用户的使用权限，并保留追究法律责任的权利。</li-help>
+</ol-help>
+</div>
+
+<div class="section-help">
+<h2-help>11. 免责声明</h2-help>
+<ol-help>
+<li-help>软件方不保证软件的无间断运行或完全无错误。用户在使用过程中遇到的任何问题，软件方不承担任何责任。</li-help>
+<li-help>软件方不保证软件中的单词释义、例句等内容的绝对准确性。用户应自行对查询结果进行判断和核实。</li-help>
+<li-help>用户在使用软件过程中，因自身操作不当或设备故障等原因导致的数据丢失或损坏，软件方不承担任何责任。</li-help>
+<li-help>软件方对因不可抗力或其他不可预见因素导致的用户损失不承担任何责任。</li-help>
+</ol-help>
+</div>
+</div>
+</div>
+</p>
+</div>
+</div>
+<div class="phonetic-overlay" id="phonetic-overlay">
+<div class="close-button" id="close-phonetic">◁</div>
+<div class="phonetic-content">
+<h2 class="phonetic-content">音标学习</h2>
+<p class="phonetic-content">学习派印斯(Pyinse)的 PSA 方案与国际音标(IPA)的发音和书写方式的对照表。</p>
+<div class="container-help" style="height: calc(70vh);">
+<table class="phonetic-table">
+<thead>
+<tr>
+<th>音标 PSA</th>
+<th>类型</th>
+<th>发音 IPA</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>/a/</td><td>元音</td><td>/a/</td></tr>
+<tr><td>/b/</td><td>辅音</td><td>/b/</td></tr>
+<tr><td>/c/</td><td>辅音</td><td>/tsʰ/</td></tr>
+<tr><td>/d/</td><td>辅音</td><td>/t/</td></tr>
+<tr><td>/e/</td><td>元音</td><td>/ɤ/</td></tr>
+<tr><td>/f/</td><td>辅音</td><td>/f/</td></tr>
+<tr><td>/g/</td><td>辅音</td><td>/k/</td></tr>
+<tr><td>/h/</td><td>辅音</td><td>/x/</td></tr>
+<tr><td>/i/</td><td>元音</td><td>/i/</td></tr>
+<tr><td>/j/</td><td>辅音</td><td>/tɕ/</td></tr>
+<tr><td>/k/</td><td>辅音</td><td>/kʰ/</td></tr>
+<tr><td>/l/</td><td>辅音</td><td>/l/</td></tr>
+<tr><td>/m/</td><td>辅音</td><td>/m/</td></tr>
+<tr><td>/n/</td><td>辅音</td><td>/n/</td></tr>
+<tr><td>/o/</td><td>元音</td><td>/o/</td></tr>
+<tr><td>/p/</td><td>辅音</td><td>/pʰ/</td></tr>
+<tr><td>/q/</td><td>辅音</td><td>/tɕʰ/</td></tr>
+<tr><td>/r/</td><td>辅音</td><td>/ʐ/</td></tr>
+<tr><td>/s/</td><td>辅音</td><td>/s/</td></tr>
+<tr><td>/t/</td><td>辅音</td><td>/tʰ/</td></tr>
+<tr><td>/u/</td><td>元音</td><td>/u/</td></tr>
+<tr><td>/v/</td><td>辅音</td><td>/v/</td></tr>
+<tr><td>/w/</td><td>辅音</td><td>/w/</td></tr>
+<tr><td>/x/</td><td>辅音</td><td>/ɕ/</td></tr>
+<tr><td>/y/</td><td>元音</td><td>/j/</td></tr>
+<tr><td>/z/</td><td>辅音</td><td>/ts/</td></tr>
+<tr><td>/th/</td><td>辅音</td><td>/θ/</td></tr>
+<tr><td>/Α/</td><td>辅音</td><td>/ei/</td></tr>
+<tr><td>/ü/</td><td>辅音</td><td>/y/</td></tr>
+<tr><td>ʰ</td><td>上标符号</td><td>送气符</td></tr>
+<tr><td>ˈ</td><td>修饰符号</td><td>主重音</td></tr>
+<tr><td>ˌ</td><td>修饰符号</td><td>次重音</td></tr>
+<tr><td>ː</td><td>修饰符号</td><td>长音</td></tr>
+<tr><td>‿</td><td>修饰符号</td><td>连音</td></tr>
+<tr><td>.</td><td>修饰符号</td><td>音节分隔</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- 更新内容页面 -->
+<div class="updates-overlay" id="updates-overlay">
+<div class="close-button" id="close-updates">◁</div>
+<div class="updates-content">
+<h2 class="updates-content">更新日志</h2>
+<div class="updates-list" id="updates-list">
+<!-- 更新内容将通过JS填充 -->
+</div>
+</div>
+</div>
+
+<script>
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+const noResults = document.getElementById('no-results');
+const wordDisplay = document.getElementById('word-display');
+const favoriteButton = document.getElementById('favorite-button');
+const favoritesList = document.getElementById('favorites-list');
+const historyList = document.getElementById('history-list');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const gameDisplay = document.getElementById('game-display');
+const toggleSidebar = document.getElementById('toggle-sidebar');
+const aboutButton = document.getElementById('about-button');
+const noteButton = document.getElementById('note-button');
+const phoneticButton = document.getElementById('phonetic-button');
+const aboutOverlay = document.getElementById('about-overlay');
+const aboutCon = document.getElementById('about-con');
+const closeAbout = document.getElementById('close-about');
+const noteOverlay = document.getElementById('note-overlay');
+const closeNote = document.getElementById('close-note');
+const phoneticOverlay = document.getElementById('phonetic-overlay');
+const closePhonetic = document.getElementById('close-phonetic');
+const splashScreen = document.getElementById('splash-screen');
+const splashWord = document.getElementById('splash-word');
+const splashDefinition = document.getElementById('splash-definition');
+const splashExample = document.getElementById('splash-example');
+const monthElement = document.getElementById('month');
+const weekElement = document.getElementById('week');
+const yearElement = document.getElementById('year');
+const dayElement = document.getElementById('day');
+const splashToggle = document.getElementById('splash-toggle');
+
+// 更新内容数据
+const Updated_Context = [
+  { date: "2025.7.12", content: "修复已知问题" },
+  { date: "2025.7.15", content: "增加音标学习功能" },
+  { date: "2025.7.19", content: "添加更新日志页面" }
+];
+
+let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+let history = JSON.parse(localStorage.getItem('history')) || [];
+let showSplash = localStorage.getItem('showSplash') !== 'false';
+
+let version = "1.0.2-Alpha(ver.内测)";
+aboutCon.innerHTML = "V" + version;
+
+const vocabulary = [
+{word: "α", pronunciation: "/a/", part_of_speech: "n. prep.", interpretation: "在；位于；朝；向；以；字母表中的字母", example: "在这里有一个人，你可以找她 | A'иi jαw гenio rcα, u dois so'ques ta.", derivative: "a"},
+{word: "αu", pronunciation: "/au/", part_of_speech: "n. prep.", interpretation: "在；位于；朝；向；以；字母表中的字母", example: "在这里有一个人，你可以询问一下 | A'иi jαw гenio rcα, u dois so'ques rcα.", derivative: "a"},
+{word: "b", pronunciation: "/b/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "bαrα", pronunciation: "/ba ra/", part_of_speech: "n.", interpretation: "八；八个；第八", example: "成功百分之八十靠的是出现。|to'aum̃cé de αpα sα ĝαq rcα-b in bαrα-a.", derivative: "bαrαnum"},
+{word: "bαrαnum", pronunciation: "/'ba ra num/", part_of_speech: "intric-n.", interpretation: "八；八个；第八", example: "成功百分之八十靠的是出现。|to'aum̃cé de αpα sα ĝαq rcα-b in bαrα-a.", derivative: "bαrα"},
+{word: "c", pronunciation: "/c/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "d", pronunciation: "/d/", part_of_speech: "n. prep.", interpretation: "的；之；字母表中的字母", example: "学无止境|Étut sα bm sodon d'pʜam̃.", derivative: "de"},
+{word: "de", pronunciation: "/de/", part_of_speech: "n. prep.", interpretation: "的；之；字母表中的字母", example: "学无止境|Étut sα bm sodon de pʜam̃.", derivative: "d"},
+{word: "τ", pronunciation: "/d/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "τé", pronunciation: "/di/", part_of_speech: "auv.", interpretation: "第；次；号；位；等；名；级；序；次序", example: "", derivative: "pʜam̃"},
+{word: "τed", pronunciation: "/'det/", part_of_speech: "n. prep.", interpretation: "的；之；字母表中的字母", example: "学无止境|Étut sα bm sodon τed pʜam̃.", derivative: "de"},
+{word: "e", pronunciation: "/e/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "erα", pronunciation: "/'era/", part_of_speech: "n.", interpretation: "二；两；两个；俩；第二；其次；然后；之后；再者", example: "山重水复疑无路，柳暗花明又一村 | αl de sum αl sodon, α'nα jαw erα.", derivative: "erαnum"},
+{word: "erαnum", pronunciation: "/'era num/", part_of_speech: "intric-n.", interpretation: "二；两；两个；俩；第二；其次；然后；之后；再者", example: "山重水复疑无路，柳暗花明又一村 | αl de sum αl sodon, α'nα jαw erα.", derivative: "erα"},
+{word: "é", pronunciation: "/y/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "ê", pronunciation: "/A/", part_of_speech: "n. prep.", interpretation: "关于；有关的；字母表中的字母", example: "", derivative: "无"},
+{word: "ë", pronunciation: "/ie/", part_of_speech: "n. conj.", interpretation: "（连接单词或句子）；字母表中的字母", example: "非物质文化遗产记录了人类最伟大的遗产，使人类记住它 | Neësum'm̃ojuα-ʜêgy ë im̃eit'en гenis αust bonpus de ʜêgy, si тory so'бembe tα.", derivative: "无"},
+{word: "f", pronunciation: "/f/", part_of_speech: "n. conj.", interpretation: "假如；要是；如果；字母表中的字母", example: "如果你做了它 | f-u so'en tα", derivative: "fsum"},
+{word: "g", pronunciation: "/c/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "z", pronunciation: "/g/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "h", pronunciation: "/h/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "j", pronunciation: "/h/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "i", pronunciation: "/y/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "ië", pronunciation: "/ie/", part_of_speech: "n. conj.", interpretation: "（连接单词或句子）；字母表中的字母", example: "非物质文化遗产记录了人类最伟大的遗产，使人类记住它 | Neësum'm̃ojuα-ʜêgy ië im̃eit'en гenis αust bonpus de ʜêgy, si тory so'бembe tα.", derivative: "无"},
+{word: "б", pronunciation: "/j/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "k", pronunciation: "/k/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "m̃", pronunciation: "/k/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "l", pronunciation: "/l/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: "ʜ"},
+{word: "ʜ", pronunciation: "/l/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: "l"},
+{word: "ʜcα", pronunciation: "/'l ka/", part_of_speech: "n.", interpretation: "六；六个；第六", example: "耶和华憎恨六样事，七样他所厌恶的：高傲的眼、撒谎的舌、流无辜人血的手、图谋恶计的心、飞奔作恶的脚、作假见证的嘴和在弟兄中制造纷争的人。|yëjeuα jitést ʜcα sum, qα sum ë-тα jitést: jaitésm̃ec'αoʜemést de αy, aoʜαlαy de an̂é, kéʜαs bon гenio de aoиαnm, pʜan neb de xée, znm vit to so'nebsum de иum, so'nebnécy de иuê jesum so'fénis sum de гenio.", derivative: "ʜcαnum"},
+{word: "ʜcαnum", pronunciation: "/'l ka num/", part_of_speech: "n.", interpretation: "六；六个；第六", example: "耶和华憎恨六样事，七样他所厌恶的：高傲的眼、撒谎的舌、流无辜人血的手、图谋恶计的心、飞奔作恶的脚、作假见证的嘴和在弟兄中制造纷争的人。|yëjeuα jitést ʜcα sum, qα sum ë-тα jitést: jaitésm̃ec'αoʜemést de αy, aoʜαlαy de an̂é, kéʜαs bon гenio de aoиαnm, pʜan neb de xée, znm vit to so'nebsum de иum, so'nebnécy de иuê jesum so'fénis sum de гenio.", derivative: "ʜcα"},
+{word: "m", pronunciation: "/m/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "n", pronunciation: "/n/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "o", pronunciation: "/o/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "p", pronunciation: "/p/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "q", pronunciation: "/q/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "qα", pronunciation: "/qa/", part_of_speech: "n.", interpretation: "七；七个；第七", example: "一周有七天，但每一天的时间都不够用。|A'aαimen in jαw dαitom qα, butu ĝaq rcα dαutom αl'ne énaf so.", derivative: "qαnum"},
+{word: "qαnum", pronunciation: "/'qa num/", part_of_speech: "n.", interpretation: "七；七个；第七", example: "一周有七天，但每一天的时间都不够用。|A'aαimen in jαw dαitom qα, butu ĝaq rcα dαutom αl'ne énaf so.", derivative: "qα"},
+{word: "r", pronunciation: "/r/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "rcα", pronunciation: "/'yka/", part_of_speech: "n. adv.", interpretation: "幺；一；一个；第一；首个；首先；先；优先", example: "千里之行，始于足下。|So'qαʜα-li de ruʜα, soto soαp rcα α'иi.", derivative: "rcαnum"},
+{word: "rcαnum", pronunciation: "/'yka num/", part_of_speech: "intric-n. intric-adv.", interpretation: "幺；一；一个；第一；首个；首先；先；优先", example: "你一定要幸福，即使这幸福不是我给的也没关系。|Uromen dom ʜαbon, αlth musba nesa iromen cu tui ë-mu αum sαy rcαnum.", derivative: "rcα"},
+{word: "rei", pronunciation: "/rA/", part_of_speech: "n. prep.", interpretation: "关于；有关的；字母表中的字母", example: "走了的人 | гenio ê znm'en", derivative: "无"},
+{word: "s", pronunciation: "/s/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "a", pronunciation: "/s/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: "α"},
+{word: "aα", pronunciation: "/sa/", part_of_speech: "n.", interpretation: "三；三个；仨；第三", example: "人生三起三落，何尝不是一种滋味，一种体验呢。|тory v aα αp jeno don, nα mu αussi sα fʜê jesum ʜisét.", derivative: "aαnum"},
+{word: "aαnum", pronunciation: "/'sa num/", part_of_speech: "intric-n.", interpretation: "三；三个；仨；第三", example: "人生起起落落，是滋味，是体验。|тory v aα αp jeno don, nα mu αussi sα fʜê jesum ʜisét.", derivative: "aα"},
+{word: "acα", pronunciation: "/'ska/", part_of_speech: "n.", interpretation: "亖；四；四个；第四", example: "四面荷花三面柳，一城山色半城湖。|αca juofα je éʜiαn,гum couʜe b'αeʜên", derivative: "acαnum"},
+{word: "acαnum", pronunciation: "/'ska num/", part_of_speech: "intric-n.", interpretation: "亖；四；四个；第四", example: "四面荷花三面柳，一城山色半城湖。|αca juofα je éʜiαn,гum couʜe b'αeʜên", derivative: "acα"},
+{word: "t", pronunciation: "/t/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "u", pronunciation: "/u/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "w", pronunciation: "/uf/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "т", pronunciation: "/w/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "тα", pronunciation: "/wa/", part_of_speech: "n.", interpretation: "五；五个；第五", example: "一只手有五个手指，但它们的长度并不相同。|aoиαnm jαw aoиi тα, butu тαis len ne'aαmio", derivative: "тαnum"},
+{word: "тαnum", pronunciation: "/wa num/", part_of_speech: "n.intric-n.", interpretation: "五；五个；第五", example: "一只手有五个手指，但它们的长度并不相同。|aoиαnm jαw aoиi тα, butu тαis len ne'aαmio", derivative: "тα"},
+{word: "x", pronunciation: "/'yks/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "y", pronunciation: "/y/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
+{word: "и", pronunciation: "/z/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""}
+];
+
+function getRandomWord() {
+const randomIndex = Math.floor(Math.random() * vocabulary.length);
+return vocabulary[randomIndex];
+}
+
+function displaySplashWord() {
+let randomWord = getRandomWord();
+while (!randomWord.example.trim()) {
+randomWord = getRandomWord();
+}
+splashWord.textContent = randomWord.word;
+splashDefinition.textContent = randomWord.interpretation;
+splashExample.innerHTML = randomWord.example.split('|').join('<br>');
+}
+
+function updateDate() {
+const now = new Date();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(now.getDate()).padStart(2, '0');
+const year = now.getFullYear();
+const weekDays = ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'];
+const week = weekDays[now.getDay()];
+
+monthElement.textContent = month;
+yearElement.textContent = year;
+dayElement.textContent = day;
+weekElement.textContent = week;
+}
+
+function fadeOutSplashScreen() {
+setTimeout(() => {
+splashScreen.classList.add('active');
+}, 5000);
+setTimeout(() => {
+splashScreen.style.display = "none";
+}, 6000);
+}
+
+if (showSplash) {
+displaySplashWord();
+updateDate();
+setTimeout(() => {
+  document.querySelector('.date-left').classList.add('animate-in');
+  document.querySelector('.date-right').classList.add('animate-in');
+}, 100);
+fadeOutSplashScreen();
+} else {
+splashScreen.style.display = "none";
+}
+
+searchInput.addEventListener('input', function () {
+const query = searchInput.value.toLowerCase();
+if (query.trim() === '') {
+displayHistoryInSearchResults();
+} else {
+const results = vocabulary.filter(word =>
+word.word.toLowerCase().startsWith(query) ||
+word.interpretation.toLowerCase().includes(query) ||
+word.word.match(new RegExp(query, 'gi')) ||
+word.interpretation.match(new RegExp(query, 'gi'))
+);
+displaySearchResults(results);
+}
+});
+
+searchInput.addEventListener('focus', function () {
+if (searchInput.value.trim() === '') {
+displayHistoryInSearchResults();
+} else {
+searchResults.classList.add('active');
+}
+});
+
+searchInput.addEventListener('blur', function () {
+setTimeout(() => {
+if (!searchResults.contains(document.activeElement)) {
+searchResults.classList.remove('active');
+}
+}, 100);
+});
+
+function displayHistoryInSearchResults() {
+const resultsList = searchResults.querySelector('ul');
+resultsList.innerHTML = '';
+searchResults.classList.add('active');
+const header = document.createElement('li');
+header.textContent = '历史记录';
+header.style.fontWeight = 'bold';
+header.style.marginBottom = '10px';
+resultsList.appendChild(header);
+noResults.style.display = 'none';
+
+history.slice(0, 10).forEach(word => {
+const li = document.createElement('li');
+li.textContent = `${word.word} - ${word.interpretation}`;
+li.addEventListener('click', () => {
+displayWordDetails(word);
+searchResults.classList.remove('active');
+});
+resultsList.appendChild(li);
+});
+}
+
+function displaySearchResults(results) {
+const resultsList = searchResults.querySelector('ul');
+resultsList.innerHTML = '';
+const header = document.createElement('li');
+header.textContent = `搜索结果（${results.length}个）`;
+header.style.fontWeight = 'bold';
+header.style.marginBottom = '10px';
+resultsList.appendChild(header);
+
+if (results.length === 0) {
+noResults.style.display = 'block';
+return;
+}
+searchResults.classList.add('active');
+noResults.style.display = 'none';
+
+results.forEach(result => {
+const li = document.createElement('li');
+const boldText = result.word.replace(new RegExp(searchInput.value, 'gi'), match => `<span class="bold">${match}</span>`);
+const boldInterpretation = result.interpretation.replace(new RegExp(searchInput.value, 'gi'), match => `<span class="bold">${match}</span>`);
+li.innerHTML = `
+<div style="display: flex; justify-content: space-between;">
+<span>${boldText}</span>
+<span style="color: #888; margin-left: 10px;">${result.part_of_speech} - ${boldInterpretation}</span>
+</div>
+`;
+li.addEventListener('click', () => {
+displayWordDetails(result);
+searchResults.classList.remove('active');
+});
+resultsList.appendChild(li);
+});
+}
+
+function displayWordDetails(word) {
+wordDisplay.style.display = 'block';
+document.getElementById('word').textContent = word.word;
+document.getElementById('pronunciation').textContent = `音标: ${word.pronunciation}`;
+document.getElementById('part-of-speech').textContent = `词性: ${word.part_of_speech}`;
+document.getElementById('interpretation').textContent = `释义: ${word.interpretation}`;
+
+const exampleElement = document.getElementById('example');
+exampleElement.innerHTML = '例句:';
+const exampleSentences = word.example.split('|');
+exampleSentences.forEach(sentence => {
+const p = document.createElement('p');
+p.textContent = sentence.trim();
+p.style.textIndent = '2em';
+exampleElement.appendChild(p);
+});
+
+const derivativeElement = document.getElementById('derivative-word');
+derivativeElement.innerHTML = '';
+if (word.derivative) {
+const derivatives = word.derivative.split(',').map(d => d.trim());
+derivatives.forEach(der => {
+const span = document.createElement('span');
+span.textContent = der;
+span.style.cursor = 'pointer';
+span.style.marginRight = '10px';
+span.addEventListener('click', () => {
+const results = vocabulary.filter(w => w.word === der);
+if (results.length > 0) {
+displayWordDetails(results[0]);
+}
+});
+derivativeElement.appendChild(span);
+});
+}
+
+const isFavorite = favorites.some(fav => fav.word === word.word);
+favoriteButton.textContent = isFavorite ? '★' : '☆';
+favoriteButton.dataset.word = JSON.stringify(word);
+
+history = [word, ...history.filter(h => h.word !== word.word)];
+localStorage.setItem('history', JSON.stringify(history));
+displayHistory();
+}
+
+favoriteButton.addEventListener('click', function () {
+const word = JSON.parse(favoriteButton.dataset.word);
+const isFavorite = favorites.some(fav => fav.word === word.word);
+
+if (!isFavorite) {
+favorites.push(word);
+const li = document.createElement('li');
+li.innerHTML = `
+<span>${word.word}</span>
+<button class="remove-favorite">—</button>
+`;
+li.querySelector('.remove-favorite').addEventListener('click', () => {
+favorites = favorites.filter(fav => fav.word !== word.word);
+favoritesList.removeChild(li);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+updateFavoriteButton(word.word);
+});
+li.querySelector('span').addEventListener('click', () => {
+displayWordDetails(word);
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+});
+favoritesList.appendChild(li);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+} else {
+favorites = favorites.filter(fav => fav.word !== word.word);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+const favoriteItem = document.querySelector(`.favorites-list span:contains("${word.word}")`);
+if (favoriteItem) {
+favoriteItem.parentNode.remove();
+}
+updateFavoriteButton(word.word);
+}
+
+favoriteButton.textContent = isFavorite ? '☆' : '★';
+});
+
+function updateFavoriteButton(word) {
+const isFavorite = favorites.some(fav => fav.word === word);
+favoriteButton.textContent = isFavorite ? '★' : '☆';
+}
+
+function displayFavorites() {
+favoritesList.innerHTML = '';
+favorites.forEach(word => {
+const li = document.createElement('li');
+li.innerHTML = `
+<span>${word.word}</span>
+<button class="remove-favorite">—</button>
+`;
+li.querySelector('.remove-favorite').addEventListener('click', () => {
+favorites = favorites.filter(fav => fav.word !== word.word);
+favoritesList.removeChild(li);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+updateFavoriteButton(word.word);
+});
+li.querySelector('span').addEventListener('click', () => {
+displayWordDetails(word);
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+});
+favoritesList.appendChild(li);
+});
+}
+
+function displayHistory() {
+historyList.innerHTML = '';
+history.slice(0, 20).forEach(word => {
+const li = document.createElement('li');
+li.innerHTML = `
+<span>${word.word} - ${word.interpretation}</span>
+<button class="remove-history">—</button>
+`;
+li.querySelector('.remove-history').addEventListener('click', () => {
+history = history.filter(h => h.word !== word.word);
+historyList.removeChild(li);
+localStorage.setItem('history', JSON.stringify(history));
+});
+li.querySelector('span').addEventListener('click', () => {
+displayWordDetails(word);
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+});
+historyList.appendChild(li);
+});
+}
+
+toggleSidebar.addEventListener('click', function () {
+sidebar.classList.toggle('active');
+overlay.classList.toggle('active');
+});
+
+overlay.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+});
+
+aboutButton.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+aboutOverlay.classList.add('active');
+});
+
+closeAbout.addEventListener('click', function () {
+aboutOverlay.classList.remove('active');
+});
+
+noteButton.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+noteOverlay.classList.add('active');
+});
+
+closeNote.addEventListener('click', function () {
+noteOverlay.classList.remove('active');
+});
+
+phoneticButton.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+phoneticOverlay.classList.add('active');
+});
+
+closePhonetic.addEventListener('click', function () {
+phoneticOverlay.classList.remove('active');
+});
+
+// 更新内容页面功能
+const viewUpdatesBtn = document.getElementById('view-updates');
+const updatesOverlay = document.getElementById('updates-overlay');
+const closeUpdates = document.getElementById('close-updates');
+const updatesList = document.getElementById('updates-list');
+
+viewUpdatesBtn.addEventListener('click', function() {
+aboutOverlay.classList.remove('active');
+updatesOverlay.classList.add('active');
+
+// 填充更新内容
+updatesList.innerHTML = '';
+Updated_Context.forEach(update => {
+const updateItem = document.createElement('div');
+updateItem.innerHTML = `
+<h3>${update.date}</h3>
+<p>${update.content}</p>
+`;
+updatesList.appendChild(updateItem);
+});
+});
+
+closeUpdates.addEventListener('click', function() {
+updatesOverlay.classList.remove('active');
+});
+
+displayFavorites();
+displayHistory();
+
+let currentQuestionIndex = 0;
+let mistakes = [];
+let reviewingMistakes = false;
+let question_amount = 3;
+
+function generateOptions(correctAnswer) {
+const options = [correctAnswer];
+const otherWords = vocabulary.filter(word => word.interpretation !== correctAnswer);
+const randomOptions = otherWords.map(word => `${word.part_of_speech} - ${word.interpretation}`);
+while (options.length < question_amount) {
+const randomIndex = Math.floor(Math.random() * randomOptions.length);
+const randomOption = randomOptions[randomIndex];
+if (!options.includes(randomOption)) {
+options.push(randomOption);
+}
+}
+return options.sort(() => Math.random() - 0.5);
+}
+
+function displayQuestion() {
+const questionElement = document.getElementById('question');
+const optionsElement = document.getElementById('options');
+const resultElement = document.getElementById('result');
+
+resultElement.textContent = '';
+optionsElement.innerHTML = '';
+
+let currentWord;
+if (reviewingMistakes && mistakes.length > 0) {
+currentWord = vocabulary[mistakes[currentQuestionIndex]];
+} else {
+currentWord = vocabulary[currentQuestionIndex];
+}
+
+const options = generateOptions(`${currentWord.part_of_speech} - ${currentWord.interpretation}`);
+
+questionElement.textContent = `第 ${currentQuestionIndex + 1} 题：${currentWord.word} 的释义是？`;
+options.forEach(option => {
+const button = document.createElement('button');
+button.textContent = option;
+button.classList.add('option');
+button.addEventListener('click', () => {
+optionsElement.querySelector('.selected')?.classList.remove('selected');
+button.classList.add('selected');
+});
+optionsElement.appendChild(button);
+});
+}
+
+function checkAnswer() {
+const selectedOption = document.querySelector('.option.selected');
+if (!selectedOption) {
+return;
+}
+
+const correctAnswer = reviewingMistakes ? `${vocabulary[mistakes[currentQuestionIndex]].part_of_speech} - ${vocabulary[mistakes[currentQuestionIndex]].interpretation}` : `${vocabulary[currentQuestionIndex].part_of_speech} - ${vocabulary[currentQuestionIndex].interpretation}`;
+const resultElement = document.getElementById('result');
+const options = document.querySelectorAll('.option');
+
+options.forEach(option => {
+if (option.textContent === correctAnswer) {
+option.style.backgroundColor = '#c8e6c9';
+} else if (option.classList.contains('selected')) {
+option.style.backgroundColor = '#ffcdd2';
+}
+});
+
+if (selectedOption.textContent === correctAnswer) {
+resultElement.textContent = '✓ 正确！';
+resultElement.style.color = '#2e7d32';
+if (reviewingMistakes) {
+mistakes.splice(currentQuestionIndex, 1);
+if (mistakes.length === 0) {
+reviewingMistakes = false;
+currentQuestionIndex = 0;
+} else {
+currentQuestionIndex = Math.floor(Math.random() * mistakes.length);
+}
+} else {
+currentQuestionIndex = (currentQuestionIndex + 1) % vocabulary.length;
+}
+setTimeout(displayQuestion, 1000);
+} else {
+resultElement.textContent = `✗ 错误！正确答案是：${correctAnswer}`;
+resultElement.style.color = '#d32f2f';
+if (!reviewingMistakes) {
+if (!mistakes.includes(currentQuestionIndex)) {
+mistakes.push(currentQuestionIndex);
+}
+}
+setTimeout(displayQuestion, 2000);
+}
+}
+
+displayQuestion();
+
+splashToggle.checked = showSplash;
+
+splashToggle.addEventListener('change', function () {
+showSplash = splashToggle.checked;
+localStorage.setItem('showSplash', showSplash);
+if (!showSplash) {
+splashScreen.style.display = "none";
+} else {
+displaySplashWord();
+updateDate();
+fadeOutSplashScreen();
+}
+});
+</script>
+</body>
+</html>
