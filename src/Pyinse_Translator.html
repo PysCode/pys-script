@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KimiPys 单词助手</title>
+<title>Pys 单词助手</title>
 <style>
 body {
 font-family: Arial, sans-serif;
@@ -53,7 +53,7 @@ background-color: #f9f9f9;
 z-index: 101;
 }
 .search-results {
-top: -100%;
+top: -120%;
 position: absolute;
 width: 92%;
 max-height: 350px;
@@ -146,7 +146,7 @@ margin: 0 0 10px;
 .sidebar ul {
 list-style-type: none;
 padding: 0;
-max-height: 240px;
+max-height: 180px;
 overflow-y: auto;
 }
 .sidebar ul li {
@@ -277,7 +277,7 @@ margin-top: 20px;
 color: #333;
 font-size: 14px;
 }
-.about-overlay, .note-overlay, .phonetic-overlay, .updates-overlay {
+.about-overlay, .note-overlay, .phonetic-overlay, .updates-overlay, .learn-overlay, .favorites-overlay, .settings-overlay {
 display: block;
 position: fixed;
 top: 0;
@@ -288,21 +288,21 @@ background-color: #fff;
 z-index: 1001;
 transition: left 0.6s ease;
 }
-.about-overlay.active, .note-overlay.active, .phonetic-overlay.active, .updates-overlay.active {
+.about-overlay.active, .note-overlay.active, .phonetic-overlay.active, .updates-overlay.active, .learn-overlay.active, .favorites-overlay.active, .settings-overlay.active {
 left: 0;
 }
-.about-overlay .close-button, .note-overlay .close-button, .phonetic-overlay .close-button, .updates-overlay .close-button {
+.about-overlay .close-button, .note-overlay .close-button, .phonetic-overlay .close-button, .updates-overlay .close-button, .learn-overlay .close-button, .favorites-overlay .close-button, .settings-overlay .close-button {
 position: absolute;
 top: 10px;
 left: 10px;
 font-size: 24px;
 cursor: pointer;
 }
-.about-overlay .about-content, .note-overlay .note-content, .phonetic-overlay .phonetic-content, .updates-overlay .updates-content {
+.about-overlay .about-content, .note-overlay .note-content, .phonetic-overlay .phonetic-content, .updates-overlay .updates-content, .learn-overlay .learn-content, .favorites-overlay .favorites-content, .settings-overlay .settings-content {
 padding: 10px;
 text-align: center;
 }
-.about-content, .note-content, .phonetic-content, .updates-content {
+.about-content, .note-content, .phonetic-content, .updates-content, .learn-content, .favorites-content, .settings-content {
 font-weight: 300;
 }
 .title-display {
@@ -313,17 +313,17 @@ margin-bottom: 15px;
 }
 .date-left,
 .date-right {
-  opacity: 0;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+opacity: 0;
+transform: translateX(-100%);
+transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 .date-right {
-  transform: translateX(100%);
+transform: translateX(100%);
 }
 .date-left.animate-in,
 .date-right.animate-in {
-  opacity: 1;
-  transform: translateX(0);
+opacity: 1;
+transform: translateX(0);
 }
 .splash-screen {
 position: fixed;
@@ -358,7 +358,7 @@ transform: translateX(100%);
 padding-left: 20px;
 }
 .date-divider {
-transform: translateX(-10px);
+transform: translateX(10px);
 width: 2px;
 height: 120px;
 background-color: black;
@@ -545,6 +545,547 @@ margin: 8px 0;
 font-size: 14px;
 color: #555;
 }
+/* ========== 夜间模式完整补丁（追加） ========== */
+
+/* 0. 仅颜色过渡，不影响位置动画 */
+body,
+.container,
+.search-bar input[type="text"],
+.search-results,
+.search-results ul li,
+.word-display,
+.game-display,
+.game-display .option,
+.game-display .submit-button,
+.sidebar,
+.overlay,
+.phonetic-table th,
+.phonetic-table td,
+.updates-list h3,
+.updates-list p,
+.section-help h2-help,
+.section-help p-help,
+.section-help ol-help,
+.section-help ul-help {
+transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+/* 夜间模式：学习区导航栏深色 */
+body.dark-mode .learn-nav {
+background-color: #111;
+border-bottom-color: #444;
+border-left-color: #444;
+}
+
+/* 夜间模式：学习区导航栏文字颜色 */
+body.dark-mode .learn-nav-item {
+color: #e8e8e8;
+}
+
+/* 夜间模式：学习区导航栏激活项下划线 */
+body.dark-mode .learn-nav-item.active {
+color: #66b3ff;
+}
+body.dark-mode .learn-nav-item.active::after {
+background-color: #66b3ff;
+}
+
+/* 夜间模式：字母表表头深色 */
+body.dark-mode .letter-table th {
+background-color: #2a2a2a;
+color: #e8e8e8;
+border-color: #444;
+}
+/* 夜间模式：更新日志浅色文字 */
+body.dark-mode .updates-content,
+body.dark-mode .updates-list h3,
+body.dark-mode .updates-list p {
+color: #e8e8e8 !important;
+}
+
+/* 1. 夜间配色：深色背景 + 极浅文字 + 深线条 */
+body.dark-mode {
+background-color: #121212;
+color: #e8e8e8;
+}
+body.dark-mode .container,
+body.dark-mode .search-results,
+body.dark-mode .word-display,
+body.dark-mode .game-display,
+body.dark-mode .container-help,
+body.dark-mode .about-overlay,
+body.dark-mode .note-overlay,
+body.dark-mode .phonetic-overlay,
+body.dark-mode .updates-overlay,
+body.dark-mode .learn-overlay,
+body.dark-mode .favorites-overlay,
+body.dark-mode .settings-overlay {
+background-color: #1e1e1e;
+color: #e8e8e8;
+border-color: #666;
+}
+body.dark-mode .search-bar input[type="text"] {
+background-color: #2a2a2a;
+color: #e8e8e8;
+border-color: #666;
+}
+body.dark-mode .search-results ul li {
+border-bottom-color: #666;
+}
+body.dark-mode .sidebar {
+background-color: #111;
+color: #e8e8e8;
+}
+body.dark-mode .sidebar ul li {
+border-bottom-color: #666;
+}
+body.dark-mode .phonetic-table th,
+body.dark-mode .phonetic-table td {
+border-color: #666;
+}
+/* 答题按钮夜间适配 */
+body.dark-mode .game-display .option,
+body.dark-mode .game-display .submit-button {
+background-color: #333;
+color: #e8e8e8;
+}
+/* 夜间模式：诗句高亮 */
+body.dark-mode .game-display .poem {
+color: #e8e8e8 !important;
+}
+
+/* 夜间模式：页脚高亮 */
+body.dark-mode .game-display .footer {
+color: #e8e8e8 !important;
+}
+
+body.dark-mode .game-display .option:hover,
+body.dark-mode .game-display .submit-button:hover {
+background-color: #444;
+}
+/* 夜间模式：单词详情区所有段落文字高亮 */
+body.dark-mode #word-display p{
+color: #d0d0d0 !important;   /* 高亮浅色文字 */
+}
+body.dark-mode #derivative-word span{
+color: #d0d0d0 !important;   /* 高亮浅色文字 */
+}
+
+/* 2. 强制保留原版动画优先级 */
+.search-results {
+transition: top 0.5s ease !important;
+}
+.sidebar,
+.overlay {
+transition: left 0.3s ease !important;
+}
+.overlay {
+transition: left 0.6s ease !important;
+}
+/* 开屏动画夜间适配 */
+body.dark-mode .splash-screen {
+background-color: #121212;
+color: #e8e8e8;
+}
+/* 开屏动画竖线夜间变浅 */
+body.dark-mode .date-divider {
+background-color: #999;
+}
+/* 夜间模式下音标表格统一深色配色 */
+body.dark-mode .phonetic-table {
+border-color: #444;                 /* 外框 */
+}
+
+body.dark-mode .phonetic-table thead {
+background-color: #2a2a2a;          /* 表头最深 */
+}
+
+body.dark-mode .phonetic-table tbody tr:nth-child(odd) {
+background-color: #1e1e1e;          /* 奇行 */
+}
+
+body.dark-mode .phonetic-table tbody tr:nth-child(even) {
+background-color: #222;             /* 偶行再深一点 */
+}
+
+body.dark-mode .phonetic-table th,
+body.dark-mode .phonetic-table td {
+border-color: #444;                 /* 单元格线条 */
+color: #e8e8e8;                     /* 文字浅色 */
+}
+
+body.dark-mode .phonetic-table tr:hover {
+background-color: #333;             /* 悬停高亮 */
+}
+
+
+/* 仅给指定的三个 h3 后面加白色小 > */
+#sidebar h3#learn-button,
+#sidebar h3#note-button,
+#sidebar h3#about-button {
+position: relative;
+padding-right: 22px;   /* 给图标留空 */
+}
+
+#sidebar h3#learn-button::after,
+#sidebar h3#note-button::after,
+#sidebar h3#about-button::after {
+content: '';
+position: absolute;
+right: 6px;
+top: 50%;
+transform: translateY(-50%);
+width: 14px;
+height: 14px;
+background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3l5 5-5 5'/%3E%3C/svg%3E")
+no-repeat center/contain;
+opacity: 0.8;
+transition: opacity 0.2s;
+}
+
+#sidebar h3:hover::after { opacity: 1; }
+
+/* 确保收藏/历史记录标题及列表不出现图标 */
+#sidebar h3:not(#learn-button):not(#note-button):not(#settings-button):not(#about-button)::after,
+#sidebar ul::before,
+#sidebar ul li::after {
+display: none !important;
+}
+body.dark-mode .phonetic-table thead,
+body.dark-mode .phonetic-table th {
+background-color: #111 !important;
+}
+
+/* ======== 新增样式：学习区导航栏与内容区（已按要求修改） ======== */
+/* 1. 学习区整体滑入滑出（纵向） */
+.learn-overlay {
+display: block;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: #fff;
+z-index: 1001;
+transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+transform: translateY(-100%);
+}
+.learn-overlay.active {
+transform: translateY(0);
+}
+
+/* 2. 导航栏始终固定在顶部 */
+.learn-nav {
+position: fixed;
+top: 0;
+left: 50px;
+right: 0;
+height: 50px;
+background: #fff;
+border-bottom: 1px solid #ddd;
+border-left: 1px solid #ddd;
+display: flex;
+align-items: center;
+overflow-x: auto;
+white-space: nowrap;
+z-index: 10;
+}
+
+/* 3. 内容区域：先快后慢平滑滚动 0.3s */
+.learn-content-wrapper {
+margin-top: 60px;
+padding: 20px;
+max-height: calc(100vh - 110px);
+overflow-y: auto;
+scroll-behavior: smooth;
+scroll-snap-type: y mandatory;            /* 可选：增强滚动体验 */
+}
+
+.section {
+scroll-snap-align: start;                 /* 可选：确保对齐 */
+min-height: 100vh;
+padding-top: 20px;
+}
+
+/* 4. 导航栏项目高亮 */
+.learn-nav-item {
+padding: 0 20px;
+font-size: 16px;
+height: 100%;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+position: relative;
+transition: background 0.2s;
+}
+.learn-nav-item.active {
+font-weight: bold;
+color: #007bff;
+}
+.learn-nav-item.active::after {
+content: '';
+position: absolute;
+left: 50%;
+bottom: 0;
+width: 30px;
+height: 3px;
+background: #007bff;
+border-radius: 2px;
+transform: translateX(-50%);
+}
+
+/* 5. 字母表 & 音标表样式（保持不变） */
+.letter-table,
+.phonetic-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 10px;
+}
+.letter-table th,
+.letter-table td,
+.phonetic-table th,
+.phonetic-table td {
+border: 1px solid #ddd;
+padding: 8px;
+text-align: left;
+}
+.letter-table th,
+.phonetic-table th {
+background-color: #f2f2f2;
+}
+/* 夜间模式：帮助区域浅色文字 */
+body.dark-mode .note-content,
+body.dark-mode .section-help h2-help,
+body.dark-mode .section-help p-help,
+body.dark-mode .section-help ol-help,
+body.dark-mode .section-help ul-help,
+body.dark-mode .section-help li-help,
+body.dark-mode .section-help pre-help,
+body.dark-mode .section-help pre-help code-help,
+body.dark-mode .container-help h1-help {
+color: #e8e8e8 !important;
+}
+/* 夜间模式：帮助区域标题颜色 */
+body.dark-mode h1-help,
+body.dark-mode h2-help {
+color: #e8e8e8 !important;
+}
+
+
+/* 夜间模式：帮助区块背景与边框 */
+body.dark-mode .container-help,
+body.dark-mode .note-overlay {
+background-color: #1e1e1e;
+border-color: #444;
+}
+
+/* ======== 每日单词区域 ======== */
+.daily-word-display {
+display: block;
+margin-top: 20px;
+padding: 15px;
+background-color: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 4px;
+position: relative;
+}
+.daily-word-display h2 {
+margin: 0 0 10px;
+}
+.daily-word-display .daily-favorite {
+position: absolute;
+top: 5px;
+right: 5px;
+padding: 5px;
+font-size: 16px;
+border: none;
+border-radius: 4px;
+background-color: #333;
+color: #fff;
+cursor: pointer;
+}
+.daily-word-content {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.daily-word-left {
+flex: 1;
+}
+.daily-word-right {
+flex: 2;
+padding-left: 20px;
+color: #666;
+font-size: 14px;
+}
+.daily-word-right p {
+margin: 3px 0;
+}
+.daily-example {
+margin-top: 10px;
+font-size: 14px;
+color: #555;
+font-style: italic;
+}
+
+/* ======== 收藏卡片区域 ======== */
+.favorites-cards {
+display: flex;
+flex-wrap: wrap;
+gap: 15px;
+padding: 20px;
+justify-content: center;
+}
+.favorite-card {
+background-color: #fff;
+border: 1px solid #ddd;
+border-radius: 8px;
+padding: 15px;
+width: 250px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+position: relative;
+}
+.favorite-card .card-favorite-btn {
+position: absolute;
+top: 5px;
+right: 5px;
+background: none;
+border: none;
+font-size: 18px;
+cursor: pointer;
+color: #333;
+}
+.favorite-card h3 {
+margin: 0 0 8px;
+font-size: 18px;
+}
+.favorite-card .card-pronunciation {
+font-size: 14px;
+color: #666;
+margin: 3px 0;
+}
+.favorite-card .card-part-of-speech {
+font-size: 14px;
+color: #666;
+margin: 3px 0;
+}
+.favorite-card .card-interpretation {
+font-size: 14px;
+color: #333;
+margin: 5px 0;
+}
+.favorite-card .card-example {
+font-size: 13px;
+color: #555;
+font-style: italic;
+margin-top: 8px;
+}
+
+/* ======== 设置区域 ======== */
+.settings-content {
+padding: 20px;
+}
+.settings-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+}
+.settings-item span {
+font-size: 16px;
+}
+
+/* ===== 夜间模式：每日单词卡片 ===== */
+body.dark-mode .daily-word-display {
+background-color: #1e1e1e;
+border-color: #444;
+}
+body.dark-mode .daily-word-right,
+body.dark-mode .daily-example {
+color: #b0b0b0 !important;
+}
+
+/* ===== 夜间模式：收藏卡片 ===== */
+body.dark-mode .favorite-card {
+background-color: #1e1e1e;
+border-color: #444;
+}
+body.dark-mode .favorite-card .card-pronunciation,
+body.dark-mode .favorite-card .card-part-of-speech,
+body.dark-mode .favorite-card .card-interpretation,
+body.dark-mode .favorite-card .card-example {
+color: #d0d0d0 !important;
+}
+body.dark-mode .favorite-card .card-favorite-btn {
+color: #e8e8e8;
+}
+/* 给“设置”右侧加白色小箭头 */
+#sidebar h3#settings-button {
+position: relative;
+padding-right: 22px;          /* 给图标留空 */
+}
+#sidebar h3#settings-button::after {
+content: '';
+position: absolute;
+right: 6px;
+top: 50%;
+transform: translateY(-50%);
+width: 14px;
+height: 14px;
+background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3l5 5-5 5'/%3E%3C/svg%3E") no-repeat center/contain;
+opacity: 0.8;
+transition: opacity 0.2s;
+}
+#sidebar h3#settings-button:hover::after { opacity: 1; }
+
+/* ===== 设置页专用开关 ===== */
+.set-switch {
+position: relative;
+display: inline-block;
+width: 54px;               /* 比默认稍小 */
+height: 28px;
+}
+.set-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.set-slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 28px;
+}
+.set-slider:before {
+position: absolute;
+content: "";
+height: 20px;
+width: 20px;
+left: 4px;
+bottom: 4px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .set-slider {
+background-color: #66b3ff;   /* 设置页专属高亮色 */
+}
+input:focus + .set-slider {
+box-shadow: 0 0 1px #66b3ff;
+}
+input:checked + .set-slider:before {
+transform: translateX(26px);
+}
+
+/* 夜间模式 */
+body.dark-mode .set-slider { background-color: #555; }
+body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
+
 </style>
 </head>
 <body>
@@ -580,6 +1121,7 @@ color: #555;
 </ul>
 <div class="no-results" id="no-results" style="display: none;">· 暂无相关词汇 ·</div>
 </div>
+
 <div class="word-display" id="word-display">
 <button class="favorite" id="favorite-button">☆</button>
 <h2 id="word">-</h2>
@@ -588,6 +1130,21 @@ color: #555;
 <p id="interpretation">释义: -</p>
 <p id="example">例句: -</p>
 <p id="derivative">衍生词: <span id="derivative-word" style="color: #333; cursor: pointer;">-</span></p>
+</div>
+
+<!-- 每日单词 -->
+<div class="daily-word-display" id="daily-word-display">
+<button class="daily-favorite" id="daily-favorite-button">☆</button>
+<div class="daily-word-content">
+<div class="daily-word-left">
+<h2 id="daily-word">-</h2>
+</div>
+<div class="daily-word-right">
+<p id="daily-pronunciation">音标: /-/</p>
+<p id="daily-interpretation">释义: -</p>
+</div>
+</div>
+<div class="daily-example" id="daily-example">例句: -</div>
 </div>
 
 <div class="game-display" id="game-display">
@@ -601,7 +1158,7 @@ color: #555;
 </div>
 </div>
 <div class="sidebar" id="sidebar">
-<h3>收藏</h3>
+<h3 id="favorites-title">收藏</h3>
 <ul class="favorites-list" id="favorites-list">
 <!-- 收藏列表 -->
 </ul>
@@ -609,6 +1166,14 @@ color: #555;
 <ul class="history-list" id="history-list">
 <!-- 历史记录列表 -->
 </ul>
+
+<div class="splash-toggle-container">
+<span class="splash-toggle-title">夜间模式</span>
+<label class="switch">
+<input type="checkbox" id="dark-mode-toggle">
+<span class="slider"></span>
+</label>
+</div>
 <div class="splash-toggle-container">
 <span class="splash-toggle-title">开屏动画</span>
 <label class="switch">
@@ -617,7 +1182,8 @@ color: #555;
 </label>
 </div>
 <br>
-<h3 id="phonetic-button">音标学习</h3>
+<h3 id="settings-button">设置</h3>
+<h3 id="learn-button">学习</h3>
 <h3 id="note-button">帮助</h3>
 <h3 id="about-button">关于</h3>
 </div>
@@ -625,7 +1191,7 @@ color: #555;
 <div class="about-overlay" id="about-overlay">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
 <div class="close-button" id="close-about">◁</div>
-<button id="view-updates" style="background: #333; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px;text-align: right;position: absolute;top: 20px;right: 20px;">更新内容</button>
+<button id="view-updates" style="background: #333; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px;text-align: right;position: absolute;top: 10px;right: 10px;">更新内容</button>
 </div>
 <div class="about-content">
 <h2 class="about-content">关于 KimiPys 单词助手</h2>
@@ -651,7 +1217,7 @@ color: #555;
 <div class="section-help">
 <h2-help>2. 查看单词详细信息</h2-help>
 <ol-help>
-<li-help>在搜索结果中点击一个单词，单词的详细信息会显示在页面中间的“单词显示”区域。</li-help>
+<li-help>在搜索结果中点击一个单词，单词的详细信息会显示在页面中间的“单词显示”区域（关于单词的拼写“a”用于/a/ /s/两种音，“α”则仅只有/a/的发音；a与α混用，只在数字或部分区域使用，具体发音见音标说明）</li-help>
 <li-help>单词详细信息包括：
 <ul-help>
 <li-help>音标：单词的音标。</li-help>
@@ -789,12 +1355,68 @@ color: #555;
 </p>
 </div>
 </div>
-<div class="phonetic-overlay" id="phonetic-overlay">
-<div class="close-button" id="close-phonetic">◁</div>
-<div class="phonetic-content">
-<h2 class="phonetic-content">音标学习</h2>
-<p class="phonetic-content">学习派印斯(Pyinse)的 PSA 方案与国际音标(IPA)的发音和书写方式的对照表。</p>
-<div class="container-help" style="height: calc(70vh);">
+
+<!-- 学习区 -->
+<div class="learn-overlay" id="learn-overlay">
+<div class="close-button" id="close-learn">△</div>
+<div class="learn-nav" id="learn-nav">
+<div class="learn-nav-item active" data-target="alphabet">字母表</div>
+<div class="learn-nav-item" data-target="phonetics">音标表</div>
+<div class="learn-nav-item" data-target="grammar">语法</div>
+<div class="learn-nav-item" data-target="pronunciat">语音规则</div>
+</div>
+<div class="learn-content-wrapper">
+<!-- 字母表 -->
+<div class="section" id="alphabet">
+<h2>字母表</h2>
+<p>下面表格展示了本方案中使用的字母与拉丁字母对照、及标准写法和简写方案。<br>标明解释：注释*为借字，注释'为舍弃字母</p>
+<table class="letter-table">
+<thead>
+<tr>
+<th>拉丁字母</th>
+<th>标准写法</th>
+<th>简写方案</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>a</td><td>α a</td><td>a</td></tr>
+<tr><td>b</td><td>b</td><td>b</td></tr>
+<tr><td>c</td><td>g</td><td>c</td></tr>
+<tr><td>ĉ</td><td>ĝ</td><td>g</td></tr>
+<tr><td>d</td><td>d τ</td><td>d</td></tr>
+<tr><td>e</td><td>e</td><td>e</td></tr>
+<tr><td>f</td><td>f</td><td>f</td></tr>
+<tr><td>g</td><td>ʐ ǵ</td><td>g</td></tr>
+<tr><td>h</td><td>j̄ j* h</td><td>h j</td></tr>
+<tr><td>i</td><td>i é</td><td>i é</td></tr>
+<tr><td>j</td><td>и̂ б</td><td>j</td></tr>
+<tr><td>k</td><td>m̃ k c</td><td>c k</td></tr>
+<tr><td>l</td><td>l ʜ</td><td>l</td></tr>
+<tr><td>m</td><td>m м'</td><td>m</td></tr>
+<tr><td>n</td><td>n</td><td>n</td></tr>
+<tr><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>p</td><td>p</td><td>p</td></tr>
+<tr><td>q</td><td>q</td><td>q</td></tr>
+<tr><td>r</td><td>r г</td><td>r</td></tr>
+<tr><td>s</td><td>s a</td><td>s</td></tr>
+<tr><td>sh</td><td>â</td><td>ss</td></tr>
+<tr><td>t</td><td>t</td><td>t</td></tr>
+<tr><td>u</td><td>u</td><td>u</td></tr>
+<tr><td>v</td><td>v</td><td>v</td></tr>
+<tr><td>w</td><td>w т</td><td>w u</td></tr>
+<tr><td>x</td><td>x</td><td>x</td></tr>
+<tr><td>y</td><td>y</td><td>y</td></tr>
+<tr><td>z</td><td>и</td><td>z</td></tr>
+<tr><td>ei</td><td>ê</td><td>e</td></tr>
+<tr><td>ie</td><td>ë</td><td>e</td></tr>
+</tbody>
+</table>
+<br><br><br><br><br><br>
+</div>
+<!-- 音标表 -->
+<div class="section" id="phonetics">
+<h2>音标学习</h2>
+<p>学习派印斯(Pyinse)的 PSA 方案与国际音标(IPA)的发音和书写方式的对照表。</p>
 <table class="phonetic-table">
 <thead>
 <tr>
@@ -833,15 +1455,77 @@ color: #555;
 <tr><td>/th/</td><td>辅音</td><td>/θ/</td></tr>
 <tr><td>/Α/</td><td>辅音</td><td>/ei/</td></tr>
 <tr><td>/ü/</td><td>辅音</td><td>/y/</td></tr>
-<tr><td>ʰ</td><td>上标符号</td><td>送气符</td></tr>
-<tr><td>ˈ</td><td>修饰符号</td><td>主重音</td></tr>
-<tr><td>ˌ</td><td>修饰符号</td><td>次重音</td></tr>
+<tr><td>□ʰ</td><td>上标符号</td><td>送气符</td></tr>
+<tr><td>ˈ□</td><td>修饰符号</td><td>主重音</td></tr>
+<tr><td>ˌ□</td><td>修饰符号</td><td>次重音</td></tr>
 <tr><td>ː</td><td>修饰符号</td><td>长音</td></tr>
 <tr><td>‿</td><td>修饰符号</td><td>连音</td></tr>
-<tr><td>.</td><td>修饰符号</td><td>音节分隔</td></tr>
+<tr><td>□</td><td>修饰符号</td><td>音节分隔</td></tr>
 </tbody>
 </table>
+<br><br><br><br><br><br>
 </div>
+<!-- 语法 -->
+<div class="section" id="grammar">
+<h2>语法</h2>
+<p>一、单词构成</p>
+<p>
+单词构成基本都是由词根和若干个词缀（前后）拼合而成(用单引号'，此处称“单词连接符”、“连字符”或“连接符”)。前词缀基本是声明作用，声明词性、时地点、词义正反。后缀基本是再次深层地说明细节<br>
+单词中字母的发音有些是存在多个发音，详情见主页面单词音标。<br>
+具体的词组如下：<br><br>
+1. 前词缀(部分)<br>
+(1)a :时地点，可以将时间地点放在其后面。<br>
+(2)ad :表“正在”，现在正在做的。<br>
+(3)at :表“当”也可写成 atom，即“在…的时候”。<br>
+(4)bin :表“所”，指所说的、所做的、说听的、所见的等等，类似“sba”用法。<br>
+(5)bum :表“没”、“没有”和“除了”（衍伸含义），比例上比较缓和，偏主观。<br>
+(6)ne :表“不”，严格只表示“不”，对动词的否定，或词义反义，语义上比较强硬。<br>
+(7)so :动词性，可以将词性特殊改成动词或强调声明词性为动词。<br>
+</p>
+<p>
+2.后词缀(部分)<br>
+(1)ap :表在…之上。<br>
+(2)appo :表在…之前。<br>
+(3)don :表在…之下。<br>
+(4)dona :表在…之后。<br>
+(5)hoh: 表在…之外。<br>
+(6)in :表在…之中；…里面。<br>
+(7)sum :表名词。<br>
+(8)técol :表动词。<br>
+</p>
+<p>二、句子构成</p>
+<p>以下根据时态，来分成几个句子组成方案</p>
+<p>
+1. 现在时<br>
+(1)一般现在时<br>
+主语(S) + 谓语(V)<br>
+主语(S) + 谓语(V) + 宾语(O)<br>
+(2)现在进行时<br>
+主语(S) + ad +谓语(V) + 宾语(O)<br>
+(3)现在完成时<br>
+主语(S) + (ja) + 谓语(V) +'en + 宾语(O)<br><br>
+2.过去时<br>
+主语(S) + 谓语(V) + 'en + 宾语(O)<br><br>
+3.将来时<br>
+主语(S) + va + 谓语(V) + 宾语(O)<br>
+</p>
+<br><br><br><br><br><br>
+</div>
+<!-- 语音规则 -->
+<div class="section" id="pronunciat">
+<h2>语音规则</h2>
+<p>
+·  每一个字母并不是只有一个音, 大部分的还是需要根据上面的上标符号，上标符号跟固定组合和自由组合，也就是有的符号和字母相组合时，只有一个固定发音，它是一个固定组合；而有的符号则可以与其他字母自由组合。将这个字母改变其发音（比如浊化、清读、改变声调等）。
+</p>
+<p>
+·  当类似于“ā ē ō ī” 上面为“-”上标符号出现时, 即为鼻音发音，类似于“ang eng ong ing” ，其属于自由组合。<br>
+·  当有上标符为波浪时, 发音与这个字母的本身发音相反，但是这个符号不常用，其属于自由组合。
+</p>
+<p>
+·  其余详情请见字母表发音，大部分字母遵循拉丁字母发音规则，通常建议当做固定组合记忆。
+</p>
+</div>
+
 </div>
 </div>
 
@@ -852,6 +1536,41 @@ color: #555;
 <h2 class="updates-content">更新日志</h2>
 <div class="updates-list" id="updates-list">
 <!-- 更新内容将通过JS填充 -->
+</div>
+</div>
+</div>
+
+<!-- 收藏卡片页面 -->
+<div class="favorites-overlay" id="favorites-overlay">
+<div class="close-button" id="close-favorites">◁</div>
+<div class="favorites-content">
+<h2 class="favorites-content">单词收藏</h2>
+<div class="container-help">
+<div class="favorites-cards" id="favorites-cards">
+<!-- 收藏卡片将通过JS填充 -->
+</div>
+</div>
+</div>
+</div>
+
+<!-- 设置页面 -->
+<div class="settings-overlay" id="settings-overlay">
+<div class="close-button" id="close-settings">◁</div>
+<div class="settings-content">
+<h2 class="settings-content">软件设置</h2>
+<div class="settings-item">
+<span>显示卡片配对栏</span>
+<label class="set-switch">
+<input type="checkbox" id="show-game-toggle">
+<span class="set-slider"></span>
+</label>
+</div>
+<div class="settings-item">
+<span>显示每日单词栏</span>
+<label class="set-switch">
+<input type="checkbox" id="show-daily-toggle">
+<span class="set-slider"></span>
+</label>
 </div>
 </div>
 </div>
@@ -890,9 +1609,10 @@ const splashToggle = document.getElementById('splash-toggle');
 
 // 更新内容数据
 const Updated_Context = [
-  { date: "2025.7.12", content: "修复已知问题" },
-  { date: "2025.7.15", content: "增加音标学习功能" },
-  { date: "2025.7.19", content: "添加更新日志页面" }
+{ date: "2025.7.12", content: "修复已知问题" },
+{ date: "2025.7.15", content: "增加音标学习功能" },
+{ date: "2025.7.19", content: "添加更新日志页面" },
+{ date: "2025.7.26", content: "添加夜间模式功能" }
 ];
 
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -903,114 +1623,733 @@ let version = "1.0.2-Alpha(ver.内测)";
 aboutCon.innerHTML = "V" + version;
 
 const vocabulary = [
-{word: "α", pronunciation: "/a/", part_of_speech: "n. prep.", interpretation: "在；位于；朝；向；以；字母表中的字母", example: "在这里有一个人，你可以找她 | A'иi jαw гenio rcα, u dois so'ques ta.", derivative: "a"},
-{word: "αu", pronunciation: "/au/", part_of_speech: "n. prep.", interpretation: "在；位于；朝；向；以；字母表中的字母", example: "在这里有一个人，你可以询问一下 | A'иi jαw гenio rcα, u dois so'ques rcα.", derivative: "a"},
-{word: "b", pronunciation: "/b/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "bαrα", pronunciation: "/ba ra/", part_of_speech: "n.", interpretation: "八；八个；第八", example: "成功百分之八十靠的是出现。|to'aum̃cé de αpα sα ĝαq rcα-b in bαrα-a.", derivative: "bαrαnum"},
-{word: "bαrαnum", pronunciation: "/'ba ra num/", part_of_speech: "intric-n.", interpretation: "八；八个；第八", example: "成功百分之八十靠的是出现。|to'aum̃cé de αpα sα ĝαq rcα-b in bαrα-a.", derivative: "bαrα"},
-{word: "c", pronunciation: "/c/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "d", pronunciation: "/d/", part_of_speech: "n. prep.", interpretation: "的；之；字母表中的字母", example: "学无止境|Étut sα bm sodon d'pʜam̃.", derivative: "de"},
-{word: "de", pronunciation: "/de/", part_of_speech: "n. prep.", interpretation: "的；之；字母表中的字母", example: "学无止境|Étut sα bm sodon de pʜam̃.", derivative: "d"},
-{word: "τ", pronunciation: "/d/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "τé", pronunciation: "/di/", part_of_speech: "auv.", interpretation: "第；次；号；位；等；名；级；序；次序", example: "", derivative: "pʜam̃"},
-{word: "τed", pronunciation: "/'det/", part_of_speech: "n. prep.", interpretation: "的；之；字母表中的字母", example: "学无止境|Étut sα bm sodon τed pʜam̃.", derivative: "de"},
-{word: "e", pronunciation: "/e/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "erα", pronunciation: "/'era/", part_of_speech: "n.", interpretation: "二；两；两个；俩；第二；其次；然后；之后；再者", example: "山重水复疑无路，柳暗花明又一村 | αl de sum αl sodon, α'nα jαw erα.", derivative: "erαnum"},
-{word: "erαnum", pronunciation: "/'era num/", part_of_speech: "intric-n.", interpretation: "二；两；两个；俩；第二；其次；然后；之后；再者", example: "山重水复疑无路，柳暗花明又一村 | αl de sum αl sodon, α'nα jαw erα.", derivative: "erα"},
-{word: "é", pronunciation: "/y/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "ê", pronunciation: "/A/", part_of_speech: "n. prep.", interpretation: "关于；有关的；字母表中的字母", example: "", derivative: "无"},
-{word: "ë", pronunciation: "/ie/", part_of_speech: "n. conj.", interpretation: "（连接单词或句子）；字母表中的字母", example: "非物质文化遗产记录了人类最伟大的遗产，使人类记住它 | Neësum'm̃ojuα-ʜêgy ë im̃eit'en гenis αust bonpus de ʜêgy, si тory so'бembe tα.", derivative: "无"},
-{word: "f", pronunciation: "/f/", part_of_speech: "n. conj.", interpretation: "假如；要是；如果；字母表中的字母", example: "如果你做了它 | f-u so'en tα", derivative: "fsum"},
-{word: "g", pronunciation: "/c/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "z", pronunciation: "/g/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "h", pronunciation: "/h/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "j", pronunciation: "/h/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "i", pronunciation: "/y/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "ië", pronunciation: "/ie/", part_of_speech: "n. conj.", interpretation: "（连接单词或句子）；字母表中的字母", example: "非物质文化遗产记录了人类最伟大的遗产，使人类记住它 | Neësum'm̃ojuα-ʜêgy ië im̃eit'en гenis αust bonpus de ʜêgy, si тory so'бembe tα.", derivative: "无"},
-{word: "б", pronunciation: "/j/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "k", pronunciation: "/k/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "m̃", pronunciation: "/k/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "l", pronunciation: "/l/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: "ʜ"},
-{word: "ʜ", pronunciation: "/l/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: "l"},
-{word: "ʜcα", pronunciation: "/'l ka/", part_of_speech: "n.", interpretation: "六；六个；第六", example: "耶和华憎恨六样事，七样他所厌恶的：高傲的眼、撒谎的舌、流无辜人血的手、图谋恶计的心、飞奔作恶的脚、作假见证的嘴和在弟兄中制造纷争的人。|yëjeuα jitést ʜcα sum, qα sum ë-тα jitést: jaitésm̃ec'αoʜemést de αy, aoʜαlαy de an̂é, kéʜαs bon гenio de aoиαnm, pʜan neb de xée, znm vit to so'nebsum de иum, so'nebnécy de иuê jesum so'fénis sum de гenio.", derivative: "ʜcαnum"},
-{word: "ʜcαnum", pronunciation: "/'l ka num/", part_of_speech: "n.", interpretation: "六；六个；第六", example: "耶和华憎恨六样事，七样他所厌恶的：高傲的眼、撒谎的舌、流无辜人血的手、图谋恶计的心、飞奔作恶的脚、作假见证的嘴和在弟兄中制造纷争的人。|yëjeuα jitést ʜcα sum, qα sum ë-тα jitést: jaitésm̃ec'αoʜemést de αy, aoʜαlαy de an̂é, kéʜαs bon гenio de aoиαnm, pʜan neb de xée, znm vit to so'nebsum de иum, so'nebnécy de иuê jesum so'fénis sum de гenio.", derivative: "ʜcα"},
-{word: "m", pronunciation: "/m/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "n", pronunciation: "/n/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "o", pronunciation: "/o/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "p", pronunciation: "/p/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "q", pronunciation: "/q/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "qα", pronunciation: "/qa/", part_of_speech: "n.", interpretation: "七；七个；第七", example: "一周有七天，但每一天的时间都不够用。|A'aαimen in jαw dαitom qα, butu ĝaq rcα dαutom αl'ne énaf so.", derivative: "qαnum"},
-{word: "qαnum", pronunciation: "/'qa num/", part_of_speech: "n.", interpretation: "七；七个；第七", example: "一周有七天，但每一天的时间都不够用。|A'aαimen in jαw dαitom qα, butu ĝaq rcα dαutom αl'ne énaf so.", derivative: "qα"},
-{word: "r", pronunciation: "/r/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "rcα", pronunciation: "/'yka/", part_of_speech: "n. adv.", interpretation: "幺；一；一个；第一；首个；首先；先；优先", example: "千里之行，始于足下。|So'qαʜα-li de ruʜα, soto soαp rcα α'иi.", derivative: "rcαnum"},
-{word: "rcαnum", pronunciation: "/'yka num/", part_of_speech: "intric-n. intric-adv.", interpretation: "幺；一；一个；第一；首个；首先；先；优先", example: "你一定要幸福，即使这幸福不是我给的也没关系。|Uromen dom ʜαbon, αlth musba nesa iromen cu tui ë-mu αum sαy rcαnum.", derivative: "rcα"},
-{word: "rei", pronunciation: "/rA/", part_of_speech: "n. prep.", interpretation: "关于；有关的；字母表中的字母", example: "走了的人 | гenio ê znm'en", derivative: "无"},
-{word: "s", pronunciation: "/s/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "a", pronunciation: "/s/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: "α"},
-{word: "aα", pronunciation: "/sa/", part_of_speech: "n.", interpretation: "三；三个；仨；第三", example: "人生三起三落，何尝不是一种滋味，一种体验呢。|тory v aα αp jeno don, nα mu αussi sα fʜê jesum ʜisét.", derivative: "aαnum"},
-{word: "aαnum", pronunciation: "/'sa num/", part_of_speech: "intric-n.", interpretation: "三；三个；仨；第三", example: "人生起起落落，是滋味，是体验。|тory v aα αp jeno don, nα mu αussi sα fʜê jesum ʜisét.", derivative: "aα"},
-{word: "acα", pronunciation: "/'ska/", part_of_speech: "n.", interpretation: "亖；四；四个；第四", example: "四面荷花三面柳，一城山色半城湖。|αca juofα je éʜiαn,гum couʜe b'αeʜên", derivative: "acαnum"},
-{word: "acαnum", pronunciation: "/'ska num/", part_of_speech: "intric-n.", interpretation: "亖；四；四个；第四", example: "四面荷花三面柳，一城山色半城湖。|αca juofα je éʜiαn,гum couʜe b'αeʜên", derivative: "acα"},
-{word: "t", pronunciation: "/t/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "u", pronunciation: "/u/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "w", pronunciation: "/uf/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "т", pronunciation: "/w/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "тα", pronunciation: "/wa/", part_of_speech: "n.", interpretation: "五；五个；第五", example: "一只手有五个手指，但它们的长度并不相同。|aoиαnm jαw aoиi тα, butu тαis len ne'aαmio", derivative: "тαnum"},
-{word: "тαnum", pronunciation: "/wa num/", part_of_speech: "n.intric-n.", interpretation: "五；五个；第五", example: "一只手有五个手指，但它们的长度并不相同。|aoиαnm jαw aoиi тα, butu тαis len ne'aαmio", derivative: "тα"},
-{word: "x", pronunciation: "/'yks/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "y", pronunciation: "/y/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""},
-{word: "и", pronunciation: "/z/", part_of_speech: "n.", interpretation: "字母表中的字母", example: "", derivative: ""}
+{
+word: "α",
+pronunciation: "/a/",
+part_of_speech: "n. prep.",
+interpretation: "在；位于；朝；向；以；字母表中的字母",
+example: "在这里有一个人，你可以找她 | A'иi jαw гenio rcα, u dois so'ques ta.",
+derivative: "a"
+},
+{
+word: "αu",
+pronunciation: "/au/",
+part_of_speech: "n. prep.",
+interpretation: "在；位于；朝；向；以；字母表中的字母",
+example: "在这里有一个人，你可以询问一下 | A'иi jαw гenio rcα, u dois so'ques rcα.",
+derivative: "a"
+},
+{
+word: "b",
+pronunciation: "/b/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "bαrα",
+pronunciation: "/ba ra/",
+part_of_speech: "n.",
+interpretation: "八；八个；第八",
+example: "成功百分之八十靠的是出现。|to'aum̃cé de αpα sα ĝαq rcα-b in bαrα-a.",
+derivative: "bαrαnum"
+},
+{
+word: "bαrαnum",
+pronunciation: "/'ba ra num/",
+part_of_speech: "intric-n.",
+interpretation: "八；八个；第八",
+example: "成功百分之八十靠的是出现。|to'aum̃cé de αpα sα ĝαq rcα-b in bαrα-a.",
+derivative: "bαrα"
+},
+{
+word: "bum",
+pronunciation: "/bu m/",
+part_of_speech: "adv.",
+interpretation: "没有；没；除；冇",
+example: "",
+derivative: "ne"
+},
+{
+word: "buy",
+pronunciation: "/bai/",
+part_of_speech: "adv. adj.",
+interpretation: "否；不（用于回答）；假的",
+example: "",
+derivative: "say"
+},
+{
+word: "c",
+pronunciation: "/k/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "d",
+pronunciation: "/d/",
+part_of_speech: "n. prep.",
+interpretation: "的；之；字母表中的字母",
+example: "学无止境|Étut sα bm sodon d'pʜam̃.",
+derivative: "τ, de"
+},
+{
+word: "de",
+pronunciation: "/de/",
+part_of_speech: "n. prep.",
+interpretation: "的；之",
+example: "学无止境|Étut sα bm sodon de pʜam̃.",
+derivative: "d"
+},
+{
+word: "τ",
+pronunciation: "/d/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "d"
+},
+{
+word: "τé",
+pronunciation: "/di/",
+part_of_speech: "auv.",
+interpretation: "第；次；号；位；等；名；级；序；次序",
+example: "",
+derivative: "pʜam̃"
+},
+{
+word: "τed",
+pronunciation: "/'det/",
+part_of_speech: "n. prep.",
+interpretation: "的；之；字母表中的字母",
+example: "学无止境|Étut sα bm sodon τed pʜam̃.",
+derivative: "de"
+},
+{
+word: "e",
+pronunciation: "/e/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "ë, ê, é"
+},
+{
+word: "erα",
+pronunciation: "/'era/",
+part_of_speech: "n.",
+interpretation: "二；两；两个；俩；第二；其次；然后；之后；再者",
+example: "山重水复疑无路，柳暗花明又一村 | αl de sum αl sodon, α'nα jαw erα.",
+derivative: "erαnum"
+},
+{
+word: "erαnum",
+pronunciation: "/'era num/",
+part_of_speech: "intric-n.",
+interpretation: "二；两；两个；俩；第二；其次；然后；之后；再者",
+example: "山重水复疑无路，柳暗花明又一村 | αl de sum αl sodon, α'nα jαw erα.",
+derivative: "erα"
+},
+{
+word: "é",
+pronunciation: "/y/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "i, e, ë, ê"
+},
+{
+word: "ét",
+pronunciation: "/y t/",
+part_of_speech: "pron.",
+interpretation: "他；她；它",
+example: "",
+derivative: ""
+},
+{
+word: "és",
+pronunciation: "/y s/",
+part_of_speech: "pron.",
+interpretation: "他的；她的；它的",
+example: "",
+derivative: "éros"
+},
+{
+word: "éro",
+pronunciation: "/y ho/",
+part_of_speech: "pron.",
+interpretation: "他们；她们；它们",
+example: "",
+derivative: "ét"
+},
+{
+word: "éros",
+pronunciation: "/y ho s/",
+part_of_speech: "pron.",
+interpretation: "他们的；她们的；它们的",
+example: "",
+derivative: "és"
+},
+{
+word: "ê",
+pronunciation: "/A/",
+part_of_speech: "n. prep.",
+interpretation: "（口语，补充说明）；关于；有关的；字母表中的字母",
+example: "",
+derivative: "e, ë, é"
+},
+{
+word: "ë",
+pronunciation: "/ie/",
+part_of_speech: "n. conj. c.",
+interpretation: "（书面用法，补充说明）；字母表中的字母",
+example: "非物质文化遗产记录了人类最伟大的遗产，使人类记住它 | Neësum'm̃ojuα-ʜêgy ë im̃eit'en гenis αust bonpus de ʜêgy, si тory so'бembe tα.",
+derivative: "e, ê, é"
+},
+{
+word: "f",
+pronunciation: "/f/",
+part_of_speech: "n. conj.",
+interpretation: "假如；要是；如果；字母表中的字母",
+example: "如果你做了它 | f-u so'en tα",
+derivative: "fsum"
+},
+{
+word: "g",
+pronunciation: "/c/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "ǵ"
+},
+{
+word: "ǵ",
+pronunciation: "/g/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "ʐ, g"
+},
+{
+word: "ʐ",
+pronunciation: "/g/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "ǵ"
+},
+{
+word: "h",
+pronunciation: "/h/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "j"
+},
+{
+word: "j",
+pronunciation: "/h/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "h"
+},
+{
+word: "i",
+pronunciation: "/y/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "é"
+},
+{
+word: "ië",
+pronunciation: "/ie/",
+part_of_speech: "n. conj.",
+interpretation: "（连接单词或句子）；字母表中的字母",
+example: "非物质文化遗产记录了人类最伟大的遗产，使人类记住它 | Neësum'm̃ojuα-ʜêgy ië im̃eit'en гenis αust bonpus de ʜêgy, si тory so'бembe tα.",
+derivative: "无"
+},
+{
+word: "б",
+pronunciation: "/j/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "бα",
+pronunciation: "/zha/",
+part_of_speech: "n.",
+interpretation: "九；九个；第九",
+example: "九月的晚风把星光吹落在屋檐，像谁寄来的一叠蓝色信笺。| бα mostom nés тéd lous α'ŝeи séed, aséq mosblα coun bleu lété rcα.",
+derivative: ""
+},
+{
+word: "бαnum",
+pronunciation: "/'zha num/",
+part_of_speech: "intric-n.",
+interpretation: "九；九个；第九",
+example: "九月的晚风把星光吹落在屋檐，像谁寄来的一叠蓝色信笺。| бα mostom nés тéd lous α'ŝeи séed, aséq mosblα coun bleu lété rcα.",
+derivative: ""
+},
+{
+word: "k",
+pronunciation: "/k/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "c, m̃"
+},
+{
+word: "m̃",
+pronunciation: "/k/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "k"
+},
+{
+word: "l",
+pronunciation: "/l/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "ʜ"
+},
+{
+word: "ʜ",
+pronunciation: "/l/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "l"
+},
+{
+word: "ʜcα",
+pronunciation: "/'l ka/",
+part_of_speech: "n.",
+interpretation: "六；六个；第六",
+example: "耶和华憎恨六样事，七样他所厌恶的：高傲的眼、撒谎的舌、流无辜人血的手、图谋恶计的心、飞奔作恶的脚、作假见证的嘴和在弟兄中制造纷争的人。|yëjeuα jitést ʜcα sum, qα sum ë-тα jitést: jaitésm̃ec'αoʜemést de αy, aoʜαlαy de an̂é, kéʜαs bon гenio de aoиαnm, pʜan neb de xée, znm vit to so'nebsum de иum, so'nebnécy de иuê jesum so'fénis sum de гenio.",
+derivative: "ʜcαnum"
+},
+{
+word: "ʜcαnum",
+pronunciation: "/'l ka num/",
+part_of_speech: "n.",
+interpretation: "六；六个；第六",
+example: "耶和华憎恨六样事，七样他所厌恶的：高傲的眼、撒谎的舌、流无辜人血的手、图谋恶计的心、飞奔作恶的脚、作假见证的嘴和在弟兄中制造纷争的人。|yëjeuα jitést ʜcα sum, qα sum ë-тα jitést: jaitésm̃ec'αoʜemést de αy, aoʜαlαy de an̂é, kéʜαs bon гenio de aoиαnm, pʜan neb de xée, znm vit to so'nebsum de иum, so'nebnécy de иuê jesum so'fénis sum de гenio.",
+derivative: "ʜcα"
+},
+{
+word: "m",
+pronunciation: "/m/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "mil",
+pronunciation: "/m y l/",
+part_of_speech: "n.",
+interpretation: "千；一千",
+example: "",
+derivative: ""
+},
+{
+word: "n",
+pronunciation: "/n/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "ne",
+pronunciation: "/ne/",
+part_of_speech: "adv.",
+interpretation: "不",
+example: "",
+derivative: "bum"
+},
+{
+word: "noun",
+pronunciation: "/nong/",
+part_of_speech: "n.",
+interpretation: "万；一万",
+example: "",
+derivative: ""
+},
+
+{
+word: "o",
+pronunciation: "/o/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "p",
+pronunciation: "/p/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "q",
+pronunciation: "/q/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "qα",
+pronunciation: "/qa/",
+part_of_speech: "n.",
+interpretation: "七；七个；第七",
+example: "一周有七天，但每一天的时间都不够用。|A'aαimen in jαw dαitom qα, butu ĝaq rcα dαutom αl'ne énaf so.",
+derivative: "qαnum"
+},
+{
+word: "qαnum",
+pronunciation: "/'qa num/",
+part_of_speech: "n.",
+interpretation: "七；七个；第七",
+example: "一周有七天，但每一天的时间都不够用。|A'aαimen in jαw dαitom qα, butu ĝaq rcα dαutom αl'ne énaf so.",
+derivative: "qα"
+},
+{
+word: "r",
+pronunciation: "/r/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "rcα",
+pronunciation: "/'yka/",
+part_of_speech: "n. adv.",
+interpretation: "幺；一；一个；第一；首个；首先；先；优先",
+example: "千里之行，始于足下。|So'qαʜα-li de ruʜα, soto soαp rcα α'иi.",
+derivative: "rcαnum"
+},
+{
+word: "rcαnum",
+pronunciation: "/'yka num/",
+part_of_speech: "intric-n. intric-adv.",
+interpretation: "幺；一；一个；第一；首个；首先；先；优先",
+example: "千里之行，始于足下。|So'qαʜα-li de ruʜα, soto soαp rcα α'иi.",
+derivative: "rcα"
+},
+{
+word: "rei",
+pronunciation: "/rA/",
+part_of_speech: "n. prep.",
+interpretation: "关于；有关的；字母表中的字母",
+example: "走了的人 | гenio ê znm'en",
+derivative: "无"
+},
+{
+word: "s",
+pronunciation: "/s/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "a"
+},
+{
+word: "say",
+pronunciation: "/sei/",
+part_of_speech: "pron.",
+interpretation: "是；对；真的",
+example: "",
+derivative: "buy"
+},
+{
+word: "sent",
+pronunciation: "/sen t/",
+part_of_speech: "n.",
+interpretation: "百；一百",
+example: "",
+derivative: ""
+},
+{
+word: "sis",
+pronunciation: "/si s/",
+part_of_speech: "n.",
+interpretation: "十；十个；第十",
+example: "",
+derivative: ""
+},
+{
+word: "so",
+pronunciation: "/so/",
+part_of_speech: "v.",
+interpretation: "做；作；干；(虚词，表动作)",
+example: "",
+derivative: ""
+},
+
+{
+word: "a",
+pronunciation: "/s/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: "s, α"
+},
+{
+word: "aα",
+pronunciation: "/sa/",
+part_of_speech: "n.",
+interpretation: "三；三个；仨；第三",
+example: "人生三起三落，何尝不是一种滋味，一种体验呢。|тory v aα αp jeno don, nα mu αussi sα fʜê jesum ʜisét.",
+derivative: "aαnum"
+},
+{
+word: "aαnum",
+pronunciation: "/'sa num/",
+part_of_speech: "intric-n.",
+interpretation: "三；三个；仨；第三",
+example: "人生三起三落，何尝不是一种滋味，一种体验呢。|тory v aα αp jeno don, nα mu αussi sα fʜê jesum ʜisét.",
+derivative: "aα"
+},
+{
+word: "acα",
+pronunciation: "/'ska/",
+part_of_speech: "n.",
+interpretation: "亖；四；四个；第四",
+example: "四面荷花三面柳，一城山色半城湖。|αca juofα je éʜiαn,гum couʜe b'αeʜên",
+derivative: "acαnum"
+},
+{
+word: "acαnum",
+pronunciation: "/'ska num/",
+part_of_speech: "intric-n.",
+interpretation: "亖；四；四个；第四",
+example: "四面荷花三面柳，一城山色半城湖。|αca juofα je éʜiαn,гum couʜe b'αeʜên",
+derivative: "acα"
+},
+{
+word: "t",
+pronunciation: "/t/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "u",
+pronunciation: "/you/",
+part_of_speech: "pron.",
+interpretation: "你；卿；字母表中的字母",
+example: "",
+derivative: "uromen"
+},
+{
+word: "us",
+pronunciation: "/you s/",
+part_of_speech: "pron.",
+interpretation: "你的",
+example: "",
+derivative: "uros"
+},
+{
+word: "uro",
+pronunciation: "/you ho/",
+part_of_speech: "pron.",
+interpretation: "你们",
+example: "",
+derivative: "u"
+},
+{
+word: "uros",
+pronunciation: "/you ho s/",
+part_of_speech: "pron.",
+interpretation: "你们的",
+example: "",
+derivative: "us"
+},
+{
+word: "uromen",
+pronunciation: "/you ho men/",
+part_of_speech: "pron.",
+interpretation: "您",
+example: "",
+derivative: "u"
+},
+{
+word: "v",
+pronunciation: "/v/",
+part_of_speech: "n.",
+interpretation: "将(缩写)；将要(缩写)；字母表中的字母",
+example: "",
+derivative: "vα{"
+},
+{
+word: "w",
+pronunciation: "/uf/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "т",
+pronunciation: "/w/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "тα",
+pronunciation: "/wa/",
+part_of_speech: "n.",
+interpretation: "五；五个；第五",
+example: "一只手有五个手指，但它们的长度并不相同。|aoиαnm jαw aoиi тα, butu тαis len ne'aαmio",
+derivative: "тαnum"
+},
+{
+word: "тαnum",
+pronunciation: "/wa num/",
+part_of_speech: "n.intric-n.",
+interpretation: "五；五个；第五",
+example: "一只手有五个手指，但它们的长度并不相同。|aoиαnm jαw aoиi тα, butu тαis len ne'aαmio",
+derivative: "тα"
+},
+{
+word: "x",
+pronunciation: "/'yks/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "y",
+pronunciation: "/y/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "и",
+pronunciation: "/z/",
+part_of_speech: "n.",
+interpretation: "字母表中的字母",
+example: "",
+derivative: ""
+},
+{
+word: "и̂e",
+pronunciation: "/je/",
+part_of_speech: "pron.",
+interpretation: "我；余；予；吾；俺",
+example: "",
+derivative: "и̂ero"
+},
+{
+word: "и̂ero",
+pronunciation: "/je ho/",
+part_of_speech: "pron.",
+interpretation: "我们；咱们",
+example: "",
+derivative: "и̂e"
+},
+{
+word: "и̂eros",
+pronunciation: "/je ho s/",
+part_of_speech: "pron.",
+interpretation: "我们的；咱们的",
+example: "",
+derivative: "и̂es"
+},
+{
+word: "и̂es",
+pronunciation: "/je s/",
+part_of_speech: "pron.",
+interpretation: "我的",
+example: "",
+derivative: "и̂eros"
+}
 ];
 
-function getRandomWord() {
-const randomIndex = Math.floor(Math.random() * vocabulary.length);
-return vocabulary[randomIndex];
-}
+// 夜间模式功能
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
-function displaySplashWord() {
-let randomWord = getRandomWord();
-while (!randomWord.example.trim()) {
-randomWord = getRandomWord();
-}
-splashWord.textContent = randomWord.word;
-splashDefinition.textContent = randomWord.interpretation;
-splashExample.innerHTML = randomWord.example.split('|').join('<br>');
-}
-
-function updateDate() {
-const now = new Date();
-const month = String(now.getMonth() + 1).padStart(2, '0');
-const day = String(now.getDate()).padStart(2, '0');
-const year = now.getFullYear();
-const weekDays = ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'];
-const week = weekDays[now.getDay()];
-
-monthElement.textContent = month;
-yearElement.textContent = year;
-dayElement.textContent = day;
-weekElement.textContent = week;
-}
-
-function fadeOutSplashScreen() {
-setTimeout(() => {
-splashScreen.classList.add('active');
-}, 5000);
-setTimeout(() => {
-splashScreen.style.display = "none";
-}, 6000);
-}
-
-if (showSplash) {
-displaySplashWord();
-updateDate();
-setTimeout(() => {
-  document.querySelector('.date-left').classList.add('animate-in');
-  document.querySelector('.date-right').classList.add('animate-in');
-}, 100);
-fadeOutSplashScreen();
+function setDarkMode(enabled) {
+if (enabled) {
+document.body.classList.add('dark-mode');
 } else {
-splashScreen.style.display = "none";
+document.body.classList.remove('dark-mode');
 }
+darkModeToggle.checked = enabled;
+localStorage.setItem('darkMode', enabled);
+}
+setDarkMode(isDarkMode);
+darkModeToggle.addEventListener('change', function() {
+setDarkMode(this.checked);
+});
+
+// 学习区
+const learnButton = document.getElementById('learn-button');
+const learnOverlay = document.getElementById('learn-overlay');
+const closeLearn = document.getElementById('close-learn');
+
+learnButton.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+learnOverlay.classList.add('active');
+});
+closeLearn.addEventListener('click', function () {
+learnOverlay.classList.remove('active');
+});
+
+// 学习区导航栏交互
+const navItems = document.querySelectorAll('.learn-nav-item');
+const sections = document.querySelectorAll('.section');
+
+function scrollToSection(targetId) {
+const target = document.getElementById(targetId);
+if (target) {
+const offset = target.offsetTop - 60;
+document.querySelector('.learn-content-wrapper').scrollTop = offset;
+}
+}
+navItems.forEach(item => {
+item.addEventListener('click', function () {
+// navItems.forEach(i => i.classList.remove('active'));
+// this.classList.add('active');
+scrollToSection(this.getAttribute('data-target'));
+});
+});
+
+// 学习区滚动监听高亮导航
+document.querySelector('.learn-content-wrapper').addEventListener('scroll', function () {
+let current = '';
+sections.forEach(section => {
+const rect = section.getBoundingClientRect();
+if (rect.top <= 70) {
+current = section.id;
+}
+});
+navItems.forEach(item => {
+item.classList.remove('active');
+if (item.getAttribute('data-target') === current) {
+item.classList.add('active');
+}
+});
+});
 
 searchInput.addEventListener('input', function () {
 const query = searchInput.value.toLowerCase();
@@ -1261,16 +2600,6 @@ closeNote.addEventListener('click', function () {
 noteOverlay.classList.remove('active');
 });
 
-phoneticButton.addEventListener('click', function () {
-sidebar.classList.remove('active');
-overlay.classList.remove('active');
-phoneticOverlay.classList.add('active');
-});
-
-closePhonetic.addEventListener('click', function () {
-phoneticOverlay.classList.remove('active');
-});
-
 // 更新内容页面功能
 const viewUpdatesBtn = document.getElementById('view-updates');
 const updatesOverlay = document.getElementById('updates-overlay');
@@ -1281,7 +2610,6 @@ viewUpdatesBtn.addEventListener('click', function() {
 aboutOverlay.classList.remove('active');
 updatesOverlay.classList.add('active');
 
-// 填充更新内容
 updatesList.innerHTML = '';
 Updated_Context.forEach(update => {
 const updateItem = document.createElement('div');
@@ -1409,6 +2737,259 @@ updateDate();
 fadeOutSplashScreen();
 }
 });
+
+function getRandomWord() {
+const randomIndex = Math.floor(Math.random() * vocabulary.length);
+return vocabulary[randomIndex];
+}
+
+function displaySplashWord() {
+let randomWord = getRandomWord();
+while (!randomWord.example.trim()) {
+randomWord = getRandomWord();
+}
+splashWord.textContent = randomWord.word;
+splashDefinition.textContent = randomWord.interpretation;
+splashExample.innerHTML = randomWord.example.split('|').join('<br>');
+}
+
+function updateDate() {
+const now = new Date();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(now.getDate()).padStart(2, '0');
+const year = now.getFullYear();
+const weekDays = ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'];
+const week = weekDays[now.getDay()];
+
+monthElement.textContent = month;
+yearElement.textContent = year;
+dayElement.textContent = day;
+weekElement.textContent = week;
+}
+
+function fadeOutSplashScreen() {
+setTimeout(() => {
+splashScreen.classList.add('active');
+}, 5000);
+setTimeout(() => {
+splashScreen.style.display = "none";
+}, 6000);
+}
+
+if (showSplash) {
+displaySplashWord();
+updateDate();
+setTimeout(() => {
+document.querySelector('.date-left').classList.add('animate-in');
+document.querySelector('.date-right').classList.add('animate-in');
+}, 100);
+fadeOutSplashScreen();
+} else {
+splashScreen.style.display = "none";
+}
+
+// 每日单词功能
+const dailyWordDisplay = document.getElementById('daily-word-display');
+const dailyFavoriteButton = document.getElementById('daily-favorite-button');
+const dailyWordEl = document.getElementById('daily-word');
+const dailyPronunciationEl = document.getElementById('daily-pronunciation');
+const dailyInterpretationEl = document.getElementById('daily-interpretation');
+const dailyExampleEl = document.getElementById('daily-example');
+
+function getDailyWord() {
+const today = new Date().toDateString();
+const savedDaily = localStorage.getItem('dailyWord');
+const savedDate = localStorage.getItem('dailyWordDate');
+
+if (savedDaily && savedDate === today) {
+return JSON.parse(savedDaily);
+} else {
+let word;
+do {
+word = getRandomWord();
+} while (!word.example.trim());
+localStorage.setItem('dailyWord', JSON.stringify(word));
+localStorage.setItem('dailyWordDate', today);
+return word;
+}
+}
+
+function displayDailyWord() {
+const word = getDailyWord();
+dailyWordEl.textContent = word.word;
+dailyPronunciationEl.textContent = `音标: ${word.pronunciation}`;
+dailyInterpretationEl.textContent = `释义: ${word.interpretation}`;
+dailyExampleEl.innerHTML = `例句: ${word.example.split('|').join('<br>')}`;
+
+const isFavorite = favorites.some(fav => fav.word === word.word);
+dailyFavoriteButton.textContent = isFavorite ? '★' : '☆';
+dailyFavoriteButton.dataset.word = JSON.stringify(word);
+}
+
+dailyFavoriteButton.addEventListener('click', function () {
+const word = JSON.parse(dailyFavoriteButton.dataset.word);
+const isFavorite = favorites.some(fav => fav.word === word.word);
+
+if (!isFavorite) {
+favorites.push(word);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+displayFavorites();
+displayFavoriteCards();
+} else {
+favorites = favorites.filter(fav => fav.word !== word.word);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+displayFavorites();
+displayFavoriteCards();
+}
+
+dailyFavoriteButton.textContent = isFavorite ? '☆' : '★';
+});
+
+// 收藏卡片页面
+const favoritesTitle = document.getElementById('favorites-title');
+const favoritesOverlay = document.getElementById('favorites-overlay');
+const closeFavorites = document.getElementById('close-favorites');
+const favoritesCards = document.getElementById('favorites-cards');
+
+favoritesTitle.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+favoritesOverlay.classList.add('active');
+displayFavoriteCards();
+});
+
+closeFavorites.addEventListener('click', function () {
+favoritesOverlay.classList.remove('active');
+});
+
+function displayFavoriteCards() {
+favoritesCards.innerHTML = '';
+if (favorites.length === 0) {
+favoritesCards.innerHTML = '<p style="text-align:center; color:#888;">暂无收藏单词</p>';
+return;
+}
+favorites.forEach(word => {
+const card = document.createElement('div');
+card.className = 'favorite-card';
+card.innerHTML = `
+<button class="card-favorite-btn" data-word="${word.word}">×</button>
+<h3>${word.word}</h3>
+<p class="card-pronunciation">音标: ${word.pronunciation}</p>
+<p class="card-part-of-speech">词性: ${word.part_of_speech}</p>
+<p class="card-interpretation">释义: ${word.interpretation}</p>
+${word.example ? `<p class="card-example">例句: ${word.example.split('|').join('<br>')}</p>` : ''}
+`;
+card.querySelector('.card-favorite-btn').addEventListener('click', function(e) {
+e.stopPropagation();
+const wordToRemove = this.dataset.word;
+favorites = favorites.filter(fav => fav.word !== wordToRemove);
+localStorage.setItem('favorites', JSON.stringify(favorites));
+displayFavorites();
+displayFavoriteCards();
+updateDailyFavoriteButton();
+});
+favoritesCards.appendChild(card);
+});
+}
+
+function updateDailyFavoriteButton() {
+const word = getDailyWord();
+const isFavorite = favorites.some(fav => fav.word === word.word);
+dailyFavoriteButton.textContent = isFavorite ? '★' : '☆';
+}
+
+// 设置页面
+const settingsButton = document.getElementById('settings-button');
+const settingsOverlay = document.getElementById('settings-overlay');
+const closeSettings = document.getElementById('close-settings');
+const showGameToggle = document.getElementById('show-game-toggle');
+const showDailyToggle = document.getElementById('show-daily-toggle');
+
+settingsButton.addEventListener('click', function () {
+sidebar.classList.remove('active');
+overlay.classList.remove('active');
+settingsOverlay.classList.add('active');
+});
+
+closeSettings.addEventListener('click', function () {
+settingsOverlay.classList.remove('active');
+});
+
+// 初始化设置
+let showGame = localStorage.getItem('showGame') !== 'false';
+let showDaily = localStorage.getItem('showDaily') !== 'false';
+
+showGameToggle.checked = showGame;
+showDailyToggle.checked = showDaily;
+
+gameDisplay.style.display = showGame ? 'block' : 'none';
+dailyWordDisplay.style.display = showDaily ? 'block' : 'none';
+
+showGameToggle.addEventListener('change', function () {
+showGame = this.checked;
+localStorage.setItem('showGame', showGame);
+gameDisplay.style.display = showGame ? 'block' : 'none';
+});
+
+showDailyToggle.addEventListener('change', function () {
+showDaily = this.checked;
+localStorage.setItem('showDaily', showDaily);
+dailyWordDisplay.style.display = showDaily ? 'block' : 'none';
+});
+
+// 初始化每日单词
+displayDailyWord();
+
+//检测系统夜间模式
+/* ---------- 夜间模式：开关优先 + 系统监测为辅 ---------- */
+(function () {
+    const STORAGE_KEY = 'darkMode';          // 保存开关状态
+    const LOCK_KEY = 'darkModeLocked';       // 是否已手动锁定
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+    /* 工具：设置 DOM 主题 + 开关状态 */
+    function applyDark(enabled) {
+        document.body.classList.toggle('dark-mode', enabled);
+        if (darkModeToggle) darkModeToggle.checked = enabled;
+        localStorage.setItem(STORAGE_KEY, enabled);
+    }
+
+    /* 首次进入 */
+    function init() {
+        const locked = localStorage.getItem(LOCK_KEY) === 'true';
+        if (locked) {
+            // 用户曾经手动设置过，完全听开关
+            const saved = localStorage.getItem(STORAGE_KEY) === 'true';
+            applyDark(saved);
+        } else {
+            // 从未手动设置 → 以系统主题为初始值，并写入锁定
+            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyDark(systemDark);
+            localStorage.setItem(LOCK_KEY, 'true'); // 锁定，以后不再被系统覆盖
+        }
+    }
+
+    /* 手动开关事件：锁定模式立即生效 */
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', () => {
+            const checked = darkModeToggle.checked;
+            applyDark(checked);
+            localStorage.setItem(LOCK_KEY, 'true'); // 只要手动拨过就永久锁定
+        });
+    }
+
+    /* 系统变化监听：仅“未锁定”阶段才跟随（实际已被 init 锁定，保险用） */
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem(LOCK_KEY) !== 'true') {
+                applyDark(e.matches);
+                localStorage.setItem(LOCK_KEY, 'true');
+            }
+        });
+    }
+
+    init(); // 启动
+})();
 </script>
-</body>
+
 </html>
