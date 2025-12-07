@@ -1,625 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俄罗斯方块</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-    font-family: 'Courier New', Courier, monospace;
-    overflow: hidden; /* 禁止页面滚动 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>沙盒沙箱模拟器 MD3</title>
+<style>
+/*  MD3 深色主题 */
+:root {
+  --md-sys-color-primary: #6750A4;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #EADDFF;
+  --md-sys-color-on-primary-container: #21005D;
+  --md-sys-color-secondary: #625B71;
+  --md-sys-color-secondary-container: #E8DEF8;
+  --md-sys-color-on-secondary-container: #1D192B;
+  --md-sys-color-surface: #1C1B1F;
+  --md-sys-color-surface-container: #25232A;
+  --md-sys-color-on-surface: #E6E1E5;
+  --md-sys-color-outline: #79747E;
+  --md-sys-color-surface-variant: #49454F;
 }
-
-/* 修改后的游戏容器宽度和高度 */
-#game-container {
-    position: relative;
-    width: 390px;  /* 调宽 */
-    height: 512.5px; /* 调矮 */
-    margin: 20px auto;
-    border: 1px solid #ababab;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    display: flex;
-}
-
-/* 修改后的游戏画布宽度和高度 */
-#gameCanvas {
-    margin: 5px;
-    border-radius: 10px;
-    border: 1px solid #000000;
-    background-color: #000;
-    width: 250px;  /* 调宽 */
-    height: 500px; /* 调矮 */
-}
-
-/* 下一个方块容器的样式保持不变 */
-#next-piece-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 10px;
-    border: 1px solid #ababab;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* 下一个方块画布的样式保持不变 */
-#next-piece-canvas {
-    width: 100px;
-    height: 100px;
-}
-
-/* 得分显示的样式保持不变 */
-#score-display {
-    position: absolute;
-    border: 1px solid #ababab;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    top: 140px;
-    left: 272.5px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-/* 按钮容器的样式保持不变 */
-.button-container {
-    display: flex; /* 使用 flexbox 使按钮横排 */
-    justify-content: center;
-    margin: 10px auto;
-    flex-wrap: wrap; /* 允许按钮换行 */
-}
-
-/* 控制按钮的样式保持不变 */
-.control-button {
-    margin: 5px; /* 为按钮添加间距 */
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 70px; /* 限定按钮宽度 */
-}
-
-/* 开始按钮的样式保持不变 */
-#start-button {
-    width: 100px;
-    font-weight: bold;
-}
-
-/* 控制按钮禁用状态的样式保持不变 */
-.control-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* 媒体查询样式保持不变 */
-@media (max-width: 400px) {
-    #game-container {
-        width: 200px;
-        height: 400px;
-    }
-
-    #next-piece-container {
-        width: 50px;
-        height: 50px;
-    }
-
-    #next-piece-canvas {
-        width: 50px;
-        height: 50px;
-    }
-
-    .control-button {
-        padding: 8px 16px;
-        font-size: 14px;
-        width: 80px; /* 限定按钮宽度 */
-    }
-
-    .button-container {
-        flex-direction: column; /* 按钮垂直排列 */
-        align-items: center; /* 水平居中 */
-    }
-
-    .button-container button {
-        margin: 5px 0; /* 增加按钮之间的垂直间距 */
-    }
-}
-
-#high-score-display {
-    position: absolute;
-    border: 1px solid #ababab;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    top: 200px;
-    left: 272.5px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-/* 自定义弹框的CSS样式保持不变 */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top of other elements */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
-    animation-name: fadeIn;
-    animation-duration: 0.5s;
-}
-
-.modal-content {
-    position: relative;
-    background-color: #fefefe;
-    font-size: 15px;
-    margin: 10% auto; /* 10% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-    max-width: 400px; /* Maximum width */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    animation-name: slideIn;
-    animation-duration: 0.5s;
-}
-
-.close-button {
-    position: absolute;
-    top: 33%;
-    right: 30px;
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-@keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-
-@keyframes slideIn {
-    from {transform: translateY(-150%);}
-    to {transform: translateY(0);}
-}
-
-@keyframes fadeOut {
-    from {opacity: 1;}
-    to {opacity: 0;}
-}
-
-    </style>
+* { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; padding: 0; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); font-family: 'Roboto', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+header { height: 64px; display: flex; align-items: center; padding: 0 16px; background: var(--md-sys-color-surface); font: 400 22px/28px 'Roboto', sans-serif; justify-content: space-between; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; color: var(--md-sys-color-on-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
+.icon-btn svg { width: 24px; height: 24px; fill: currentColor; }
+#game-container { flex: 1; position: relative; background: #000; margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; touch-action: none; }
+canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.controls-area { background: var(--md-sys-color-surface-container); padding: 12px 16px 24px 16px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; gap: 12px; }
+.chip-scroll { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 4px; scrollbar-width: none; }
+.chip-scroll::-webkit-scrollbar { display: none; }
+.chip { height: 32px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-on-surface); font: 500 14px/20px 'Roboto', sans-serif; display: flex; align-items: center; white-space: nowrap; cursor: pointer; transition: all .2s; }
+.chip.active { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border-color: transparent; }
+.chip.active::before { content: "✓"; margin-right: 6px; font-weight: bold; }
+#more-sheet { position: fixed; bottom: -100%; left: 0; right: 0; background: var(--md-sys-color-surface-container); border-radius: 28px 28px 0 0; padding: 24px; transition: bottom .3s; z-index: 100; max-height: 70vh; overflow-y: auto; }
+#more-sheet.open { bottom: 0; }
+.sheet-handle { width: 32px; height: 4px; background: var(--md-sys-color-outline); opacity: .4; border-radius: 2px; margin: -10px auto 20px auto; }
+.grid-elements { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; }
+.element-card { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; background: var(--md-sys-color-surface); border-radius: 12px; gap: 8px; cursor: pointer; }
+.element-color-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(0,0,0,.1); }
+.backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.4); z-index: 90; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.backdrop.open { opacity: 1; pointer-events: auto; }
+.brush-size-slider { width: 100%; height: 4px; background: var(--md-sys-color-surface-variant); border-radius: 2px; appearance: none; outline: none; }
+.brush-size-slider::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--md-sys-color-primary); cursor: pointer; }
+</style>
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="gameCanvas" width="300" height="600"></canvas>
-        <div id="next-piece-container">
-            <canvas id="next-piece-canvas" width="100" height="100"></canvas>
-        </div>
-        <div id="score-display">Score: 0</div>
-        <div id="high-score-display">Best: 0</div>
+
+<header>
+    <div style="display:flex; align-items:center; gap:12px;"><span>沙箱模拟器</span></div>
+    <button class="icon-btn" onclick="clearCanvas()" title="清空">
+        <svg viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/></svg>
+    </button>
+</header>
+
+<div id="game-container"><canvas id="sandbox"></canvas></div>
+
+<div class="controls-area">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="font-size:12px; opacity:.7">笔刷大小</span>
+        <input type="range" class="brush-size-slider" min="1" max="10" value="3" id="brushSize">
     </div>
-    <div class="button-container">
-        <button id="start-button" class="control-button"><i class="fas fa-play"></i>&nbsp;&nbsp;开始</button>
-        <button id="pause-button"class="control-button"><i class="fas fa-pause"></i></button>
-        <button id="restart-button" class="control-button"><i class="fas fa-redo"></i></button>
-        <!--<button id="drop-button" class="control-button"><i class="fas fa-angle-double-down"></i></button>-->
-    </div>
-    <div class="button-container" style="display:none;">
-        <button id="left-button" class="control-button"><i class="fas fa-arrow-left"></i></button>
-        <button id="down-button" class="control-button"><i class="fas fa-arrow-down"></i></button>
-        <button id="drop-button" class="control-button"><i class="fas fa-angle-double-down"></i></button>
-        <button id="right-button" class="control-button"><i class="fas fa-arrow-right"></i></button>
-        <button id="rotate-button" class="control-button"><i class="fas fa-sync"></i></button>
-    </div>
-        <!-- 自定义弹框 -->
-        <div id="customModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <p id="modalText"></p>
-            </div>
-        </div>
-    <script>
-const gameCanvas = document.getElementById('gameCanvas');
-const ctx = gameCanvas.getContext('2d');
-const nextPieceCanvas = document.getElementById('next-piece-canvas');
-const nextCtx = nextPieceCanvas.getContext('2d');
-const scoreDisplay = document.getElementById('score-display');
-const startButton = document.getElementById('start-button');
-const pauseButton = document.getElementById('pause-button');
-const restartButton = document.getElementById('restart-button');
-const leftButton = document.getElementById('left-button');
-const rightButton = document.getElementById('right-button');
-const downButton = document.getElementById('down-button');
-const dropButton = document.getElementById('drop-button');
-const rotateButton = document.getElementById('rotate-button');
+    <div class="chip-scroll" id="quick-bar"></div>
+    <button class="icon-btn" style="width:100%; border-radius:12px; height:48px; background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); margin-top:8px;" onclick="toggleSheet(true)">更多元素</button>
+</div>
 
-const GRID_SIZE = 30;  // 修改后的方块大小
-const ROWS = 20;
-const COLS = 10;
-const COLORS = [
-    null, 'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'cyan'
-];
+<div class="backdrop" id="backdrop" onclick="toggleSheet(false)"></div>
+<div id="more-sheet">
+    <div class="sheet-handle"></div>
+    <h3 style="margin:0 0 16px 0; font-size:20px;">所有元素</h3>
+    <div class="grid-elements" id="all-elements-grid"></div>
+</div>
 
-let board = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
-let currentPiece = null;
-let nextPiece = null;
-let score = 900;
-let gameInterval = null;
+<script>
+const CANVAS_SCALE = 4;
+const TYPES = { EMPTY:0, SOLID:1, POWDER:2, LIQUID:3, GAS:4, ACID:5, DUST:6 };
+const ELEMENTS = {
+    AIR:   { id:0, name:'空气', color:[0,0,0,0], type:TYPES.EMPTY },
+    SAND:  { id:1, name:'沙子', color:[226, 197, 139, 255], type:TYPES.POWDER, variance:20 },
+    WATER: { id:2, name:'水', color:[79, 151, 232, 255], type:TYPES.LIQUID, variance:10 },
+    STONE: { id:3, name:'石头', color:[119, 119, 119, 255], type:TYPES.SOLID },
+    WOOD:  { id:4, name:'木头', color:[139, 69, 19, 255], type:TYPES.SOLID, flammable:true },
+    FIRE:  { id:5, name:'火焰', color:[255, 69, 0, 255], type:TYPES.GAS, variance:50, life:50 },
+    SMOKE: { id:6, name:'烟雾', color:[200, 200, 200, 150], type:TYPES.GAS, life:200 },
+    ACID:  { id:7, name:'酸液', color:[124, 252, 0, 200], type:TYPES.LIQUID, acidity:true },
+    PLANT: { id:8, name:'植物', color:[34, 139, 34, 255], type:TYPES.SOLID, flammable:true },
+    OIL:   { id:9, name:'石油', color:[30, 30, 30, 255], type:TYPES.LIQUID, flammable:true, variance:10 },
+    SEED:  { id:10, name:'种子', color:[139, 90, 43, 255], type:TYPES.POWDER, flammable:true, growable:true },
+    DUST:  { id:11, name:'火药', color:[180, 150, 120, 255], type:TYPES.POWDER, explosive:true, variance:15 },
+    ERASER:{ id:99, name:'橡皮擦', color:[255,255,255,50], type:TYPES.SOLID, isEraser:true }
+};
+let currentElement = ELEMENTS.SAND;
+let brushSize = 3;
+const canvas = document.getElementById('sandbox');
+const ctx = canvas.getContext('2d', { alpha:false });
+let width, height, grid, imageData, animationId;
 
+function initGame() {
+    const container = document.getElementById('game-container');
+    width = Math.floor(container.clientWidth / CANVAS_SCALE);
+    height = Math.floor(container.clientHeight / CANVAS_SCALE);
+    canvas.width = width; canvas.height = height;
+    grid = new Array(width * height).fill(0);
+    imageData = ctx.createImageData(width, height);
+    for(let i=0; i<imageData.data.length; i+=4) { imageData.data[i]=0; imageData.data[i+1]=0; imageData.data[i+2]=0; imageData.data[i+3]=255; }
+    loop();
+}
+const idx = (x, y) => x + y * width;
+const inBounds = (x, y) => x>=0 && x<width && y>=0 && y<height;
 
-let highScore = 6800;  // 用于存储最高分
-
-// 新增变量用于记录上次按下下键的时间
-let lastDownKeyPressTime = 0;
-
-// 新增键盘事件监听函数
-function handleKeyDown(event) {
-    switch (event.key) {
-        case 'a':
-            movePiece(-1, 0);
-            break;
-        case 'd':
-            movePiece(1, 0);
-            break;
-        case 's':
-            movePiece(0, 1);
-            break;
-        case 'Shift': // Shift键
-            // 检查是否是左Shift键
-            if (event.code === 'ShiftLeft') {
-                // 点击左Shift键，方块旋转
-                rotatePiece();
-            }
-            break;
-        case 'Enter': // Enter键
-            // 点击Enter键，方块直接到底
-            while (!checkCollision(currentPiece, currentPiece.x, currentPiece.y + 1)) {
-                currentPiece.y++;
-            }
-            placePiece();
-            break;
-        default:
-            // 其他按键不做处理
-            break;
+// 爆炸抛射粒子（临时火星）
+const sparks = [];
+class Spark {
+    constructor(x,y,vx,vy) {
+        this.x=x; this.y=y; this.vx=vx; this.vy=vy;
+        this.life=20; // 落地前寿命
     }
-}
-
-function updateHighScore() {
-    if (score > highScore) {
-        highScore = score;
-        document.getElementById('high-score-display').textContent = `Best: ${highScore}`;
-    }
-}
-
-// 确保在游戏开始时显示当前最高分
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('high-score-display').textContent = `Best: ${highScore}`;
-    document.addEventListener('keydown', handleKeyDown);
-});
-
-
-
-const PIECES = [
-    [[1, 1, 1, 1]], // I
-    [[1, 1], [1, 1]], // O
-    [[0, 1, 0], [1, 1, 1]], // T
-    [[1, 1, 0], [0, 1, 1]], // S
-    [[0, 1, 1], [1, 1, 0]], // Z
-    [[1, 0, 0], [1, 1, 1]], // J
-    [[0, 0, 1], [1, 1, 1]] // L
-];
-
-function speed(score) {
-    const initialSpeed = 800; // 初始速度1000毫秒
-    const minSpeed = 10; // 最小速度10毫秒
-    const speedReductionPer100Score = 10; // 每增加100分，速度减少10毫秒
-
-    // 计算当前速度
-    let currentSpeed = initialSpeed - (score / 100) * speedReductionPer100Score;
-
-    // 确保速度不会小于最小速度
-    return Math.max(minSpeed, currentSpeed);
-}
-
-function newPiece() {
-    const piece = PIECES[Math.floor(Math.random() * PIECES.length)];
-    return {
-        shape: piece,
-        x: Math.floor(COLS / 2) - Math.floor(piece[0].length / 2),
-        y: 0,
-        color: Math.floor(Math.random() * COLORS.length) + 1
-    };
-}
-
-function showModal(message) {
-    const modal = document.getElementById('customModal');
-    const modalText = document.getElementById('modalText');
-    modalText.textContent = message;
-    modal.style.display = "block";
-    modal.style.animation = 'fadeIn 0.5s';
-}
-
-function hideModal() {
-    const modal = document.getElementById('customModal');
-    modal.style.animation = 'fadeOut 0.5s';
-    setTimeout(() => {
-        modal.style.display = "none";
-    }, 500); // 设置为动画持续时间，确保动画完成后再隐藏元素
-}
-
-document.getElementsByClassName('close-button')[0].onclick = hideModal;
-window.onclick = function(event) {
-    var modal = document.getElementById('customModal');
-    if (event.target == modal) {
-        hideModal();
-    }
-}
-
-function drawBoard() {
-    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-            if (board[row][col]) {
-                ctx.fillStyle = COLORS[board[row][col]];
-                ctx.fillRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-                // 绘制黑色边框
-                ctx.strokeStyle = '#000';
-                ctx.strokeRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-            }
+    update() {
+        this.x+=this.vx; this.y+=this.vy;
+        this.vy+=0.2; // 重力
+        this.life--;
+        if(this.y>=height-1 || this.life<=0) {
+            // 落地转火焰
+            const ix=Math.floor(this.x), iy=Math.floor(this.y);
+            if(inBounds(ix,iy) && grid[idx(ix,iy)]===0) grid[idx(ix,iy)]=ELEMENTS.FIRE.id;
+            return true;
         }
+        return false;
     }
-    if (currentPiece) {
-        for (let row = 0; row < currentPiece.shape.length; row++) {
-            for (let col = 0; col < currentPiece.shape[row].length; col++) {
-                if (currentPiece.shape[row][col]) {
-                    ctx.fillStyle = COLORS[currentPiece.color];
-                    ctx.fillRect((currentPiece.x + col) * GRID_SIZE, (currentPiece.y + row) * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-                    // 绘制黑色边框
-                    ctx.strokeStyle = '#000';
-                    ctx.strokeRect((currentPiece.x + col) * GRID_SIZE, (currentPiece.y + row) * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+}
+
+function update() {
+    // 主循环：物理更新
+    for(let y=height-1; y>=0; y--) {
+        const startLeft = Math.random() > 0.5;
+        const xStart = startLeft ? 0 : width-1;
+        const xEnd = startLeft ? width : -1;
+        const xStep = startLeft ? 1 : -1;
+        for(let x=xStart; x!==xEnd; x+=xStep) {
+            const i = idx(x, y);
+            const id = grid[i];
+            if(id===0) continue;
+            const elem = Object.values(ELEMENTS).find(e=>e.id===id);
+            if(!elem) continue;
+
+            // 火药爆炸
+            if(elem.explosive) {
+                const aroundFire = [[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy])=>{
+                    const ni = idx(x+dx,y+dy);
+                    return inBounds(x+dx,y+dy) && grid[ni]===ELEMENTS.FIRE.id;
+                });
+                if(aroundFire) {
+                    grid[i]=0; // 火药消失
+                    // 炸飞四周 + 生成火焰
+                    for(let dy2=-2; dy2<=2; dy2++) {
+                        for(let dx2=-2; dx2<=2; dx2++) {
+                            if(dx2*dx2+dy2*dy2>4) continue;
+                            const tx=x+dx2, ty=y+dy2;
+                            if(!inBounds(tx,ty)) continue;
+                            const ti=idx(tx,ty);
+                            const target=grid[ti];
+                            if(target===0 || Object.values(ELEMENTS).find(e=>e.id===target)?.type!==TYPES.SOLID) {
+                                // 炸飞
+                                const vx=(dx2+Math.random()*0.4-0.2)*0.8;
+                                const vy=(dy2+Math.random()*0.4-0.2)*0.8-1;
+                                sparks.push(new Spark(tx,ty,vx,vy));
+                                // 空位留火
+                                if(grid[ti]===0) grid[ti]=ELEMENTS.FIRE.id;
+                            }
+                        }
+                    }
+                    continue;
                 }
             }
-        }
-    }
-}
 
-function drawNextPiece() {
-    nextCtx.clearRect(0, 0, nextPieceCanvas.width, nextPieceCanvas.height);
-    if (nextPiece) {
-        const pieceWidth = nextPiece.shape[0].length;
-        const pieceHeight = nextPiece.shape.length;
-        const smallGridSize = GRID_SIZE / 2;  // 将方块大小调整为原来的一半
-        const startX = (nextPieceCanvas.width - pieceWidth * smallGridSize) / 2;
-        const startY = (nextPieceCanvas.height - pieceHeight * smallGridSize) / 2;
-
-        for (let row = 0; row < pieceHeight; row++) {
-            for (let col = 0; col < pieceWidth; col++) {
-                if (nextPiece.shape[row][col]) {
-                    nextCtx.fillStyle = COLORS[nextPiece.color];
-                    nextCtx.fillRect(startX + col * smallGridSize, startY + row * smallGridSize, smallGridSize, smallGridSize);
-                    // 绘制黑色边框
-                    nextCtx.strokeStyle = 'black';
-                    nextCtx.strokeRect(startX + col * smallGridSize, startY + row * smallGridSize, smallGridSize, smallGridSize);
+            // 火焰生命 & 点燃可燃物
+            if(elem.id===ELEMENTS.FIRE.id) {
+                if(Math.random()<0.12) { grid[i]=ELEMENTS.SMOKE.id; continue; }
+                const around = [[0,1],[0,-1],[1,0],[-1,0]];
+                for(let [dx,dy] of around) {
+                    const ni = idx(x+dx, y+dy);
+                    if(!inBounds(x+dx,y+dy)) continue;
+                    const neighbor = Object.values(ELEMENTS).find(e=>e.id===grid[ni]);
+                    if(neighbor && neighbor.flammable && Math.random()<0.25) {
+                        grid[ni] = ELEMENTS.FIRE.id;
+                    }
                 }
+                updateGas(x,y,i,elem.id); continue;
             }
-        }
-    }
-}
-
-function checkCollision(piece, x, y) {
-    for (let row = 0; row < piece.shape.length; row++) {
-        for (let col = 0; col < piece.shape[row].length; col++) {
-            if (piece.shape[row][col]) {
-                const newX = x + col;
-                const newY = y + row;
-                if (newX < 0 || newX >= COLS || newY >= ROWS || board[newY][newX]) {
-                    return true;
+            // 烟雾缓慢消失 + 随机漂移（上升速度再慢一点）
+            if(elem.id===ELEMENTS.SMOKE.id) {
+                if(Math.random()<0.003) { grid[i]=0; continue; }
+                // 50%概率才上升
+                if(Math.random()<0.5) updateGas(x,y,i,elem.id);
+                // 横向漂移
+                if(Math.random()<0.4) { const dir=Math.random()>0.5?1:-1; const si=idx(x+dir,y); if(inBounds(x+dir,y)&&grid[si]===0) swap(i,si); }
+                continue;
+            }
+            // 酸液
+            if(elem.acidity) {
+                const around = [[0,1],[0,-1],[1,0],[-1,0]];
+                for(let [dx,dy] of around) {
+                    const ni = idx(x+dx,y+dy);
+                    if(inBounds(x+dx,y+dy) && grid[ni] && grid[ni]!==elem.id && Math.random()<0.05) { grid[ni]=0; grid[i]=0; break; }
                 }
+                updateLiquid(x,y,i,elem.id); continue;
             }
+            // 物理运动
+            if(elem.type===TYPES.POWDER) updatePowder(x,y,i);
+            else if(elem.type===TYPES.LIQUID) updateLiquid(x,y,i,elem.id);
+            else if(elem.type===TYPES.GAS) updateGas(x,y,i,elem.id);
         }
     }
-    return false;
+    // 更新火星
+    for(let i=sparks.length-1; i>=0; i--) {
+        if(sparks[i].update()) sparks.splice(i,1);
+    }
+    draw(); animationId = requestAnimationFrame(update);
 }
 
-function placePiece() {
-    for (let row = 0; row < currentPiece.shape.length; row++) {
-        for (let col = 0; col < currentPiece.shape[row].length; col++) {
-            if (currentPiece.shape[row][col]) {
-                const boardRow = currentPiece.y + row;
-                if (boardRow < ROWS) {  // 确保不会超出底部
-                    board[boardRow][currentPiece.x + col] = currentPiece.color;
-                }
-            }
+function updatePowder(x,y,i) {
+    const below = idx(x,y+1);
+    if(y+1<height && (grid[below]===0 || isLiquid(grid[below]))) { swap(i,below); return; }
+    const side = Math.random()>0.5?1:-1;
+    const diag = idx(x+side,y+1);
+    if(inBounds(x+side,y+1) && (grid[diag]===0 || isLiquid(grid[diag]))) swap(i,diag);
+}
+function updateLiquid(x,y,i,typeId) {
+    const below = idx(x,y+1);
+    if(y+1<height && grid[below]===0) { swap(i,below); return; }
+    const dir = Math.random()>0.5?1:-1;
+    const sideA = idx(x+dir,y);
+    const sideB = idx(x-dir,y);
+    if(inBounds(x+dir,y) && grid[sideA]===0) swap(i,sideA);
+    else if(inBounds(x-dir,y) && grid[sideB]===0) swap(i,sideB);
+}
+function updateGas(x,y,i,typeId) {
+    const above = idx(x,y-1);
+    if(y-1>=0 && (grid[above]===0 || isLiquid(grid[above]))) { swap(i,above); }
+    else {
+        const dir = Math.random()>0.5?1:-1;
+        const aboveSide = idx(x+dir,y-1);
+        if(inBounds(x+dir,y-1) && (grid[aboveSide]===0 || isLiquid(grid[aboveSide]))) swap(i,aboveSide);
+    }
+}
+function isLiquid(id) {
+    const e = Object.values(ELEMENTS).find(el=>el.id===id);
+    return e && e.type===TYPES.LIQUID;
+}
+function swap(i,j) { const t=grid[i]; grid[i]=grid[j]; grid[j]=t; }
+function draw() {
+    const data = imageData.data;
+    for(let i=0; i<grid.length; i++) {
+        const id = grid[i];
+        const p=i*4;
+        if(id===0) { data[p]=0; data[p+1]=0; data[p+2]=0; data[p+3]=255; continue; }
+        const el = Object.values(ELEMENTS).find(e=>e.id===id);
+        if(el) {
+            const v = el.variance ? (Math.random()*el.variance-el.variance/2) : 0;
+            data[p] = clamp(el.color[0]+v);
+            data[p+1] = clamp(el.color[1]+v);
+            data[p+2] = clamp(el.color[2]+v);
+            data[p+3] = el.color[3]!==undefined ? el.color[3] : 255;
         }
     }
-    clearRows();
-    currentPiece = nextPiece;
-    nextPiece = newPiece();
-    drawNextPiece();
-    if (checkCollision(currentPiece, currentPiece.x, currentPiece.y)) {
-        gameOver();
-    }
-}
-
-function clearRows() {
-    let rowsCleared = 0;
-    for (let row = ROWS - 1; row >= 0; row--) {
-        if (board[row].every(cell => cell !== 0)) {
-            board.splice(row, 1);
-            board.unshift(Array(COLS).fill(0));
-            rowsCleared++;
-            row++; // 重新检查当前行，因为上面的行已经下移
+    // 画火星
+    for(const s of sparks) {
+        const sx=Math.floor(s.x), sy=Math.floor(s.y);
+        if(inBounds(sx,sy)) {
+            const i=idx(sx,sy);
+            const p=i*4;
+            data[p]=255; data[p+1]=150; data[p+2]=0; data[p+3]=255;
         }
     }
-    if (rowsCleared > 0) {
-        score += 100 * rowsCleared; // 根据清除的行数增加得分
-        scoreDisplay.textContent = `得分：${score}`;
-        
-        // 更新游戏速度
-        const newSpeed = speed(score);
-        clearInterval(gameInterval);
-        gameInterval = setInterval(gameLoop, newSpeed);
+    ctx.putImageData(imageData,0,0);
+}
+const clamp=v=>Math.max(0,Math.min(255,v));
+function loop() { update(); }
+
+function clearCanvas() { grid.fill(0); sparks.length=0; }
+
+let isDrawing = false;
+function getGridPos(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const [cx,cy] = evt.touches&&evt.touches.length ? [evt.touches[0].clientX,evt.touches[0].clientY] : [evt.clientX,evt.clientY];
+    return { x:Math.floor((cx-rect.left)/rect.width*width), y:Math.floor((cy-rect.top)/rect.height*height) };
+}
+function paint(evt) {
+    if(!isDrawing) return;
+    const {x,y} = getGridPos(evt);
+    const r = parseInt(document.getElementById('brushSize').value);
+    for(let dy=-r; dy<=r; dy++) for(let dx=-r; dx<=r; dx++) if(dx*dx+dy*dy<=r*r) {
+        const px=x+dx, py=y+dy;
+        if(!inBounds(px,py)) continue;
+        const i=idx(px,py);
+        if(currentElement.isEraser) grid[i]=0;
+        else if(grid[i]===0||currentElement.type===TYPES.SOLID) { if(Math.random()>0.1) grid[i]=currentElement.id; }
     }
 }
+canvas.addEventListener('mousedown',e=>{isDrawing=true; paint(e);});
+window.addEventListener('mouseup',()=>isDrawing=false);
+canvas.addEventListener('mousemove',paint);
+canvas.addEventListener('touchstart',e=>{isDrawing=true; paint(e); e.preventDefault();},{passive:false});
+window.addEventListener('touchend',()=>isDrawing=false);
+canvas.addEventListener('touchmove',e=>{paint(e); e.preventDefault();},{passive:false});
 
+function selectElement(key) { currentElement=ELEMENTS[key]; updateUI(); toggleSheet(false); }
+function updateUI() { document.querySelectorAll('.chip').forEach(chip=>{ chip.classList.toggle('active', chip.dataset.key===getKeyByValue(currentElement)); }); }
+function getKeyByValue(obj) { return Object.keys(ELEMENTS).find(k=>ELEMENTS[k]===obj); }
+function toggleSheet(open) { document.getElementById('more-sheet').classList.toggle('open',open); document.getElementById('backdrop').classList.toggle('open',open); }
 
-function gameOver() {
-    const text = '游戏结束！ 得分：' + score;
-    showModal(text);
-    setTimeout(hideModal, 10000);
-    updateHighScore();  // 更新最高分
-    leftButton.disabled = true;
-    rightButton.disabled = true;
-    downButton.disabled = true;
-    dropButton.disabled = true;
-    rotateButton.disabled = true;
-    resetGame();
+function initUI() {
+    const quickBar=document.getElementById('quick-bar');
+    const allGrid=document.getElementById('all-elements-grid');
+    const quickKeys=['SAND','WATER','STONE','DUST','ERASER'];
+    quickKeys.forEach(key=>{
+        const el=ELEMENTS[key];
+        const btn=document.createElement('button'); btn.className='chip'; btn.dataset.key=key; btn.innerText=el.name;
+        btn.onclick=e=>{selectElement(key);}; if(key==='SAND') btn.classList.add('active'); quickBar.appendChild(btn);
+    });
+    Object.keys(ELEMENTS).forEach(key=>{
+        if(key==='AIR') return; const el=ELEMENTS[key];
+        const card=document.createElement('div'); card.className='element-card'; card.onclick=e=>{selectElement(key);};
+        const dot=document.createElement('div'); dot.className='element-color-dot';
+        if(el.isEraser) { dot.style.background='#fff'; dot.style.border='2px solid #ccc'; dot.style.backgroundImage='linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)'; dot.style.backgroundSize='10px 10px'; dot.style.backgroundPosition='0 0, 5px 5px'; }
+        else dot.style.backgroundColor=`rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+        const name=document.createElement('span'); name.style.fontSize='14px'; name.innerText=el.name;
+        card.appendChild(dot); card.appendChild(name); allGrid.appendChild(card);
+    });
 }
 
-function resetGame() {
-    pauseButton.innerHTML = '<i class="fas fa-pause"></i>';
-    board = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
-    score = 0;
-    scoreDisplay.textContent = 'Score: 0';
-    currentPiece = newPiece();
-    nextPiece = newPiece();
-    drawNextPiece();
-    clearInterval(gameInterval);
-    startButton.disabled = false;
-    pauseButton.disabled = true;
-}
-
-function gameLoop() {
-    if (checkCollision(currentPiece, currentPiece.x, currentPiece.y + 1)) {
-        placePiece();
-    } else {
-        currentPiece.y++; // 每次迭代向下移动一个 GRID_SIZE
-    }
-    drawBoard();
-}
-
-
-function movePiece(dx, dy) {
-    if (!checkCollision(currentPiece, currentPiece.x + dx, currentPiece.y + dy)) {
-        currentPiece.x += dx;
-        currentPiece.y += dy;
-        drawBoard();
-    }
-}
-
-function rotatePiece() {
-    const newShape = [];
-    for (let col = 0; col < currentPiece.shape[0].length; col++) {
-        newShape[col] = [];
-        for (let row = currentPiece.shape.length - 1; row >= 0; row--) {
-            newShape[col].push(currentPiece.shape[row][col]);
-        }
-    }
-    const testPiece = { ...currentPiece, shape: newShape };
-    if (!checkCollision(testPiece, currentPiece.x, currentPiece.y)) {
-        currentPiece.shape = newShape;
-        drawBoard();
-    }
-}
-
-leftButton.addEventListener('click', () => movePiece(-1, 0));
-rightButton.addEventListener('click', () => movePiece(1, 0));
-downButton.addEventListener('click', () => movePiece(0, 1));
-dropButton.addEventListener('click', () => {
-    while (!checkCollision(currentPiece, currentPiece.x, currentPiece.y + 1)) {
-        currentPiece.y++;
-    }
-    placePiece();
-});
-rotateButton.addEventListener('click', rotatePiece);
-
-startButton.addEventListener('click', () => {
-    leftButton.disabled = false;
-    rightButton.disabled = false;
-    downButton.disabled = false;
-    dropButton.disabled = false;
-    rotateButton.disabled = false;
-    resetGame();
-    currentPiece = newPiece();
-    nextPiece = newPiece();
-    drawNextPiece();
-    gameInterval = setInterval(gameLoop, speed(score));
-    startButton.disabled = true;
-    pauseButton.disabled = false;
-});
-
-pauseButton.addEventListener('click', () => {
-    if (gameInterval) {
-        leftButton.disabled = true;
-        rightButton.disabled = true;
-        downButton.disabled = true;
-        dropButton.disabled = true;
-        rotateButton.disabled = true;
-        clearInterval(gameInterval);
-        gameInterval = null;
-        pauseButton.innerHTML = '<i class="fas fa-play"></i>';
-    } else {
-        leftButton.disabled = false;
-        rightButton.disabled = false;
-        downButton.disabled = false;
-        dropButton.disabled = false;
-        rotateButton.disabled = false;
-        gameInterval = setInterval(gameLoop, speed(score));
-        pauseButton.innerHTML = '<i class="fas fa-pause"></i>';
-    }
-});
-
-restartButton.addEventListener('click', () => {
-    // showModal("若无效双击暂停键");
-    // setTimeout(hideModal, 1000);
-    leftButton.disabled = false;
-    rightButton.disabled = false;
-    downButton.disabled = false;
-    dropButton.disabled = false;
-    rotateButton.disabled = false;
-    pauseButton.innerHTML = '<i class="fas fa-pause"></i>';
-    resetGame();
-    currentPiece = newPiece();
-    nextPiece = newPiece();
-    drawNextPiece();
-    if (!gameInterval) {
-        gameInterval = setInterval(gameLoop, speed(score));
-    }
-    startButton.disabled = true;
-    pauseButton.disabled = false;
-});
-    </script>
+window.addEventListener('load',()=>{ initGame(); initUI(); });
+</script>
 </body>
 </html>
