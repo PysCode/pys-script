@@ -160,6 +160,11 @@ function update() {
                             if(!inBounds(tx,ty)) continue;
                             const ti=idx(tx,ty);
                             const target=grid[ti];
+                            // 石头被炸成沙子
+                            if(target===ELEMENTS.STONE.id) {
+                                grid[ti]=ELEMENTS.SAND.id;
+                                continue;
+                            }
                             if(target===0 || Object.values(ELEMENTS).find(e=>e.id===target)?.type!==TYPES.SOLID) {
                                 // 炸飞
                                 const vx=(dx2+Math.random()*0.4-0.2)*0.8;
@@ -237,16 +242,19 @@ function updateLiquid(x,y,i,typeId) {
 }
 function updateGas(x,y,i,typeId) {
     const above = idx(x,y-1);
-    if(y-1>=0 && (grid[above]===0 || isLiquid(grid[above]))) { swap(i,above); }
+    if(y-1>=0 && (grid[above]===0 || isLiquid(grid[above]) || isWaterLike(grid[above]))) { swap(i,above); }
     else {
         const dir = Math.random()>0.5?1:-1;
         const aboveSide = idx(x+dir,y-1);
-        if(inBounds(x+dir,y-1) && (grid[aboveSide]===0 || isLiquid(grid[aboveSide]))) swap(i,aboveSide);
+        if(inBounds(x+dir,y-1) && (grid[aboveSide]===0 || isLiquid(grid[aboveSide]) || isWaterLike(grid[aboveSide]))) swap(i,aboveSide);
     }
 }
 function isLiquid(id) {
     const e = Object.values(ELEMENTS).find(el=>el.id===id);
     return e && e.type===TYPES.LIQUID;
+}
+function isWaterLike(id) {
+    return id===ELEMENTS.WATER.id || id===ELEMENTS.OIL.id || id===ELEMENTS.ACID.id || id===ELEMENTS.SEED.id;
 }
 function swap(i,j) { const t=grid[i]; grid[i]=grid[j]; grid[j]=t; }
 function draw() {
