@@ -3,342 +3,2562 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>沙盒沙箱模拟器 MD3</title>
+<title>SandSpiel - PowderGame</title>
 <style>
-/*  MD3 深色主题 */
-:root {
-  --md-sys-color-primary: #6750A4;
-  --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #EADDFF;
-  --md-sys-color-on-primary-container: #21005D;
-  --md-sys-color-secondary: #625B71;
-  --md-sys-color-secondary-container: #E8DEF8;
-  --md-sys-color-on-secondary-container: #1D192B;
-  --md-sys-color-surface: #1C1B1F;
-  --md-sys-color-surface-container: #25232A;
-  --md-sys-color-on-surface: #E6E1E5;
-  --md-sys-color-outline: #79747E;
-  --md-sys-color-surface-variant: #49454F;
-}
-* { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-body { margin: 0; padding: 0; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); font-family: 'Roboto', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-header { height: 64px; display: flex; align-items: center; padding: 0 16px; background: var(--md-sys-color-surface); font: 400 22px/28px 'Roboto', sans-serif; justify-content: space-between; }
-.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; color: var(--md-sys-color-on-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
-.icon-btn svg { width: 24px; height: 24px; fill: currentColor; }
-#game-container { flex: 1; position: relative; background: #000; margin: 0 16px 16px 16px; border-radius: 16px; overflow: hidden; touch-action: none; }
-canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
-.controls-area { background: var(--md-sys-color-surface-container); padding: 12px 16px 24px 16px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; gap: 12px; }
-.chip-scroll { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 4px; scrollbar-width: none; }
-.chip-scroll::-webkit-scrollbar { display: none; }
-.chip { height: 32px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-on-surface); font: 500 14px/20px 'Roboto', sans-serif; display: flex; align-items: center; white-space: nowrap; cursor: pointer; transition: all .2s; }
-.chip.active { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border-color: transparent; }
-.chip.active::before { content: "✓"; margin-right: 6px; font-weight: bold; }
-#more-sheet { position: fixed; bottom: -100%; left: 0; right: 0; background: var(--md-sys-color-surface-container); border-radius: 28px 28px 0 0; padding: 24px; transition: bottom .3s; z-index: 100; max-height: 70vh; overflow-y: auto; }
-#more-sheet.open { bottom: 0; }
-.sheet-handle { width: 32px; height: 4px; background: var(--md-sys-color-outline); opacity: .4; border-radius: 2px; margin: -10px auto 20px auto; }
-.grid-elements { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; }
-.element-card { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; background: var(--md-sys-color-surface); border-radius: 12px; gap: 8px; cursor: pointer; }
-.element-color-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(0,0,0,.1); }
-.backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.4); z-index: 90; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.backdrop.open { opacity: 1; pointer-events: auto; }
-.brush-size-slider { width: 100%; height: 4px; background: var(--md-sys-color-surface-variant); border-radius: 2px; appearance: none; outline: none; }
-.brush-size-slider::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--md-sys-color-primary); cursor: pointer; }
+:root{--md-sys-color-primary:#6750A4;--md-sys-color-on-primary:#FFFFFF;--md-sys-color-primary-container:#EADDFF;--md-sys-color-on-primary-container:#21005D;--md-sys-color-secondary:#625B71;--md-sys-color-secondary-container:#E8DEF8;--md-sys-color-on-secondary-container:#1D192B;--md-sys-color-surface:#1C1B1F;--md-sys-color-surface-container:#25232A;--md-sys-color-on-surface:#E6E1E5;--md-sys-color-outline:#79747E;--md-sys-color-surface-variant:#49454F;}
+* {box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0;background:var(--md-sys-color-surface);color:var(--md-sys-color-on-surface);font-family:'Roboto',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{height:64px;display:flex;align-items:center;padding:0 16px;background:var(--md-sys-color-surface);font:400 22px/28px 'Roboto',sans-serif;justify-content:space-between}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:var(--md-sys-color-on-surface);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden}
+.icon-btn svg{width:24px;height:24px;fill:currentColor}
+#game-container{flex:1;position:relative;background:#000;margin:0 16px 16px 16px;border-radius:16px;overflow:hidden;touch-action:none}
+canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+.controls-area{background:var(--md-sys-color-surface-container);padding:12px 16px 24px 16px;border-radius:24px 24px 0 0;display:flex;flex-direction:column;gap:12px}
+.chip-scroll{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none}
+.chip-scroll::-webkit-scrollbar{display:none}
+.chip{height:32px;padding:0 16px;border-radius:8px;border:1px solid var(--md-sys-color-outline);background:transparent;color:var(--md-sys-color-on-surface);font:500 14px/20px 'Roboto',sans-serif;display:flex;align-items:center;white-space:nowrap;cursor:pointer;transition:all .2s}
+.chip.active{background:var(--md-sys-color-secondary-container);color:var(--md-sys-color-on-secondary-container);border-color:transparent}
+.chip.active::before{content:"✓";margin-right:6px;font-weight:bold}
+#more-sheet{position:fixed;bottom:-100%;left:0;right:0;background:var(--md-sys-color-surface-container);border-radius:28px 28px 0 0;padding:24px;transition:bottom .3s;z-index:100;max-height:70vh;overflow-y:auto}
+#more-sheet.open{bottom:0}
+.sheet-handle{width:32px;height:4px;background:var(--md-sys-color-outline);opacity:.4;border-radius:2px;margin:-10px auto 20px auto}
+.grid-elements{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px}
+.element-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;background:var(--md-sys-color-surface);border-radius:12px;gap:8px;cursor:pointer}
+.element-color-dot{width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+.backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:90;opacity:0;pointer-events:none;transition:opacity .3s}
+.backdrop.open{opacity:1;pointer-events:auto}
+.brush-size-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--md-sys-color-surface-variant);border-radius:2px;outline:none}
+.brush-size-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--md-sys-color-primary);border:2px solid var(--md-sys-color-on-primary);cursor:grab;box-shadow:0 0 4px rgba(0,0,0,.35);transition:transform .2s}
+.brush-size-slider:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.15)}
+.brush-size-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--md-sys-color-primary);border:2px solid var(--md-sys-color-on-primary);cursor:grab;box-shadow:0 0 4px rgba(0,0,0,.35);transition:transform .2s}
+.brush-size-slider:active::-moz-range-thumb{cursor:grabbing;transform:scale(1.15)}
+#fps-display{position:absolute;top:5px;right:5px;color:white;font-family:'Roboto',sans-serif;font-size:12px;font-weight:400;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:3px;z-index:10;pointer-events:none}
+.control-buttons{display:flex;gap:8px;margin-left:auto}
+.paused-indicator{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:24px;font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.8);display:none;z-index:20}
+.temp-display{position:absolute;top:30px;right:5px;color:white;font-family:'Roboto',sans-serif;font-size:12px;font-weight:400;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:3px;z-index:10;pointer-events:none}
+.temp-settings{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding:8px;background:rgba(0,0,0,0.1);border-radius:8px}
+.temp-slider-container{display:flex;align-items:center;gap:8px}
+.temp-label{font-size:11px;opacity:0.7;min-width:80px}
+.temp-value{font-size:11px;min-width:30px;text-align:right}
+.temp-toggle{display:flex;align-items:center;gap:8px;font-size:12px}
 </style>
 </head>
-<body>
 
+<body>
 <header>
-    <div style="display:flex; align-items:center; gap:12px;"><span>沙箱模拟器</span></div>
-    <button class="icon-btn" onclick="clearCanvas()" title="清空">
-        <svg viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/></svg>
-    </button>
+<div style="display:flex; align-items:center; gap:12px;"><span>Sand - Spiel</span></div>
+<div class="control-buttons">
+<button class="icon-btn" onclick="togglePause()" title="暂停/继续">
+<svg viewBox="0 0 24 24" id="pauseIcon"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+<svg viewBox="0 0 24 24" id="playIcon" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+</button>
+<button class="icon-btn" onclick="clearCanvas()" title="清空">
+<svg viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/></svg>
+</button>
+</div>
 </header>
 
-<div id="game-container"><canvas id="sandbox"></canvas></div>
+<div id="game-container">
+<canvas id="sandbox"></canvas>
+<div id="fps-display">0 FPS</div>
+<div id="temp-display">温度系统: 开启</div>
+<div class="paused-indicator" id="pausedIndicator">暂停中</div>
+</div>
 
 <div class="controls-area">
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-        <span style="font-size:12px; opacity:.7">笔刷大小</span>
-        <input type="range" class="brush-size-slider" min="1" max="10" value="3" id="brushSize">
-    </div>
-    <div class="chip-scroll" id="quick-bar"></div>
-    <button class="icon-btn" style="width:100%; border-radius:12px; height:48px; background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); margin-top:8px;" onclick="toggleSheet(true)">更多元素</button>
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+<span style="font-size:12px; opacity:.7">笔刷大小</span>
+<input type="range" class="brush-size-slider" min="1" max="10" value="3" id="brushSize">
+</div>
+
+<div class="temp-settings">
+<div class="temp-toggle">
+<input type="checkbox" id="tempToggle" checked onchange="toggleTemperatureSystem()">
+<label for="tempToggle">温度系统</label>
+</div>
+
+<div class="temp-slider-container">
+<span class="temp-label">热传导</span>
+<input type="range" min="1" max="10" value="5" class="brush-size-slider" id="heatTransferSpeed">
+<span class="temp-value" id="heatTransferValue">5</span>
+</div>
+
+<div class="temp-slider-container">
+<span class="temp-label">环境温度</span>
+<input type="range" min="-273" max="5000" value="20" class="brush-size-slider" id="ambientTemp">
+<span class="temp-value" id="ambientTempValue">20°C</span>
+</div>
+</div>
+
+<div class="chip-scroll" id="quick-bar"></div>
+<button class="icon-btn" style="width:100%; border-radius:12px; height:48px; background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); margin-top:8px;" onclick="toggleSheet(true)">更多元素</button>
 </div>
 
 <div class="backdrop" id="backdrop" onclick="toggleSheet(false)"></div>
 <div id="more-sheet">
-    <div class="sheet-handle"></div>
-    <h3 style="margin:0 0 16px 0; font-size:20px;">所有元素</h3>
-    <div class="grid-elements" id="all-elements-grid"></div>
+<div class="sheet-handle"></div>
+<h3 style="margin:0 0 16px 0; font-size:20px;">所有元素</h3>
+<div class="grid-elements" id="all-elements-grid"></div>
 </div>
 
 <script>
-const CANVAS_SCALE = 4;
-const TYPES = { EMPTY:0, SOLID:1, POWDER:2, LIQUID:3, GAS:4, ACID:5, DUST:6 };
-const ELEMENTS = {
-    AIR:   { id:0, name:'空气', color:[0,0,0,0], type:TYPES.EMPTY },
-    SAND:  { id:1, name:'沙子', color:[226, 197, 139, 255], type:TYPES.POWDER, variance:20 },
-    WATER: { id:2, name:'水', color:[79, 151, 232, 255], type:TYPES.LIQUID, variance:10 },
-    STONE: { id:3, name:'石头', color:[119, 119, 119, 255], type:TYPES.SOLID },
-    WOOD:  { id:4, name:'木头', color:[139, 69, 19, 255], type:TYPES.SOLID, flammable:true },
-    FIRE:  { id:5, name:'火焰', color:[255, 69, 0, 255], type:TYPES.GAS, variance:50, life:50 },
-    SMOKE: { id:6, name:'烟雾', color:[200, 200, 200, 150], type:TYPES.GAS, life:200 },
-    ACID:  { id:7, name:'酸液', color:[124, 252, 0, 200], type:TYPES.LIQUID, acidity:true },
-    PLANT: { id:8, name:'植物', color:[34, 139, 34, 255], type:TYPES.SOLID, flammable:true },
-    OIL:   { id:9, name:'石油', color:[30, 30, 30, 255], type:TYPES.LIQUID, flammable:true, variance:10 },
-    SEED:  { id:10, name:'种子', color:[139, 90, 43, 255], type:TYPES.POWDER, flammable:true, growable:true },
-    DUST:  { id:11, name:'火药', color:[180, 150, 120, 255], type:TYPES.POWDER, explosive:true, variance:15 },
-    ERASER:{ id:99, name:'橡皮擦', color:[255,255,255,50], type:TYPES.SOLID, isEraser:true }
+const CANVAS_SCALE = 2;
+const TYPES = {
+EMPTY:0,
+SOLID:1,
+POWDER:2,
+LIQUID:3,
+GAS:4,
+ACID:5,
+DUST:6,
+FUEL_GAS:7,
+HEAVY_SOLID:8,
+LAVA:9,
+STONE_SOLID:10,
+CLONE:11,
+SUPER_ACID:12,
+BEDROCK:13,
+GLASS:14,
+LIFE:15,
+STEAM:16
 };
+
+// 扩展元素定义，添加温度相关属性
+const ELEMENTS = {
+AIR:      { id:0,  name:'空气',   color:[0,0,0,0],          type:TYPES.EMPTY, heatResistance:0.1, defaultTemp:20 },
+SAND:     { id:1,  name:'沙子',   color:[226,197,139,255],  type:TYPES.POWDER, variance:20, heatResistance:0.3, defaultTemp:20, meltsAt:1600, meltTo:'GLASS' },
+WATER:    { id:2,  name:'水',     color:[79,151,232,255],   type:TYPES.LIQUID, variance:10, reactsWithOil:true, heatResistance:0.4, defaultTemp:20, boilsAt:100, boilTo:'STEAM', freezesAt:0, freezeTo:'ICE' },
+STONE:    { id:3,  name:'石头',   color:[119,119,119,255],  type:TYPES.STONE_SOLID, heatResistance:0.5, defaultTemp:20 },
+WALL:     { id:4,  name:'墙',     color:[150,150,150,255],  type:TYPES.SOLID, heatResistance:0.8, defaultTemp:20 },
+FIRE:     { id:5,  name:'火焰',   color:[255,69,0,255],     type:TYPES.GAS, variance:50, life:50, heatResistance:0.0, defaultTemp:500, heatEmission:80, burnTime:50 },
+SMOKE:    { id:6,  name:'烟雾',   color:[200,200,200,150],  type:TYPES.GAS, life:200, heatResistance:0.2, defaultTemp:80 },
+ACID:     { id:7,  name:'酸液',   color:[124,252,0,200],    type:TYPES.LIQUID, acidity:true, heatResistance:0.3, defaultTemp:20 },
+WOOD:     { id:8,  name:'木头',   color:[139,69,19,255],    type:TYPES.SOLID, flammable:true, heatResistance:0.2, defaultTemp:20, ignitesAt:150, burnTo:'FIRE' },
+PLANT:    { id:9,  name:'植物',   color:[34,139,34,255],    type:TYPES.SOLID, flammable:true, heatResistance:0.2, defaultTemp:20, ignitesAt:120, burnTo:'FIRE' },
+OIL:      { id:10, name:'石油',   color:[30,30,30,255],     type:TYPES.LIQUID, flammable:true, variance:10, reactsWithWater:true, heatResistance:0.3, defaultTemp:20, ignitesAt:200, burnTo:'FIRE' },
+SEED:     { id:11, name:'种子',   color:[139,90,43,255],    type:TYPES.POWDER, flammable:true, heatResistance:0.2, defaultTemp:20, ignitesAt:100, burnTo:'FIRE' },
+DUST:     { id:12, name:'火药',   color:[180,150,120,255],  type:TYPES.POWDER, explosive:true, variance:15, heatResistance:0.1, defaultTemp:20, ignitesAt:80, burnTo:'FIRE' },
+GAS_FUEL: { id:13, name:'燃气',   color:[255,213,79,180],   type:TYPES.GAS, variance:25, flammable:true, heatResistance:0.0, defaultTemp:20, ignitesAt:60, burnTo:'FIRE' },
+ICE:      { id:14, name:'冰',     color:[173,216,230,255],  type:TYPES.SOLID, meltable:true, heatResistance:0.6, defaultTemp:-10, meltsAt:0, meltTo:'WATER' },
+LAVA:     { id:15, name:'岩浆',   color:[255,80,0,255],     type:TYPES.LAVA, hot:true, variance:30, heatResistance:0.0, defaultTemp:1200, heatEmission:100 },
+FLOWER:   { id:16, name:'花',     color:[255,105,180,255],  type:TYPES.SOLID, flammable:true, heatResistance:0.2, defaultTemp:20, ignitesAt:100, burnTo:'FIRE' },
+VINE:     { id:17, name:'藤蔓',   color:[50,205,50,180],    type:TYPES.SOLID, flammable:true, heatResistance:0.2, defaultTemp:20, ignitesAt:110, burnTo:'FIRE' },
+LEAF:     { id:18, name:'叶子',   color:[144,238,144,200],  type:TYPES.SOLID, flammable:true, heatResistance:0.2, defaultTemp:20, ignitesAt:90, burnTo:'FIRE' },
+CLONE:    { id:19, name:'克隆',   color:[138,43,226,255],   type:TYPES.CLONE, clonePower:5, pulse:true, heatResistance:0.5, defaultTemp:20 },
+SUPER_ACID: { id:20, name:'超酸',  color:[255,255,0,255],   type:TYPES.SUPER_ACID, superAcidic:true, heatResistance:0.3, defaultTemp:20 },
+BEDROCK:    { id:21, name:'基岩',  color:[60,60,60,255],    type:TYPES.BEDROCK, indestructible:true, heatResistance:1.0, defaultTemp:20 },
+GLASS:      { id:22, name:'玻璃',  color:[200,220,240,180], type:TYPES.SOLID, transparent:true, heatResistance:0.4, defaultTemp:20 },
+LIFE:       { id:23, name:'生命',  color:[255,100,100,255], type:TYPES.LIFE, lifeForm:true, heatResistance:0.3, defaultTemp:37, diesAt:60, freezeAt:0 },
+STEAM:      { id:24, name:'蒸汽',  color:[220,240,255,200], type:TYPES.GAS, variance:15, life:300, heatResistance:0.0, defaultTemp:120, condensesAt:99, condenseTo:'WATER' },
+ERASER:     { id:99, name:'橡皮擦',color:[255,255,255,50],  type:TYPES.SOLID, isEraser:true }
+};
+
 let currentElement = ELEMENTS.SAND;
 let brushSize = 3;
 const canvas = document.getElementById('sandbox');
 const ctx = canvas.getContext('2d', { alpha:false });
 let width, height, grid, imageData, animationId;
+let fps = 0, frameCount = 0, lastTime = performance.now();
+const fpsUpdateInterval = 500;
+const fpsDisplay = document.getElementById('fps-display');
+const tempDisplay = document.getElementById('temp-display');
+
+let isPaused = false;
+let temperatureSystemEnabled = true;
+let temperatures;
+let heatTransferSpeed = 5;
+let ambientTemperature = 20;
+
+// 种子生长计时
+const SEED_GROW_INTERVAL = 120;
+// 植物吸收水计时
+const PLANT_ABSORB_INTERVAL = 150;
+// 藤蔓生长计时
+const VINE_GROW_INTERVAL = 100;
+// 克隆元素复制计时
+const CLONE_COPY_INTERVAL = 100;
+// 生命移动计时
+const LIFE_MOVE_INTERVAL = 100;
+
+// 生长状态存储
+let seedGrowth = {
+positions: [],
+heights: [],
+directions: [],
+maxHeights: [],
+growthTime: []
+};
+
+// 植物吸水生长状态
+let plantWaterGrowth = {
+positions: [],
+waterCount: [],
+lastAbsorbTime: [],
+growDirections: [],
+maxAbsorbCount: []
+};
+
+// 藤蔓生长状态
+let vineGrowth = {
+positions: [],
+lastGrowTime: [],
+directions: [],
+spreadCount: []
+};
+
+// 被破坏的植物记录
+let destroyedPlants = {
+positions: [],
+timestamps: []
+};
+const DESTROYED_PLANT_TTL = 5000;
+
+// 克隆元素状态
+let cloneElements = {
+positions: [],
+lastCopyTime: [],
+targetElements: [],
+copyCount: [],
+maxCopyCount: []
+};
+const MAX_CLONE_COUNT = 100;
+
+// 生命元素状态
+let lifeElements = {
+positions: [],
+lastMoveTime: [],
+directions: [],
+hunger: [],  // 饥饿值
+age: [],     // 年龄
+health: []   // 健康值
+};
+const LIFE_MAX_HUNGER = 100;
+const LIFE_MAX_AGE = 1000;
+const LIFE_MAX_HEALTH = 100;
+const LIFE_BREED_CHANCE = 0.1; // 繁殖概率
+
+// 石头被炸飞状态
+let flyingStones = {
+positions: [],
+velocitiesX: [],
+velocitiesY: [],
+timestamps: []
+};
+const FLYING_STONE_TTL = 3000; // 飞行时间3秒
+
+// 植物生长极限配置
+const GROWTH_LIMITS = {
+SEED_MAX_HEIGHT: 30,
+MAX_SEED_GROWTH_HEIGHT: 12,
+MAX_ABSORB_COUNT: 10,
+MAX_VINE_SPREAD: 8,
+MAX_PLANT_HEIGHT: 25
+};
+
+function togglePause() {
+isPaused = !isPaused;
+const pauseIcon = document.getElementById('pauseIcon');
+const playIcon = document.getElementById('playIcon');
+const pausedIndicator = document.getElementById('pausedIndicator');
+if (isPaused) {
+pauseIcon.style.display = 'none';
+playIcon.style.display = 'block';
+pausedIndicator.style.display = 'block';
+cancelAnimationFrame(animationId);
+} else {
+pauseIcon.style.display = 'block';
+playIcon.style.display = 'none';
+pausedIndicator.style.display = 'none';
+loop();
+}
+}
 
 function initGame() {
-    const container = document.getElementById('game-container');
-    width = Math.floor(container.clientWidth / CANVAS_SCALE);
-    height = Math.floor(container.clientHeight / CANVAS_SCALE);
-    canvas.width = width; canvas.height = height;
-    grid = new Array(width * height).fill(0);
-    imageData = ctx.createImageData(width, height);
-    for(let i=0; i<imageData.data.length; i+=4) { imageData.data[i]=0; imageData.data[i+1]=0; imageData.data[i+2]=0; imageData.data[i+3]=255; }
-    loop();
+const container = document.getElementById('game-container');
+width = Math.floor(container.clientWidth / CANVAS_SCALE);
+height = Math.floor(container.clientHeight / CANVAS_SCALE);
+canvas.width = width; canvas.height = height;
+grid = new Array(width * height).fill(0);
+temperatures = new Float32Array(width * height);
+temperatures.fill(ambientTemperature);
+imageData = ctx.createImageData(width, height);
+for(let i=0; i<imageData.data.length; i+=4) {
+imageData.data[i]=0; imageData.data[i+1]=0; imageData.data[i+2]=0; imageData.data[i+3]=255;
 }
+window.shockWave = new Uint8Array(width * height);
+loop();
+}
+
+function saveToLocalStorage() {
+const saveData = {
+grid: Array.from(grid),
+timestamp: Date.now()
+};
+localStorage.setItem('sandboxSaveData', JSON.stringify(saveData));
+}
+
+function loadSavedState() {
+const savedData = localStorage.getItem('sandboxSaveData');
+if (savedData) {
+try {
+const parsed = JSON.parse(savedData);
+if (parsed.grid && parsed.grid.length === grid.length) {
+grid = parsed.grid;
+temperatures.fill(ambientTemperature);
+}
+} catch (e) {
+console.log('加载保存数据失败');
+}
+}
+}
+
 const idx = (x, y) => x + y * width;
 const inBounds = (x, y) => x>=0 && x<width && y>=0 && y<height;
 
-// 爆炸抛射粒子（临时火星）
 const sparks = [];
 class Spark {
-    constructor(x,y,vx,vy) {
-        this.x=x; this.y=y; this.vx=vx; this.vy=vy;
-        this.life=20; // 落地前寿命
+constructor(x,y,vx,vy,restoreId=0){
+this.x=x; this.y=y; this.vx=vx; this.vy=vy;
+this.life=20;
+this.restoreId=restoreId;
+}
+update(){
+this.x+=this.vx; this.y+=this.vy;
+this.vy+=0.2;
+this.life--;
+if(this.y>=height-1 || this.life<=0){
+const ix=Math.floor(this.x), iy=Math.floor(this.y);
+if(inBounds(ix,iy)){
+const i=idx(ix,iy);
+if(grid[i]===0){
+const el=Object.values(ELEMENTS).find(e=>e.id===this.restoreId);
+if(el && (el.type===TYPES.LIQUID||el.type===TYPES.POWDER||el.type===TYPES.HEAVY_SOLID)) grid[i]=this.restoreId;
+else grid[i]=ELEMENTS.FIRE.id;
+}
+}
+return true;
+}
+return false;
+}
+}
+
+// 新增：石头被炸飞的效果
+class FlyingStone {
+constructor(x, y, vx, vy) {
+this.x = x;
+this.y = y;
+this.vx = vx;
+this.vy = vy;
+this.life = FLYING_STONE_TTL;
+this.startTime = performance.now();
+}
+
+update() {
+const now = performance.now();
+const elapsed = now - this.startTime;
+this.life = FLYING_STONE_TTL - elapsed;
+
+if (this.life <= 0) {
+// 落地变成沙子
+const ix = Math.floor(this.x);
+const iy = Math.floor(this.y);
+if (inBounds(ix, iy)) {
+const i = idx(ix, iy);
+if (grid[i] === 0) {
+grid[i] = ELEMENTS.SAND.id;
+}
+}
+return true;
+}
+
+// 更新位置（抛物线运动）
+this.x += this.vx;
+this.y += this.vy;
+this.vy += 0.2; // 重力
+
+// 边界检查
+if (this.x < 0 || this.x >= width || this.y >= height) {
+// 出界变成沙子
+const ix = Math.max(0, Math.min(width - 1, Math.floor(this.x)));
+const iy = Math.max(0, Math.min(height - 1, Math.floor(this.y)));
+if (inBounds(ix, iy)) {
+const i = idx(ix, iy);
+if (grid[i] === 0) {
+grid[i] = ELEMENTS.SAND.id;
+}
+}
+return true;
+}
+
+// 碰撞检查
+const ix = Math.floor(this.x);
+const iy = Math.floor(this.y);
+if (inBounds(ix, iy)) {
+const i = idx(ix, iy);
+if (grid[i] !== 0 && grid[i] !== ELEMENTS.AIR.id) {
+// 碰到其他元素，变成沙子
+grid[i] = ELEMENTS.SAND.id;
+return true;
+}
+}
+
+return false;
+}
+}
+
+function addShockWave(cx,cy,r,strength){
+const r2=r*r;
+for(let dy=-r;dy<=r;dy++){
+for(let dx=-r;dx<=r;dx++){
+const tx=cx+dx,ty=cy+dy;
+if(!inBounds(tx,ty)) continue;
+const d2=dx*dx+dy*dy;
+if(d2>r2) continue;
+const i=idx(tx,ty);
+const s = Math.floor(strength * (1 - Math.sqrt(d2)/r));
+window.shockWave[i] = Math.min(255, window.shockWave[i] + s);
+
+// 新增：石头被冲击波炸飞
+const elemId = grid[i];
+if (elemId === ELEMENTS.STONE.id) {
+// 石头被炸飞，变成沙子
+grid[i] = ELEMENTS.SAND.id;
+
+// 添加飞行的石头效果
+const force = strength * (1 - Math.sqrt(d2)/r) * 0.1;
+const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.5;
+const vx = Math.cos(angle) * force;
+const vy = Math.sin(angle) * force - 1.5;
+
+flyingStones.positions.push([tx, ty]);
+flyingStones.velocitiesX.push(vx);
+flyingStones.velocitiesY.push(vy);
+flyingStones.timestamps.push(performance.now());
+}
+}
+}
+}
+
+function decayShockWave(){
+for(let i=0;i<window.shockWave.length;i++){
+if(window.shockWave[i]>0) window.shockWave[i] = Math.max(0, window.shockWave[i] - 8);
+}
+}
+
+// 更新飞行的石头
+function updateFlyingStones() {
+for (let i = flyingStones.positions.length - 1; i >= 0; i--) {
+const now = performance.now();
+const elapsed = now - flyingStones.timestamps[i];
+
+if (elapsed > FLYING_STONE_TTL) {
+// 飞行时间结束，变成沙子
+const [x, y] = flyingStones.positions[i];
+const ix = Math.floor(x);
+const iy = Math.floor(y);
+if (inBounds(ix, iy)) {
+const idxPos = idx(ix, iy);
+if (grid[idxPos] === 0) {
+grid[idxPos] = ELEMENTS.SAND.id;
+}
+}
+
+flyingStones.positions.splice(i, 1);
+flyingStones.velocitiesX.splice(i, 1);
+flyingStones.velocitiesY.splice(i, 1);
+flyingStones.timestamps.splice(i, 1);
+continue;
+}
+
+// 更新位置
+let [x, y] = flyingStones.positions[i];
+let vx = flyingStones.velocitiesX[i];
+let vy = flyingStones.velocitiesY[i];
+
+// 应用重力
+vy += 0.2;
+
+// 更新位置
+x += vx;
+y += vy;
+
+// 边界检查
+if (x < 0 || x >= width || y >= height) {
+// 出界变成沙子
+const ix = Math.max(0, Math.min(width - 1, Math.floor(x)));
+const iy = Math.max(0, Math.min(height - 1, Math.floor(y)));
+if (inBounds(ix, iy)) {
+const idxPos = idx(ix, iy);
+if (grid[idxPos] === 0) {
+grid[idxPos] = ELEMENTS.SAND.id;
+}
+}
+
+flyingStones.positions.splice(i, 1);
+flyingStones.velocitiesX.splice(i, 1);
+flyingStones.velocitiesY.splice(i, 1);
+flyingStones.timestamps.splice(i, 1);
+continue;
+}
+
+// 碰撞检查
+const ix = Math.floor(x);
+const iy = Math.floor(y);
+if (inBounds(ix, iy)) {
+const idxPos = idx(ix, iy);
+const elemId = grid[idxPos];
+
+if (elemId !== 0 && elemId !== ELEMENTS.AIR.id) {
+// 碰到其他元素，变成沙子
+grid[idxPos] = ELEMENTS.SAND.id;
+
+flyingStones.positions.splice(i, 1);
+flyingStones.velocitiesX.splice(i, 1);
+flyingStones.velocitiesY.splice(i, 1);
+flyingStones.timestamps.splice(i, 1);
+continue;
+}
+}
+
+// 保存更新后的位置和速度
+flyingStones.positions[i] = [x, y];
+flyingStones.velocitiesX[i] = vx;
+flyingStones.velocitiesY[i] = vy;
+}
+}
+
+// ================ 温度系统函数 ================
+function updateTemperature() {
+if (!temperatureSystemEnabled) return;
+    
+const transferRate = heatTransferSpeed * 0.02;
+const ambientEffect = 0.01;
+    
+const newTemps = new Float32Array(temperatures);
+    
+for (let i = 0; i < grid.length; i++) {
+if (grid[i] === 0) continue;
+        
+const x = i % width;
+const y = Math.floor(i / width);
+const elem = Object.values(ELEMENTS).find(e => e.id === grid[i]);
+if (!elem) continue;
+        
+if (elem.heatResistance >= 0.95) continue;
+        
+const currentTemp = temperatures[i];
+let totalTemp = 0;
+let neighborCount = 0;
+        
+const neighbors = [
+idx(x, y-1), idx(x, y+1), 
+idx(x-1, y), idx(x+1, y)
+];
+        
+for (const ni of neighbors) {
+if (ni !== -1) {
+const neighborElem = Object.values(ELEMENTS).find(e => e.id === grid[ni]);
+if (neighborElem && neighborElem.heatResistance < 0.95) {
+totalTemp += temperatures[ni];
+neighborCount++;
+}
+}
+}
+        
+if (neighborCount > 0) {
+const avgTemp = totalTemp / neighborCount;
+const tempDiff = avgTemp - currentTemp;
+const heatTransfer = tempDiff * transferRate * (1 - elem.heatResistance);
+            
+newTemps[i] += heatTransfer;
+newTemps[i] += (ambientTemperature - newTemps[i]) * ambientEffect;
+}
+        
+if (elem.heatEmission) {
+newTemps[i] += elem.heatEmission * 0.1;
+}
+        
+applyTemperatureEffects(i, x, y, newTemps[i]);
+}
+    
+temperatures.set(newTemps);
+    
+for (let i = 0; i < temperatures.length; i++) {
+if (temperatures[i] < -100) temperatures[i] = -100;
+if (temperatures[i] > 2000) temperatures[i] = 2000;
+}
+}
+
+function applyTemperatureEffects(i, x, y, temp) {
+const elemId = grid[i];
+const elem = Object.values(ELEMENTS).find(e => e.id === elemId);
+if (!elem) return;
+    
+// 冰融化（当温度大于0°C时）
+if (elemId === ELEMENTS.ICE.id && temp > 0) {
+grid[i] = ELEMENTS.WATER.id;
+temperatures[i] = Math.max(temp, 5);
+return;
+}
+    
+// 水结冰（当温度小于等于0°C时）
+if (elemId === ELEMENTS.WATER.id && temp <= 0) {
+grid[i] = ELEMENTS.ICE.id;
+temperatures[i] = Math.min(temp, -5);
+return;
+}
+    
+// 水沸腾变成蒸汽
+if (elemId === ELEMENTS.WATER.id && elem.boilsAt && temp > elem.boilsAt) {
+if (Math.random() < 0.05) {
+grid[i] = ELEMENTS.STEAM.id;
+temperatures[i] = 120;
+}
+return;
+}
+    
+// 蒸汽凝结
+if (elemId === ELEMENTS.STEAM.id && elem.condensesAt && temp < elem.condensesAt) {
+grid[i] = ELEMENTS.WATER.id;
+temperatures[i] = Math.min(temp, 95);
+return;
+}
+    
+// 物质燃烧
+if (elem.flammable && elem.ignitesAt && temp > elem.ignitesAt) {
+if (Math.random() < 0.01) {
+grid[i] = ELEMENTS.FIRE.id;
+temperatures[i] = 500;
+markAsDestroyed(i);
+removeGrowthRecords(i);
+}
+return;
+}
+    
+// 沙子熔化形成玻璃
+if (elemId === ELEMENTS.SAND.id && elem.meltsAt && temp > elem.meltsAt) {
+if (Math.random() < 0.001) {
+grid[i] = ELEMENTS.GLASS.id;
+}
+return;
+}
+    
+// 生命死亡
+if (elemId === ELEMENTS.LIFE.id) {
+if ((elem.diesAt && temp > elem.diesAt) || (elem.freezeAt && temp < elem.freezeAt)) {
+if (Math.random() < 0.01) {
+grid[i] = 0;
+removeGrowthRecords(i);
+}
+}
+}
+}
+
+function toggleTemperatureSystem() {
+temperatureSystemEnabled = document.getElementById('tempToggle').checked;
+tempDisplay.textContent = temperatureSystemEnabled ? 
+`温度系统: 开启 (${ambientTemperature}°C)` : '温度系统: 关闭';
+    
+if (!temperatureSystemEnabled) {
+temperatures.fill(ambientTemperature);
+}
+}
+
+// 温度UI控制
+document.getElementById('heatTransferSpeed').addEventListener('input', function() {
+heatTransferSpeed = parseInt(this.value);
+document.getElementById('heatTransferValue').textContent = heatTransferSpeed;
+});
+
+document.getElementById('ambientTemp').addEventListener('input', function() {
+ambientTemperature = parseInt(this.value);
+document.getElementById('ambientTempValue').textContent = `${ambientTemperature}°C`;
+tempDisplay.textContent = temperatureSystemEnabled ? 
+`温度系统: 开启 (${ambientTemperature}°C)` : '温度系统: 关闭';
+    
+if (!temperatureSystemEnabled) {
+temperatures.fill(ambientTemperature);
+}
+});
+
+// ================ 气体改进函数 ================
+// 改进的气体移动函数 - 随机上下左右移动，但倾向于向上
+function updateGasImproved(x, y, i, elem) {
+// 火焰和烟雾的特殊处理
+if (elem.id === ELEMENTS.FIRE.id) {
+updateFireImproved(x, y, i);
+return;
+}
+if (elem.id === ELEMENTS.SMOKE.id) {
+updateSmokeImproved(x, y, i);
+return;
+}
+if (elem.id === ELEMENTS.FUEL_GAS.id) {
+updateFuelGasImproved(x, y, i);
+return;
+}
+if (elem.id === ELEMENTS.GAS.id) {
+updateSteamImproved(x, y, i);
+return;
+}
+    
+// 普通气体（空气等）的随机移动
+const directions = [
+[0, -1, 0.4],  // 上，40%概率
+[0, 1, 0.1],   // 下，10%概率
+[-1, 0, 0.25], // 左，25%概率
+[1, 0, 0.25]   // 右，25%概率
+];
+    
+// 按概率选择方向
+let rand = Math.random();
+let selectedDir = [0, 0];
+for (const [dx, dy, prob] of directions) {
+if (rand < prob) {
+selectedDir = [dx, dy];
+break;
+}
+rand -= prob;
+}
+    
+const newX = x + selectedDir[0];
+const newY = y + selectedDir[1];
+    
+if (inBounds(newX, newY)) {
+const ni = idx(newX, newY);
+if (grid[ni] === 0) {
+swap(i, ni);
+}
+}
+}
+
+function updateFireImproved(x, y, i) {
+// 火焰生命周期
+if (Math.random() < 0.12) { 
+grid[i] = ELEMENTS.SMOKE.id; 
+return; 
+}
+    
+// 火焰产生热量
+if (temperatureSystemEnabled) {
+temperatures[i] = Math.min(800, temperatures[i] + 5);
+}
+    
+// 火焰传播
+const around = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]];
+for (let [dx, dy] of around) {
+const ni = idx(x + dx, y + dy);
+if (!inBounds(x + dx, y + dy)) continue;
+const neighborId = grid[ni];
+if (neighborId === ELEMENTS.LAVA.id) continue;
+const neighbor = Object.values(ELEMENTS).find(e => e.id === neighborId);
+if (neighbor && neighbor.flammable && Math.random() < 0.25) {
+grid[ni] = ELEMENTS.FIRE.id;
+markAsDestroyed(ni);
+removeGrowthRecords(ni);
+}
+if (neighbor && neighbor.meltable && Math.random() < 0.15) grid[ni] = ELEMENTS.WATER.id;
+}
+    
+// 火焰向上飘，但有一定随机性
+const dirs = [
+[0, -1, 0.6],  // 向上概率60%
+[-1, -1, 0.15], // 左上概率15%
+[1, -1, 0.15],  // 右上概率15%
+[-1, 0, 0.05],  // 左概率5%
+[1, 0, 0.05]    // 右概率5%
+];
+    
+let rand = Math.random();
+let selectedDir = [0, 0];
+for (const [dx, dy, prob] of dirs) {
+if (rand < prob) {
+selectedDir = [dx, dy];
+break;
+}
+rand -= prob;
+}
+    
+const newX = x + selectedDir[0];
+const newY = y + selectedDir[1];
+    
+if (inBounds(newX, newY)) {
+const ni = idx(newX, newY);
+if (grid[ni] === 0 || isLiquid(grid[ni]) || isWaterLike(grid[ni])) {
+swap(i, ni);
+}
+}
+}
+
+function updateSmokeImproved(x, y, i) {
+if (Math.random() < 0.012) { 
+grid[i] = 0; 
+return; 
+}
+    
+// 烟雾向上飘，更随机
+const dirs = [
+[0, -1, 0.5],  // 向上50%
+[-1, -1, 0.2], // 左上20%
+[1, -1, 0.2],  // 右上20%
+[-1, 0, 0.05], // 左5%
+[1, 0, 0.05]   // 右5%
+];
+    
+let rand = Math.random();
+let selectedDir = [0, 0];
+for (const [dx, dy, prob] of dirs) {
+if (rand < prob) {
+selectedDir = [dx, dy];
+break;
+}
+rand -= prob;
+}
+    
+const newX = x + selectedDir[0];
+const newY = y + selectedDir[1];
+    
+if (inBounds(newX, newY)) {
+const ni = idx(newX, newY);
+if (grid[ni] === 0) {
+swap(i, ni);
+}
+}
+}
+
+function updateFuelGasImproved(x, y, i) {
+// 检查是否接触火焰
+const aroundFire = [[0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => {
+const ni = idx(x + dx, y + dy);
+return inBounds(x + dx, y + dy) && grid[ni] === ELEMENTS.FIRE.id;
+});
+    
+if (aroundFire) {
+grid[i] = 0;
+for (let dy2 = -1; dy2 <= 1; dy2++) {
+for (let dx2 = -1; dx2 <= 1; dx2++) {
+const tx = x + dx2, ty = y + dy2;
+if (!inBounds(tx, ty)) continue;
+const ti = idx(tx, ty);
+const target = grid[ti];
+const targetElem = Object.values(ELEMENTS).find(e => e.id === target);
+if (target === ELEMENTS.WALL.id) { grid[ti] = ELEMENTS.STONE.id; continue; }
+if (target === 0 || !targetElem || targetElem.type !== TYPES.SOLID) {
+const vx = (dx2 + Math.random() * 0.4 - 0.2) * 0.7;
+const vy = (dy2 + Math.random() * 0.4 - 0.2) * 0.7 - 0.8;
+sparks.push(new Spark(tx, ty, vx, vy, target));
+if (grid[ti] === 0) grid[ti] = ELEMENTS.FIRE.id;
+}
+}
+}
+return;
+}
+    
+// 燃气向上飘，随机性更强
+const dirs = [
+[0, -1, 0.0],  // 向上40%
+[-1, 0, 0.2],  // 左20%
+[1, 0, 0.2],   // 右20%
+[-1, -1, 0.1], // 左上10%
+[1, -1, 0.1]   // 右上10%
+];
+    
+let rand = Math.random();
+let selectedDir = [0, 0];
+for (const [dx, dy, prob] of dirs) {
+if (rand < prob) {
+selectedDir = [dx, dy];
+break;
+}
+rand -= prob;
+}
+    
+const newX = x + selectedDir[0];
+const newY = y + selectedDir[1];
+    
+if (inBounds(newX, newY)) {
+const ni = idx(newX, newY);
+const tgt = grid[ni];
+const tgtEl = Object.values(ELEMENTS).find(e => e.id === tgt);
+if (tgt === 0 || tgtEl?.type === TYPES.LIQUID || tgtEl?.type === TYPES.POWDER) { 
+swap(i, ni); 
+return; 
+}
+}
+}
+
+function updateSteamImproved(x, y, i) {
+    // 蒸汽像云雾一样扩散，随机性更强
+    const dirs = [
+        [0, -1, 0.35],   // 向上35% (温度高时上升)
+        [-1, -1, 0.08],  // 左上8%
+        [1, -1, 0.08],   // 右上8%
+        [-1, 0, 0.16],   // 左16%
+        [1, 0, 0.16],    // 右16%
+        [0, 1, 0.1],     // 向下10% (温度下降时)
+        [-1, 1, 0.05],   // 左下5%
+        [1, 1, 0.05]     // 右下5%
+    ];
+    
+    // 如果温度较高，更倾向于向上
+    if (temperatureSystemEnabled && temperatures[i] > 120) {
+        dirs[0][2] = 0.45;  // 向上概率增加到45%
+        dirs[5][2] = 0.05;  // 向下概率减少到5%
     }
-    update() {
-        this.x+=this.vx; this.y+=this.vy;
-        this.vy+=0.2; // 重力
-        this.life--;
-        if(this.y>=height-1 || this.life<=0) {
-            // 落地转火焰
-            const ix=Math.floor(this.x), iy=Math.floor(this.y);
-            if(inBounds(ix,iy) && grid[idx(ix,iy)]===0) grid[idx(ix,iy)]=ELEMENTS.FIRE.id;
-            return true;
+    
+    let rand = Math.random();
+    let selectedDir = [0, 0];
+    for (const [dx, dy, prob] of dirs) {
+        if (rand < prob) {
+            selectedDir = [dx, dy];
+            break;
         }
-        return false;
+        rand -= prob;
     }
+    
+    const newX = x + selectedDir[0];
+    const newY = y + selectedDir[1];
+    
+    if (inBounds(newX, newY)) {
+        const ni = idx(newX, newY);
+        const targetId = grid[ni];
+        
+        // 蒸汽可以穿过大部分气体和空位
+        if (targetId === 0 || 
+            targetId === ELEMENTS.AIR.id ||
+            targetId === ELEMENTS.SMOKE.id ||
+            targetId === ELEMENTS.GAS_FUEL.id) {
+            swap(i, ni);
+        }
+    }
+}
+
+// ================ 原有函数（保持完整） ================
+// 检查种子是否需要开始生长
+function checkSeedGrowth(x, y) {
+const i = idx(x, y);
+
+if (isRecentlyDestroyed(i)) {
+return;
+}
+
+const below = idx(x, y + 1);
+if (y + 1 < height && (grid[below] === ELEMENTS.SAND.id ||
+grid[below] === ELEMENTS.PLANT.id ||
+grid[below] === ELEMENTS.VINE.id ||
+grid[below] === ELEMENTS.STONE.id)) {
+const existingIdx = seedGrowth.positions.indexOf(i);
+if (existingIdx === -1) {
+seedGrowth.positions.push(i);
+seedGrowth.heights.push(0);
+seedGrowth.directions.push(0);
+seedGrowth.maxHeights.push(8 + Math.floor(Math.random() * (GROWTH_LIMITS.MAX_SEED_GROWTH_HEIGHT - 8 + 1)));
+seedGrowth.growthTime.push(performance.now());
+}
+}
+}
+
+// 更新种子生长
+function updateSeedGrowth(now) {
+for (let j = 0; j < seedGrowth.positions.length; j++) {
+const pos = seedGrowth.positions[j];
+const lastTime = seedGrowth.growthTime[j];
+const currentHeight = seedGrowth.heights[j];
+const currentDir = seedGrowth.directions[j];
+const maxHeight = seedGrowth.maxHeights[j];
+
+if (now - lastTime >= SEED_GROW_INTERVAL && currentHeight < maxHeight) {
+const x = pos % width;
+const y = Math.floor(pos / width);
+
+if (y - currentHeight < 0) {
+seedGrowth.heights[j] = maxHeight;
+continue;
+}
+
+const growY = y - currentHeight - 1;
+
+if (growY >= 0) {
+const growIdx = idx(x, growY);
+if (isRecentlyDestroyed(growIdx)) {
+continue;
+}
+
+let newDir = currentDir;
+if (Math.random() < 0.3) {
+newDir = Math.floor(Math.random() * 3) - 1;
+}
+
+const newX = Math.max(0, Math.min(width - 1, x + newDir));
+const finalGrowIdx = idx(newX, growY);
+
+if (isRecentlyDestroyed(finalGrowIdx)) {
+continue;
+}
+
+if (grid[finalGrowIdx] === 0) {
+if (Math.random() < 0.7) {
+grid[finalGrowIdx] = ELEMENTS.PLANT.id;
+} else {
+grid[finalGrowIdx] = ELEMENTS.VINE.id;
+vineGrowth.positions.push(finalGrowIdx);
+vineGrowth.lastGrowTime.push(now);
+vineGrowth.directions.push(newDir);
+vineGrowth.spreadCount.push(0);
+}
+
+seedGrowth.heights[j] = currentHeight + 1;
+seedGrowth.directions[j] = newDir;
+seedGrowth.growthTime[j] = now;
+
+if (Math.random() < 0.2 && currentHeight > 3) {
+const leafDir = Math.random() > 0.5 ? 1 : -1;
+const leafX = Math.max(0, Math.min(width - 1, newX + leafDir));
+const leafIdx = idx(leafX, growY);
+if (grid[leafIdx] === 0 && !isRecentlyDestroyed(leafIdx)) {
+grid[leafIdx] = ELEMENTS.LEAF.id;
+}
+}
+
+if (seedGrowth.heights[j] === maxHeight) {
+grid[finalGrowIdx] = ELEMENTS.FLOWER.id;
+seedGrowth.positions.splice(j, 1);
+seedGrowth.heights.splice(j, 1);
+seedGrowth.directions.splice(j, 1);
+seedGrowth.maxHeights.splice(j, 1);
+seedGrowth.growthTime.splice(j, 1);
+j--;
+}
+}
+}
+}
+}
+}
+
+// 检查植物是否接触水并开始吸收
+function checkPlantWaterAbsorption(x, y) {
+const i = idx(x, y);
+const elemId = grid[i];
+
+if (elemId !== ELEMENTS.PLANT.id &&
+elemId !== ELEMENTS.FLOWER.id ||
+elemId !== ELEMENTS.VINE.id ||
+elemId !== ELEMENTS.LEAF.id) {
+return;
+}
+
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y]
+];
+
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+if (grid[ni] === ELEMENTS.WATER.id) {
+const existingIdx = plantWaterGrowth.positions.indexOf(i);
+if (existingIdx === -1) {
+plantWaterGrowth.positions.push(i);
+plantWaterGrowth.waterCount.push(1);
+plantWaterGrowth.lastAbsorbTime.push(performance.now());
+plantWaterGrowth.growDirections.push(Math.floor(Math.random() * 3) - 1);
+plantWaterGrowth.maxAbsorbCount.push(GROWTH_LIMITS.MAX_ABSORB_COUNT);
+} else {
+plantWaterGrowth.lastAbsorbTime[existingIdx] = performance.now();
+}
+break;
+}
+}
+}
+}
+
+// 更新植物吸水生长
+function updatePlantWaterGrowth(now) {
+for (let j = 0; j < plantWaterGrowth.positions.length; j++) {
+const pos = plantWaterGrowth.positions[j];
+const lastTime = plantWaterGrowth.lastAbsorbTime[j];
+const waterCount = plantWaterGrowth.waterCount[j];
+const growDir = plantWaterGrowth.growDirections[j];
+const maxAbsorbCount = plantWaterGrowth.maxAbsorbCount[j];
+
+if (waterCount >= maxAbsorbCount) {
+plantWaterGrowth.positions.splice(j, 1);
+plantWaterGrowth.waterCount.splice(j, 1);
+plantWaterGrowth.lastAbsorbTime.splice(j, 1);
+plantWaterGrowth.growDirections.splice(j, 1);
+plantWaterGrowth.maxAbsorbCount.splice(j, 1);
+j--;
+continue;
+}
+
+if (now - lastTime >= PLANT_ABSORB_INTERVAL) {
+const x = pos % width;
+const y = Math.floor(pos / width);
+
+let waterFound = false;
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y]
+];
+
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+if (grid[ni] === ELEMENTS.WATER.id) {
+waterFound = true;
+
+if (Math.random() < 0.6) {
+if (isRecentlyDestroyed(ni)) {
+grid[ni] = 0;
+} else {
+const rand = Math.random();
+if (rand < 0.4) {
+grid[ni] = ELEMENTS.PLANT.id;
+} else if (rand < 0.7) {
+grid[ni] = ELEMENTS.VINE.id;
+} else {
+if (Math.random() < 0.1) {
+grid[ni] = ELEMENTS.FLOWER.id;
+} else {
+grid[ni] = ELEMENTS.LEAF.id;
+}
+}
+}
+
+plantWaterGrowth.waterCount[j]++;
+
+if (Math.random() < 0.3 && waterCount < maxAbsorbCount - 2) {
+const upX = Math.max(0, Math.min(width - 1, x + growDir));
+const upY = y - 1;
+if (upY >= 0) {
+const upIdx = idx(upX, upY);
+if (grid[upIdx] === 0 && !isRecentlyDestroyed(upIdx)) {
+if (Math.random() < 0.5) {
+grid[upIdx] = ELEMENTS.PLANT.id;
+} else {
+grid[upIdx] = ELEMENTS.VINE.id;
+}
+plantWaterGrowth.waterCount[j]++;
+}
+}
+}
+} else {
+grid[ni] = 0;
+plantWaterGrowth.waterCount[j]++;
+}
+
+plantWaterGrowth.lastAbsorbTime[j] = now;
+break;
+}
+}
+}
+
+if (!waterFound) {
+plantWaterGrowth.positions.splice(j, 1);
+plantWaterGrowth.waterCount.splice(j, 1);
+plantWaterGrowth.lastAbsorbTime.splice(j, 1);
+plantWaterGrowth.growDirections.splice(j, 1);
+plantWaterGrowth.maxAbsorbCount.splice(j, 1);
+j--;
+}
+}
+}
+}
+
+// 更新藤蔓生长
+function updateVineGrowth(now) {
+for (let j = 0; j < vineGrowth.positions.length; j++) {
+const pos = vineGrowth.positions[j];
+const lastTime = vineGrowth.lastGrowTime[j];
+const dir = vineGrowth.directions[j];
+const spreadCount = vineGrowth.spreadCount[j];
+
+if (spreadCount >= GROWTH_LIMITS.MAX_VINE_SPREAD) {
+vineGrowth.positions.splice(j, 1);
+vineGrowth.lastGrowTime.splice(j, 1);
+vineGrowth.directions.splice(j, 1);
+vineGrowth.spreadCount.splice(j, 1);
+j--;
+continue;
+}
+
+if (now - lastTime >= VINE_GROW_INTERVAL) {
+const x = pos % width;
+const y = Math.floor(pos / width);
+
+const possibleDirections = [
+[x, y - 1, 0],
+[x - 1, y, -1],
+[x + 1, y, 1]
+];
+
+const randomIndex = Math.floor(Math.random() * possibleDirections.length);
+const [newX, newY, newDir] = possibleDirections[randomIndex];
+
+if (inBounds(newX, newY)) {
+const newIdx = idx(newX, newY);
+if (grid[newIdx] === 0) {
+if (isRecentlyDestroyed(newIdx)) {
+vineGrowth.lastGrowTime[j] = now;
+continue;
+}
+
+if (Math.random() < 0.5) {
+grid[newIdx] = ELEMENTS.VINE.id;
+
+vineGrowth.positions[j] = newIdx;
+vineGrowth.directions[j] = newDir;
+vineGrowth.spreadCount[j] = spreadCount + 1;
+vineGrowth.lastGrowTime[j] = now;
+
+if (Math.random() < 0.2) {
+const leafDir = Math.random() > 0.5 ? 1 : -1;
+const leafX = Math.max(0, Math.min(width - 1, newX + leafDir));
+const leafIdx = idx(leafX, newY);
+if (inBounds(leafX, newY) && grid[leafIdx] === 0 && !isRecentlyDestroyed(leafIdx)) {
+grid[leafIdx] = ELEMENTS.LEAF.id;
+}
+}
+}
+}
+}
+
+vineGrowth.lastGrowTime[j] = now;
+}
+}
+}
+
+// 检查克隆元素并开始复制周围元素
+function checkCloneElement(x, y) {
+const i = idx(x, y);
+
+const existingIdx = cloneElements.positions.indexOf(i);
+if (existingIdx === -1) {
+cloneElements.positions.push(i);
+cloneElements.lastCopyTime.push(performance.now());
+cloneElements.targetElements.push(0);
+cloneElements.copyCount.push(0);
+cloneElements.maxCopyCount.push(MAX_CLONE_COUNT);
+}
+}
+
+// 更新克隆元素
+function updateCloneElements(now) {
+for (let j = 0; j < cloneElements.positions.length; j++) {
+const pos = cloneElements.positions[j];
+const lastTime = cloneElements.lastCopyTime[j];
+let targetElement = cloneElements.targetElements[j];
+const copyCount = cloneElements.copyCount[j];
+const maxCopyCount = cloneElements.maxCopyCount[j];
+
+if (copyCount >= maxCopyCount) {
+cloneElements.positions.splice(j, 1);
+cloneElements.lastCopyTime.splice(j, 1);
+cloneElements.targetElements.splice(j, 1);
+cloneElements.copyCount.splice(j, 1);
+cloneElements.maxCopyCount.splice(j, 1);
+j--;
+continue;
+}
+
+if (now - lastTime >= CLONE_COPY_INTERVAL) {
+const x = pos % width;
+const y = Math.floor(pos / width);
+
+if (targetElement === 0) {
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y],
+[x + 1, y + 1],
+[x - 1, y + 1],
+[x + 1, y - 1],
+[x - 1, y - 1]
+];
+
+const nearbyElements = [];
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+const elemId = grid[ni];
+if (elemId !== 0 && elemId !== ELEMENTS.CLONE.id && elemId !== ELEMENTS.ERASER.id) {
+nearbyElements.push(elemId);
+}
+}
+}
+
+if (nearbyElements.length > 0) {
+targetElement = nearbyElements[Math.floor(Math.random() * nearbyElements.length)];
+cloneElements.targetElements[j] = targetElement;
+} else {
+cloneElements.lastCopyTime[j] = now;
+continue;
+}
+}
+
+const emptySpots = [];
+const neighborOffsets = [
+[0, 1],
+[0, -1],
+[1, 0],
+[-1, 0],
+[1, 1],
+[-1, 1],
+[1, -1],
+[-1, -1]
+];
+
+for (const [dx, dy] of neighborOffsets) {
+const nx = x + dx;
+const ny = y + dy;
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+if (grid[ni] === 0 ||
+grid[ni] === ELEMENTS.SMOKE.id ||
+grid[ni] === ELEMENTS.GAS_FUEL.id) {
+emptySpots.push([nx, ny, ni]);
+}
+}
+}
+
+if (emptySpots.length > 0) {
+const numCopies = Math.min(emptySpots.length, Math.floor(Math.random() * 3) + 1);
+
+for (let k = 0; k < numCopies; k++) {
+if (emptySpots.length === 0) break;
+
+const randomIndex = Math.floor(Math.random() * emptySpots.length);
+const [copyX, copyY, copyIdx] = emptySpots[randomIndex];
+
+grid[copyIdx] = targetElement;
+
+emptySpots.splice(randomIndex, 1);
+
+cloneElements.copyCount[j]++;
+
+if (targetElement === ELEMENTS.SEED.id) {
+checkSeedGrowth(copyX, copyY);
+}
+
+if (targetElement === ELEMENTS.PLANT.id ||
+targetElement === ELEMENTS.FLOWER.id ||
+targetElement === ELEMENTS.VINE.id ||
+targetElement === ELEMENTS.LEAF.id) {
+checkPlantWaterAbsorption(copyX, copyY);
+}
+}
+
+cloneElements.lastCopyTime[j] = now;
+} else {
+cloneElements.lastCopyTime[j] = now;
+}
+}
+}
+}
+
+// 检查生命元素
+function checkLifeElement(x, y) {
+const i = idx(x, y);
+
+const existingIdx = lifeElements.positions.indexOf(i);
+if (existingIdx === -1) {
+lifeElements.positions.push(i);
+lifeElements.lastMoveTime.push(performance.now());
+lifeElements.directions.push(Math.floor(Math.random() * 3) - 1); // -1, 0, 1
+lifeElements.hunger.push(LIFE_MAX_HUNGER / 2); // 初始半饱
+lifeElements.age.push(0);
+lifeElements.health.push(LIFE_MAX_HEALTH);
+}
+}
+
+// 更新生命元素
+function updateLifeElements(now) {
+for (let j = 0; j < lifeElements.positions.length; j++) {
+const pos = lifeElements.positions[j];
+const lastTime = lifeElements.lastMoveTime[j];
+let dir = lifeElements.directions[j];
+let hunger = lifeElements.hunger[j];
+let age = lifeElements.age[j];
+let health = lifeElements.health[j];
+
+// 增加年龄
+age += 1;
+if (age > LIFE_MAX_AGE) {
+// 死亡，变成空气
+grid[pos] = 0;
+lifeElements.positions.splice(j, 1);
+lifeElements.lastMoveTime.splice(j, 1);
+lifeElements.directions.splice(j, 1);
+lifeElements.hunger.splice(j, 1);
+lifeElements.age.splice(j, 1);
+lifeElements.health.splice(j, 1);
+j--;
+continue;
+}
+
+// 减少饥饿值
+hunger -= 0.5;
+if (hunger <= 0) {
+// 饿死，变成空气
+grid[pos] = 0;
+lifeElements.positions.splice(j, 1);
+lifeElements.lastMoveTime.splice(j, 1);
+lifeElements.directions.splice(j, 1);
+lifeElements.hunger.splice(j, 1);
+lifeElements.age.splice(j, 1);
+lifeElements.health.splice(j, 1);
+j--;
+continue;
+}
+
+// 检查是否应该移动
+if (now - lastTime >= LIFE_MOVE_INTERVAL) {
+const x = pos % width;
+const y = Math.floor(pos / width);
+
+// 检查周围是否有植物可以吃
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y]
+];
+
+let atePlant = false;
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+const elemId = grid[ni];
+// 可以吃的植物
+if (elemId === ELEMENTS.PLANT.id ||
+elemId === ELEMENTS.FLOWER.id ||
+elemId === ELEMENTS.VINE.id ||
+elemId === ELEMENTS.LEAF.id ||
+elemId === ELEMENTS.SEED.id) {
+// 吃掉植物
+grid[ni] = 0;
+destroyPlantAt(nx, ny);
+hunger = Math.min(LIFE_MAX_HUNGER, hunger + 30); // 增加饥饿值
+atePlant = true;
+break;
+}
+}
+}
+
+if (!atePlant) {
+// 随机移动
+if (Math.random() < 0.3) { // 30%概率改变方向
+dir = Math.floor(Math.random() * 3) - 1;
+lifeElements.directions[j] = dir;
+}
+
+// 尝试移动
+const moveX = Math.max(0, Math.min(width - 1, x + dir));
+const moveIdx = idx(moveX, y);
+
+// 检查是否可以移动
+if (grid[moveIdx] === 0) {
+// 移动到新位置
+grid[pos] = 0;
+grid[moveIdx] = ELEMENTS.LIFE.id;
+lifeElements.positions[j] = moveIdx;
+
+// 检查繁殖
+if (Math.random() < LIFE_BREED_CHANCE) {
+// 检查周围是否有空位繁殖
+const breedSpots = [];
+const breedOffsets = [
+[0, 1], [0, -1], [1, 0], [-1, 0]
+];
+
+for (const [dx, dy] of breedOffsets) {
+const bx = moveX + dx;
+const by = y + dy;
+if (inBounds(bx, by)) {
+const bi = idx(bx, by);
+if (grid[bi] === 0) {
+breedSpots.push([bx, by, bi]);
+}
+}
+}
+
+if (breedSpots.length > 0 && hunger > LIFE_MAX_HUNGER * 0.7) {
+// 繁殖一个新生命
+const randomSpot = breedSpots[Math.floor(Math.random() * breedSpots.length)];
+const [bx, by, bi] = randomSpot;
+grid[bi] = ELEMENTS.LIFE.id;
+hunger -= 20; // 繁殖消耗能量
+
+// 记录新生命
+lifeElements.positions.push(bi);
+lifeElements.lastMoveTime.push(now);
+lifeElements.directions.push(Math.floor(Math.random() * 3) - 1);
+lifeElements.hunger.push(LIFE_MAX_HUNGER * 0.5);
+lifeElements.age.push(0);
+lifeElements.health.push(LIFE_MAX_HEALTH);
+}
+}
+} else {
+// 不能移动，尝试向上或向下
+const tryUp = y - 1 >= 0 ? idx(moveX, y - 1) : -1;
+const tryDown = y + 1 < height ? idx(moveX, y + 1) : -1;
+
+if (tryUp !== -1 && grid[tryUp] === 0) {
+// 向上跳
+grid[pos] = 0;
+grid[tryUp] = ELEMENTS.LIFE.id;
+lifeElements.positions[j] = tryUp;
+} else if (tryDown !== -1 && grid[tryDown] === 0) {
+// 向下跳
+grid[pos] = 0;
+grid[tryDown] = ELEMENTS.LIFE.id;
+lifeElements.positions[j] = tryDown;
+}
+}
+}
+
+// 更新状态
+lifeElements.hunger[j] = hunger;
+lifeElements.age[j] = age;
+lifeElements.health[j] = health;
+lifeElements.lastMoveTime[j] = now;
+}
+}
+}
+
+// 检查植物高度限制
+function checkPlantHeightLimit(x, y) {
+let height = 0;
+let currentY = y;
+
+while (currentY >= 0) {
+const currentIdx = idx(x, currentY);
+const elemId = grid[currentIdx];
+
+if (elemId === ELEMENTS.PLANT.id ||
+elemId === ELEMENTS.VINE.id ||
+elemId === ELEMENTS.LEAF.id ||
+elemId === ELEMENTS.FLOWER.id) {
+height++;
+currentY--;
+
+if (height > GROWTH_LIMITS.MAX_PLANT_HEIGHT) {
+grid[currentIdx] = 0;
+removeGrowthRecords(currentIdx);
+markAsDestroyed(currentIdx);
+}
+} else {
+break;
+}
+}
+}
+
+// 水与石油的化学反应
+function checkWaterOilReaction(x, y) {
+const i = idx(x, y);
+const elemId = grid[i];
+
+if (elemId !== ELEMENTS.WATER.id) {
+return;
+}
+
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y]
+];
+
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+if (grid[ni] === ELEMENTS.OIL.id) {
+if (Math.random() < 0.15) {
+grid[i] = ELEMENTS.OIL.id;
+return;
+}
+}
+}
+}
+}
+
+// 石油与水的化学反应
+function checkOilWaterReaction(x, y) {
+const i = idx(x, y);
+const elemId = grid[i];
+
+if (elemId !== ELEMENTS.OIL.id) {
+return;
+}
+
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y]
+];
+
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+if (grid[ni] === ELEMENTS.WATER.id) {
+if (Math.random() < 0.2) {
+grid[ni] = ELEMENTS.OIL.id;
+return;
+}
+}
+}
+}
+}
+
+// 超酸的化学反应
+function checkSuperAcidReaction(x, y) {
+const i = idx(x, y);
+const elemId = grid[i];
+
+if (elemId !== ELEMENTS.SUPER_ACID.id) {
+return;
+}
+
+const neighbors = [
+[x, y + 1],
+[x, y - 1],
+[x + 1, y],
+[x - 1, y]
+];
+
+for (const [nx, ny] of neighbors) {
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+const neighborId = grid[ni];
+
+// 超酸与水反应：水变成酸液，超酸消失
+if (neighborId === ELEMENTS.WATER.id) {
+if (Math.random() < 0.3) {
+grid[ni] = ELEMENTS.ACID.id;
+grid[i] = 0;
+return;
+}
+}
+
+// 超酸与岩浆反应：两者都变成玻璃
+if (neighborId === ELEMENTS.LAVA.id) {
+if (Math.random() < 0.5) {
+grid[ni] = ELEMENTS.GLASS.id;
+grid[i] = ELEMENTS.GLASS.id;
+return;
+}
+}
+
+// 超酸与酸液不反应
+if (neighborId === ELEMENTS.ACID.id) {
+continue;
+}
+
+// 超酸腐蚀其他所有粒子（除了基岩）
+if (neighborId !== 0 && neighborId !== ELEMENTS.AIR.id &&
+neighborId !== ELEMENTS.BEDROCK.id && neighborId !== ELEMENTS.SUPER_ACID.id) {
+// 基岩不会被腐蚀
+const neighbor = Object.values(ELEMENTS).find(e => e.id === neighborId);
+if (neighbor && !neighbor.indestructible) {
+if (Math.random() < 0.8) { // 80%腐蚀概率
+grid[ni] = 0;
+// 如果腐蚀的是植物，移除生长记录
+if (neighborId === ELEMENTS.PLANT.id ||
+neighborId === ELEMENTS.VINE.id ||
+neighborId === ELEMENTS.LEAF.id ||
+neighborId === ELEMENTS.FLOWER.id ||
+neighborId === ELEMENTS.SEED.id) {
+destroyPlantAt(nx, ny);
+}
+// 超酸本身不受影响
+}
+}
+}
+}
+}
+}
+
+// 检查位置是否最近被破坏过
+function isRecentlyDestroyed(index) {
+const now = performance.now();
+for (let i = 0; i < destroyedPlants.positions.length; i++) {
+if (destroyedPlants.positions[i] === index) {
+if (now - destroyedPlants.timestamps[i] < DESTROYED_PLANT_TTL) {
+return true;
+} else {
+destroyedPlants.positions.splice(i, 1);
+destroyedPlants.timestamps.splice(i, 1);
+i--;
+return false;
+}
+}
+}
+return false;
+}
+
+// 标记位置为被破坏
+function markAsDestroyed(index) {
+const now = performance.now();
+
+const existingIdx = destroyedPlants.positions.indexOf(index);
+if (existingIdx === -1) {
+destroyedPlants.positions.push(index);
+destroyedPlants.timestamps.push(now);
+} else {
+destroyedPlants.timestamps[existingIdx] = now;
+}
+
+cleanupDestroyedRecords(now);
+}
+
+// 清理过期的破坏记录
+function cleanupDestroyedRecords(now) {
+for (let i = destroyedPlants.positions.length - 1; i >= 0; i--) {
+if (now - destroyedPlants.timestamps[i] > DESTROYED_PLANT_TTL) {
+destroyedPlants.positions.splice(i, 1);
+destroyedPlants.timestamps.splice(i, 1);
+}
+}
+}
+
+// 当植物被破坏时，完全移除其生长状态
+function destroyPlantAt(x, y) {
+const i = idx(x, y);
+
+markAsDestroyed(i);
+removeGrowthRecords(i);
+grid[i] = 0;
 }
 
 function update() {
-    // 主循环：物理更新
-    for(let y=height-1; y>=0; y--) {
-        const startLeft = Math.random() > 0.5;
-        const xStart = startLeft ? 0 : width-1;
-        const xEnd = startLeft ? width : -1;
-        const xStep = startLeft ? 1 : -1;
-        for(let x=xStart; x!==xEnd; x+=xStep) {
-            const i = idx(x, y);
-            const id = grid[i];
-            if(id===0) continue;
-            const elem = Object.values(ELEMENTS).find(e=>e.id===id);
-            if(!elem) continue;
+if (isPaused) return;
+    
+// 更新温度系统
+updateTemperature();
+    
+decayShockWave();
+const now = performance.now();
 
-            // 火药爆炸
-            if(elem.explosive) {
-                const aroundFire = [[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy])=>{
-                    const ni = idx(x+dx,y+dy);
-                    return inBounds(x+dx,y+dy) && grid[ni]===ELEMENTS.FIRE.id;
-                });
-                if(aroundFire) {
-                    grid[i]=0; // 火药消失
-                    // 炸飞四周 + 生成火焰
-                    for(let dy2=-2; dy2<=2; dy2++) {
-                        for(let dx2=-2; dx2<=2; dx2++) {
-                            if(dx2*dx2+dy2*dy2>4) continue;
-                            const tx=x+dx2, ty=y+dy2;
-                            if(!inBounds(tx,ty)) continue;
-                            const ti=idx(tx,ty);
-                            const target=grid[ti];
-                            // 石头被炸成沙子
-                            if(target===ELEMENTS.STONE.id) {
-                                grid[ti]=ELEMENTS.SAND.id;
-                                continue;
-                            }
-                            if(target===0 || Object.values(ELEMENTS).find(e=>e.id===target)?.type!==TYPES.SOLID) {
-                                // 炸飞
-                                const vx=(dx2+Math.random()*0.4-0.2)*0.8;
-                                const vy=(dy2+Math.random()*0.4-0.2)*0.8-1;
-                                sparks.push(new Spark(tx,ty,vx,vy));
-                                // 空位留火
-                                if(grid[ti]===0) grid[ti]=ELEMENTS.FIRE.id;
-                            }
-                        }
-                    }
-                    continue;
-                }
-            }
+// 清理过期的破坏记录
+cleanupDestroyedRecords(now);
 
-            // 火焰生命 & 点燃可燃物
-            if(elem.id===ELEMENTS.FIRE.id) {
-                if(Math.random()<0.12) { grid[i]=ELEMENTS.SMOKE.id; continue; }
-                const around = [[0,1],[0,-1],[1,0],[-1,0]];
-                for(let [dx,dy] of around) {
-                    const ni = idx(x+dx, y+dy);
-                    if(!inBounds(x+dx,y+dy)) continue;
-                    const neighbor = Object.values(ELEMENTS).find(e=>e.id===grid[ni]);
-                    if(neighbor && neighbor.flammable && Math.random()<0.25) {
-                        grid[ni] = ELEMENTS.FIRE.id;
-                    }
-                }
-                updateGas(x,y,i,elem.id); continue;
-            }
-            // 烟雾缓慢消失 + 随机漂移（上升速度再慢一点）
-            if(elem.id===ELEMENTS.SMOKE.id) {
-                if(Math.random()<0.003) { grid[i]=0; continue; }
-                // 50%概率才上升
-                if(Math.random()<0.5) updateGas(x,y,i,elem.id);
-                // 横向漂移
-                if(Math.random()<0.4) { const dir=Math.random()>0.5?1:-1; const si=idx(x+dir,y); if(inBounds(x+dir,y)&&grid[si]===0) swap(i,si); }
-                continue;
-            }
-            // 酸液
-            if(elem.acidity) {
-                const around = [[0,1],[0,-1],[1,0],[-1,0]];
-                for(let [dx,dy] of around) {
-                    const ni = idx(x+dx,y+dy);
-                    if(inBounds(x+dx,y+dy) && grid[ni] && grid[ni]!==elem.id && Math.random()<0.05) { grid[ni]=0; grid[i]=0; break; }
-                }
-                updateLiquid(x,y,i,elem.id); continue;
-            }
-            // 物理运动
-            if(elem.type===TYPES.POWDER) updatePowder(x,y,i);
-            else if(elem.type===TYPES.LIQUID) updateLiquid(x,y,i,elem.id);
-            else if(elem.type===TYPES.GAS) updateGas(x,y,i,elem.id);
-        }
-    }
-    // 更新火星
-    for(let i=sparks.length-1; i>=0; i--) {
-        if(sparks[i].update()) sparks.splice(i,1);
-    }
-    draw(); animationId = requestAnimationFrame(update);
+// 更新飞行的石头
+updateFlyingStones();
+
+// 更新种子生长
+updateSeedGrowth(now);
+
+// 更新植物吸水生长
+updatePlantWaterGrowth(now);
+
+// 更新藤蔓生长
+updateVineGrowth(now);
+
+// 更新克隆元素
+updateCloneElements(now);
+
+// 更新生命元素
+updateLifeElements(now);
+
+for (let y = height - 1; y >= 0; y--) {
+const startLeft = Math.random() > 0.5;
+const xStart = startLeft ? 0 : width - 1;
+const xEnd = startLeft ? width : -1;
+const xStep = startLeft ? 1 : -1;
+for (let x = xStart; x !== xEnd; x += xStep) {
+const i = idx(x, y);
+const id = grid[i];
+if (id === 0) continue;
+const elem = Object.values(ELEMENTS).find(e => e.id === id);
+if (!elem) continue;
+
+// 检查种子是否需要开始生长
+if (elem.id === ELEMENTS.SEED.id) {
+checkSeedGrowth(x, y);
 }
 
-function updatePowder(x,y,i) {
-    const below = idx(x,y+1);
-    if(y+1<height && (grid[below]===0 || isLiquid(grid[below]))) { swap(i,below); return; }
-    const side = Math.random()>0.5?1:-1;
-    const diag = idx(x+side,y+1);
-    if(inBounds(x+side,y+1) && (grid[diag]===0 || isLiquid(grid[diag]))) swap(i,diag);
+// 检查植物是否接触水
+if (elem.id === ELEMENTS.PLANT.id ||
+elem.id === ELEMENTS.FLOWER.id ||
+elem.id === ELEMENTS.VINE.id ||
+elem.id === ELEMENTS.LEAF.id) {
+checkPlantWaterAbsorption(x, y);
+
+// 检查植物高度限制
+checkPlantHeightLimit(x, y);
 }
-function updateLiquid(x,y,i,typeId) {
-    const below = idx(x,y+1);
-    if(y+1<height && grid[below]===0) { swap(i,below); return; }
-    const dir = Math.random()>0.5?1:-1;
-    const sideA = idx(x+dir,y);
-    const sideB = idx(x-dir,y);
-    if(inBounds(x+dir,y) && grid[sideA]===0) swap(i,sideA);
-    else if(inBounds(x-dir,y) && grid[sideB]===0) swap(i,sideB);
+
+// 检查克隆元素是否需要开始复制
+if (elem.id === ELEMENTS.CLONE.id) {
+checkCloneElement(x, y);
 }
-function updateGas(x,y,i,typeId) {
-    const above = idx(x,y-1);
-    if(y-1>=0 && (grid[above]===0 || isLiquid(grid[above]) || isWaterLike(grid[above]))) { swap(i,above); }
-    else {
-        const dir = Math.random()>0.5?1:-1;
-        const aboveSide = idx(x+dir,y-1);
-        if(inBounds(x+dir,y-1) && (grid[aboveSide]===0 || isLiquid(grid[aboveSide]) || isWaterLike(grid[aboveSide]))) swap(i,aboveSide);
-    }
+
+// 检查生命元素
+if (elem.id === ELEMENTS.LIFE.id) {
+checkLifeElement(x, y);
 }
+
+// 检查水与石油的化学反应
+if (elem.id === ELEMENTS.WATER.id) {
+checkWaterOilReaction(x, y);
+}
+
+// 检查石油与水的化学反应
+if (elem.id === ELEMENTS.OIL.id) {
+checkOilWaterReaction(x, y);
+}
+
+// 检查超酸的化学反应
+if (elem.id === ELEMENTS.SUPER_ACID.id) {
+checkSuperAcidReaction(x, y);
+}
+
+// 基岩不会被任何形式破坏
+if (elem.id === ELEMENTS.BEDROCK.id) {
+continue;
+}
+
+// 处理火焰和可燃物交互
+if (window.shockWave[i] > 60) {
+if (elem.explosive) {
+destroyPlantAt(x, y);
+doExplode(x, y, 4, 180);
+continue;
+}
+if (elem.flammable && Math.random() < 0.6 && elem.id !== ELEMENTS.LAVA.id) {
+grid[i] = ELEMENTS.FIRE.id;
+markAsDestroyed(i);
+removeGrowthRecords(i);
+continue;
+}
+if (elem.meltable && Math.random() < 0.8) {
+grid[i] = ELEMENTS.WATER.id;
+continue;
+}
+}
+if (elem.explosive) {
+const aroundFire = [[0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => {
+const ni = idx(x + dx, y + dy);
+return inBounds(x + dx, y + dy) && grid[ni] === ELEMENTS.FIRE.id;
+});
+if (aroundFire) {
+destroyPlantAt(x, y);
+doExplode(x, y, 4, 180);
+continue;
+}
+}
+if (elem.id === ELEMENTS.FIRE.id) {
+// 使用改进的火焰更新
+updateFireImproved(x, y, i);
+continue;
+}
+if (elem.id === ELEMENTS.SMOKE.id) {
+// 使用改进的烟雾更新
+updateSmokeImproved(x, y, i);
+continue;
+}
+if (elem.acidity) {
+const around = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+for (let [dx, dy] of around) {
+const ni = idx(x + dx, y + dy);
+if (inBounds(x + dx, y + dy) && grid[ni] && grid[ni] !== elem.id) {
+const targetElem = Object.values(ELEMENTS).find(e => e.id === grid[ni]);
+if (targetElem) {
+if ((targetElem.id === ELEMENTS.PLANT.id ||
+targetElem.id === ELEMENTS.VINE.id ||
+targetElem.id === ELEMENTS.LEAF.id ||
+targetElem.id === ELEMENTS.FLOWER.id ||
+targetElem.id === ELEMENTS.SEED.id) &&
+Math.random() < 0.8) {
+destroyPlantAt(x + dx, y + dy);
+grid[ni] = 0;
+if (Math.random() < 0.3) grid[i] = 0;
+break;
+}
+if (targetElem.type === TYPES.LIQUID && targetElem.id !== ELEMENTS.LAVA.id && Math.random() < 0.1) {
+grid[ni] = 0; if (Math.random() < 0.3) grid[i] = 0; break;
+}
+if (targetElem.id !== ELEMENTS.WALL.id && targetElem.id !== ELEMENTS.LAVA.id && Math.random() < 0.05) {
+grid[ni] = 0; if (Math.random() < 0.2) grid[i] = 0; break;
+}
+}
+}
+}
+updateLiquid(x, y, i, elem.id); continue;
+}
+if (elem.id === ELEMENTS.GAS_FUEL.id) {
+// 使用改进的燃气更新
+updateFuelGasImproved(x, y, i);
+continue;
+}
+if (elem.meltable) {
+const aroundHot = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]].some(([dx, dy]) => {
+const ni = idx(x + dx, y + dy);
+if (!inBounds(x + dx, y + dy)) return false;
+const neighbor = Object.values(ELEMENTS).find(e => e.id === grid[ni]);
+return neighbor && (neighbor.id === ELEMENTS.FIRE.id || neighbor.id === ELEMENTS.LAVA.id);
+});
+if (aroundHot && Math.random() < 0.05) { grid[i] = ELEMENTS.WATER.id; continue; }
+}
+if (elem.id === ELEMENTS.LAVA.id) {
+if (Math.random() < 0.02) { const up = idx(x, y - 1); if (inBounds(x, y - 1) && grid[up] === 0) grid[up] = ELEMENTS.FIRE.id; }
+const around = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1]];
+for (let [dx, dy] of around) {
+const ni = idx(x + dx, y + dy);
+if (!inBounds(x + dx, y + dy)) continue;
+const neighbor = Object.values(ELEMENTS).find(e => e.id === grid[ni]);
+if (neighbor) {
+if (neighbor.explosive && neighbor.id !== ELEMENTS.LAVA.id) {
+destroyPlantAt(x + dx, y + dy);
+doExplode(x + dx, y + dy, 3, 120);
+}
+else if (neighbor.flammable && neighbor.id !== ELEMENTS.LAVA.id && Math.random() < 0.8) {
+grid[ni] = ELEMENTS.FIRE.id;
+markAsDestroyed(ni);
+removeGrowthRecords(ni);
+}
+if (neighbor.id === ELEMENTS.WATER.id && Math.random() < 0.5) {
+grid[ni] = ELEMENTS.STONE.id;
+const smokePos = idx(x, y - 1);
+if (inBounds(x, y - 1) && grid[smokePos] === 0) grid[smokePos] = ELEMENTS.SMOKE.id;
+}
+if (neighbor.id === ELEMENTS.ICE.id && Math.random() < 0.4) grid[ni] = ELEMENTS.WATER.id;
+}
+}
+updateLava(x, y, i); continue;
+}
+if (elem.id === ELEMENTS.STONE.id) {
+const below = idx(x, y + 1);
+if (y + 1 < height) {
+const belowElem = Object.values(ELEMENTS).find(e => e.id === grid[below]);
+if (grid[below] === 0 || (belowElem && (belowElem.type === TYPES.LIQUID || belowElem.type === TYPES.GAS || belowElem.type === TYPES.FUEL_GAS))) { swap(i, below); continue; }
+}
+continue;
+}
+if (elem.id === ELEMENTS.SUPER_ACID.id) {
+// 超酸有重力，像液体一样流动
+updateLiquid(x, y, i, elem.id);
+continue;
+}
+if (elem.id === ELEMENTS.STEAM.id) {
+// 使用改进的蒸汽更新
+updateSteamImproved(x, y, i);
+continue;
+}
+if (elem.type === TYPES.POWDER) updatePowder(x, y, i);
+else if (elem.type === TYPES.LIQUID) updateLiquid(x, y, i, elem.id);
+else if (elem.type === TYPES.GAS) {
+// 使用改进的气体更新
+updateGasImproved(x, y, i, elem);
+}
+else if (elem.type === TYPES.HEAVY_SOLID) updateHeavySolid(x, y, i);
+}
+}
+for (let i = sparks.length - 1; i >= 0; i--) if (sparks[i].update()) sparks.splice(i, 1);
+draw();
+animationId = requestAnimationFrame(update);
+}
+
+function updateLava(x, y, i) {
+const below = idx(x, y + 1);
+if (y + 1 < height) {
+const belowElem = Object.values(ELEMENTS).find(e => e.id === grid[below]);
+if (grid[below] === ELEMENTS.WATER.id) { grid[below] = ELEMENTS.STONE.id; return; }
+else if (grid[below] === 0 || (belowElem && (belowElem.type === TYPES.LIQUID || belowElem.type === TYPES.GAS || belowElem.type === TYPES.FUEL_GAS))) {
+const temp = grid[below];
+grid[below] = ELEMENTS.LAVA.id; grid[i] = 0;
+if (temp !== 0 && temp !== ELEMENTS.LAVA.id) {
+const dir = Math.random() > 0.5 ? 1 : -1;
+const side = idx(x + dir, y);
+if (inBounds(x + dir, y) && grid[side] === 0) grid[side] = temp;
+}
+return;
+}
+}
+const dir = Math.random() > 0.5 ? 1 : -1;
+const sideA = idx(x + dir, y);
+const sideB = idx(x - dir, y);
+if (inBounds(x + dir, y)) {
+const sideAElem = Object.values(ELEMENTS).find(e => e.id === grid[sideA]);
+if (grid[sideA] === ELEMENTS.WATER.id) { grid[sideA] = ELEMENTS.STONE.id; return; }
+else if (grid[sideA] === 0 || (sideAElem && (sideAElem.type === TYPES.LIQUID || sideAElem.type === TYPES.GAS || sideAElem.type === TYPES.FUEL_GAS))) {
+const temp = grid[sideA];
+grid[sideA] = ELEMENTS.LAVA.id; grid[i] = 0;
+if (temp !== 0 && temp !== ELEMENTS.LAVA.id) {
+const up = idx(x + dir, y - 1);
+if (inBounds(x + dir, y - 1) && grid[up] === 0) grid[up] = temp;
+}
+return;
+}
+}
+if (inBounds(x - dir, y)) {
+const sideBElem = Object.values(ELEMENTS).find(e => e.id === grid[sideB]);
+if (grid[sideB] === ELEMENTS.WATER.id) { grid[sideB] = ELEMENTS.STONE.id; return; }
+else if (grid[sideB] === 0 || (sideBElem && (sideBElem.type === TYPES.LIQUID || sideBElem.type === TYPES.GAS || sideBElem.type === TYPES.FUEL_GAS))) {
+const temp = grid[sideB];
+grid[sideB] = ELEMENTS.LAVA.id; grid[i] = 0;
+if (temp !== 0 && temp !== ELEMENTS.LAVA.id) {
+const up = idx(x - dir, y - 1);
+if (inBounds(x - dir, y - 1) && grid[up] === 0) grid[up] = temp;
+}
+return;
+}
+}
+const diagA = idx(x + dir, y + 1);
+const diagB = idx(x - dir, y + 1);
+if (y + 1 < height) {
+if (inBounds(x + dir, y + 1) && (grid[diagA] === 0 || grid[diagA] === ELEMENTS.WATER.id)) {
+if (grid[diagA] === ELEMENTS.WATER.id) grid[diagA] = ELEMENTS.STONE.id;
+else { grid[diagA] = ELEMENTS.LAVA.id; grid[i] = 0; }
+return;
+}
+if (inBounds(x - dir, y + 1) && (grid[diagB] === 0 || grid[diagB] === ELEMENTS.WATER.id)) {
+if (grid[diagB] === ELEMENTS.WATER.id) grid[diagB] = ELEMENTS.STONE.id;
+else { grid[diagB] = ELEMENTS.LAVA.id; grid[i] = 0; }
+return;
+}
+}
+}
+
+function updateHeavySolid(x, y, i) {
+const below = idx(x, y + 1);
+if (y + 1 < height && grid[below] === 0) swap(i, below);
+}
+
+function doExplode(cx, cy, r, strength) {
+addShockWave(cx, cy, r, strength);
+for (let dy = -r; dy <= r; dy++) {
+for (let dx = -r; dx <= r; dx++) {
+const tx = cx + dx, ty = cy + dy;
+if (!inBounds(tx, ty)) continue;
+const d2 = dx * dx + dy * dy;
+if (d2 > r * r) continue;
+const ti = idx(tx, ty);
+const target = grid[ti];
+const tgtEl = Object.values(ELEMENTS).find(e => e.id === target);
+if (!tgtEl) continue;
+if (target === ELEMENTS.WALL.id) { grid[ti] = ELEMENTS.STONE.id; continue; }
+if (target === 0 || tgtEl.type === TYPES.LIQUID || tgtEl.type === TYPES.POWDER) {
+const vx = (dx + Math.random() * 0.4 - 0.2) * 0.8;
+const vy = (dy + Math.random() * 0.4 - 0.2) * 0.8 - 1;
+sparks.push(new Spark(tx, ty, vx, vy, target));
+if (grid[ti] === 0) grid[ti] = ELEMENTS.FIRE.id;
+}
+}
+}
+}
+
+function updatePowder(x, y, i) {
+const below = idx(x, y + 1);
+if (y + 1 < height && (grid[below] === 0 || isLiquid(grid[below]))) { swap(i, below); return; }
+const side = Math.random() > 0.5 ? 1 : -1;
+const diag = idx(x + side, y + 1);
+if (inBounds(x + side, y + 1) && (grid[diag] === 0 || isLiquid(grid[diag]))) swap(i, diag);
+}
+
+function updateLiquid(x, y, i, typeId) {
+if (typeId === ELEMENTS.LAVA.id) return;
+const below = idx(x, y + 1);
+if (y + 1 < height && grid[below] === 0) { swap(i, below); return; }
+const dir = Math.random() > 0.5 ? 1 : -1;
+const sideA = idx(x + dir, y);
+const sideB = idx(x - dir, y);
+if (inBounds(x + dir, y) && grid[sideA] === 0) swap(i, sideA);
+else if (inBounds(x - dir, y) && grid[sideB] === 0) swap(i, sideB);
+}
+
 function isLiquid(id) {
-    const e = Object.values(ELEMENTS).find(el=>el.id===id);
-    return e && e.type===TYPES.LIQUID;
+const e = Object.values(ELEMENTS).find(el => el.id === id);
+return e && (e.type === TYPES.LIQUID || e.type === TYPES.LAVA || e.type === TYPES.SUPER_ACID);
 }
+
 function isWaterLike(id) {
-    return id===ELEMENTS.WATER.id || id===ELEMENTS.OIL.id || id===ELEMENTS.ACID.id || id===ELEMENTS.SEED.id;
+return id === ELEMENTS.WATER.id || id === ELEMENTS.OIL.id || id === ELEMENTS.ACID.id || id === ELEMENTS.SEED.id || id === ELEMENTS.SUPER_ACID.id;
 }
-function swap(i,j) { const t=grid[i]; grid[i]=grid[j]; grid[j]=t; }
+
+function swap(i, j) { 
+const t = grid[i]; 
+grid[i] = grid[j]; 
+grid[j] = t; 
+    
+// 交换温度
+if (temperatureSystemEnabled) {
+const tempT = temperatures[i];
+temperatures[i] = temperatures[j];
+temperatures[j] = tempT;
+}
+}
+
+function updateFPS() {
+frameCount++;
+const currentTime = performance.now();
+const elapsed = currentTime - lastTime;
+if (elapsed >= fpsUpdateInterval) {
+fps = Math.round((frameCount * 1000) / elapsed);
+frameCount = 0;
+lastTime = currentTime;
+fpsDisplay.textContent = `FPS：${fps}`;
+}
+}
+
 function draw() {
-    const data = imageData.data;
-    for(let i=0; i<grid.length; i++) {
-        const id = grid[i];
-        const p=i*4;
-        if(id===0) { data[p]=0; data[p+1]=0; data[p+2]=0; data[p+3]=255; continue; }
-        const el = Object.values(ELEMENTS).find(e=>e.id===id);
-        if(el) {
-            const v = el.variance ? (Math.random()*el.variance-el.variance/2) : 0;
-            data[p] = clamp(el.color[0]+v);
-            data[p+1] = clamp(el.color[1]+v);
-            data[p+2] = clamp(el.color[2]+v);
-            data[p+3] = el.color[3]!==undefined ? el.color[3] : 255;
-        }
-    }
-    // 画火星
-    for(const s of sparks) {
-        const sx=Math.floor(s.x), sy=Math.floor(s.y);
-        if(inBounds(sx,sy)) {
-            const i=idx(sx,sy);
-            const p=i*4;
-            data[p]=255; data[p+1]=150; data[p+2]=0; data[p+3]=255;
-        }
-    }
-    ctx.putImageData(imageData,0,0);
+const data = imageData.data;
+for (let i = 0; i < data.length; i += 4) { data[i] = 0; data[i + 1] = 0; data[i + 2] = 0; data[i + 3] = 255; }
+for (let i = 0; i < grid.length; i++) {
+const id = grid[i];
+const p = i * 4;
+if (id === 0) continue;
+const el = Object.values(ELEMENTS).find(e => e.id === id);
+if (el) {
+let r = el.color[0], g = el.color[1], b = el.color[2];
+const v = el.variance ? (Math.random() * el.variance - el.variance / 2) : 0;
+r = clamp(r + v); g = clamp(g + v); b = clamp(b + v);
+
+// 温度着色效果
+if (temperatureSystemEnabled && temperatures[i] !== ambientTemperature) {
+const temp = temperatures[i];
+if (temp > 100) {
+// 高温红色调
+const heatIntensity = Math.min(1, (temp - 100) / 500);
+r = clamp(r + 100 * heatIntensity);
+g = clamp(g - 50 * heatIntensity);
+b = clamp(b - 80 * heatIntensity);
+} else if (temp < 0) {
+// 低温蓝色调
+const coldIntensity = Math.min(1, Math.abs(temp) / 50);
+r = clamp(r - 30 * coldIntensity);
+g = clamp(g + 20 * coldIntensity);
+b = clamp(b + 50 * coldIntensity);
 }
-const clamp=v=>Math.max(0,Math.min(255,v));
+}
+
+if (el.id === ELEMENTS.LAVA.id) {
+const pulse = Math.sin(performance.now() * 0.005) * 15;
+r = clamp(r + pulse); g = clamp(g + pulse * 0.5);
+const glowRadius = 1, x = i % width, y = Math.floor(i / width);
+for (let dy = -glowRadius; dy <= glowRadius; dy++) {
+for (let dx = -glowRadius; dx <= glowRadius; dx++) {
+if (dx === 0 && dy === 0) continue;
+const nx = x + dx, ny = y + dy;
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+const np = ni * 4;
+const glowStrength = 0.4;
+data[np] = Math.min(255, data[np] + r * glowStrength);
+data[np + 1] = Math.min(255, data[np + 1] + g * glowStrength);
+data[np + 2] = Math.min(255, data[np + 2] + b * glowStrength * 0.3);
+}
+}
+}
+} else if (el.id === ELEMENTS.FLOWER.id) {
+const pulse = Math.sin(performance.now() * 0.01) * 15;
+r = clamp(r + pulse);
+g = clamp(g + pulse * 0.3);
+} else if (el.id === ELEMENTS.VINE.id || el.id === ELEMENTS.LEAF.id) {
+const pulse = Math.sin(performance.now() * 0.003 + i * 0.01) * 5;
+r = clamp(r + pulse * 0.5);
+g = clamp(g + pulse);
+} else if (el.id === ELEMENTS.CLONE.id) {
+const pulse = Math.sin(performance.now() * 0.008) * 30;
+r = clamp(r + pulse);
+g = clamp(g - pulse * 0.3);
+b = clamp(b + pulse * 0.5);
+
+const glowRadius = 1, x = i % width, y = Math.floor(i / width);
+for (let dy = -glowRadius; dy <= glowRadius; dy++) {
+for (let dx = -glowRadius; dx <= glowRadius; dx++) {
+if (dx === 0 && dy === 0) continue;
+const nx = x + dx, ny = y + dy;
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+const np = ni * 4;
+const glowStrength = 0.2;
+data[np] = Math.min(255, data[np] + r * glowStrength);
+data[np + 1] = Math.min(255, data[np + 1] + g * glowStrength);
+data[np + 2] = Math.min(255, data[np + 2] + b * glowStrength);
+}
+}
+}
+} else if (el.id === ELEMENTS.SUPER_ACID.id) {
+// 超酸有轻微的闪烁效果
+const pulse = Math.sin(performance.now() * 0.01 + i * 0.02) * 10;
+r = clamp(r + pulse);
+g = clamp(g + pulse * 0.5);
+// 添加腐蚀效果的光晕
+const glowRadius = 1, x = i % width, y = Math.floor(i / width);
+for (let dy = -glowRadius; dy <= glowRadius; dy++) {
+for (let dx = -glowRadius; dx <= glowRadius; dx++) {
+if (dx === 0 && dy === 0) continue;
+const nx = x + dx, ny = y + dy;
+if (inBounds(nx, ny)) {
+const ni = idx(nx, ny);
+const np = ni * 4;
+const glowStrength = 0.1;
+data[np] = Math.min(255, data[np] + r * glowStrength);
+data[np + 1] = Math.min(255, data[np + 1] + g * glowStrength);
+data[np + 2] = Math.min(255, data[np + 2] + b * glowStrength * 0.3);
+}
+}
+}
+} else if (el.id === ELEMENTS.GLASS.id) {
+// 玻璃是半透明的
+data[p + 3] = 180;
+// 添加微小的反光效果
+const shine = Math.sin(performance.now() * 0.005 + i * 0.01) * 10 + 10;
+r = clamp(r + shine);
+g = clamp(g + shine);
+b = clamp(b + shine);
+} else if (el.id === ELEMENTS.LIFE.id) {
+// 生命元素（小虫）有脉动效果
+const pulse = Math.sin(performance.now() * 0.015 + i * 0.03) * 20;
+r = clamp(r + pulse);
+g = clamp(g - pulse * 0.5);
+b = clamp(b - pulse * 0.5);
+// 添加微小的移动效果
+const move = Math.sin(performance.now() * 0.02 + i * 0.05) * 0.5;
+const offsetX = Math.floor(i % width + move);
+const offsetY = Math.floor(Math.floor(i / width));
+if (offsetX >= 0 && offsetX < width) {
+const offsetIdx = idx(offsetX, offsetY);
+const offsetP = offsetIdx * 4;
+data[offsetP] = r;
+data[offsetP + 1] = g;
+data[offsetP + 2] = b;
+data[offsetP + 3] = 255;
+continue; // 跳过正常绘制
+}
+} else if (el.id === ELEMENTS.STEAM.id) {
+// 蒸汽的脉动效果
+const pulse = Math.sin(performance.now() * 0.01 + i * 0.03) * 15;
+r = clamp(r + pulse);
+g = clamp(g + pulse);
+b = clamp(b + pulse);
+}
+
+data[p] = r; data[p + 1] = g; data[p + 2] = b;
+data[p + 3] = el.color[3] !== undefined ? el.color[3] : 255;
+}
+}
+
+// 绘制飞行的石头（在正常绘制之后，这样它们会显示在最上层）
+for (let i = 0; i < flyingStones.positions.length; i++) {
+const [x, y] = flyingStones.positions[i];
+const ix = Math.floor(x);
+const iy = Math.floor(y);
+if (inBounds(ix, iy)) {
+const idxPos = idx(ix, iy);
+const p = idxPos * 4;
+// 飞行的石头颜色（比普通石头亮）
+data[p] = 150;
+data[p + 1] = 150;
+data[p + 2] = 150;
+data[p + 3] = 255;
+}
+}
+
+for (const s of sparks) {
+const sx = Math.floor(s.x), sy = Math.floor(s.y);
+if (inBounds(sx, sy)) {
+const i = idx(sx, sy);
+const p = i * 4;
+data[p] = 255; data[p + 1] = 200; data[p + 2] = 0; data[p + 3] = 255;
+}
+}
+for (let i = 0; i < window.shockWave.length; i++) {
+if (window.shockWave[i] > 30) {
+const px = (i % width) * 4;
+const py = Math.floor(i / width) * 4;
+const base = (py * width + px) * 4;
+const waveIntensity = window.shockWave[i] / 255;
+data[base] = Math.min(255, data[base] + 255 * waveIntensity);
+data[base + 1] = Math.min(255, data[base + 1] + 200 * waveIntensity);
+data[base + 2] = Math.min(255, data[base + 2] + 100 * waveIntensity);
+}
+}
+ctx.putImageData(imageData, 0, 0);
+updateFPS();
+}
+
+const clamp = v => Math.max(0, Math.min(255, v));
+
 function loop() { update(); }
 
-function clearCanvas() { grid.fill(0); sparks.length=0; }
+function clearCanvas() {
+grid.fill(0);
+sparks.length = 0;
+window.shockWave.fill(0);
+if (temperatureSystemEnabled) {
+temperatures.fill(ambientTemperature);
+}
+
+// 清空所有生长状态
+seedGrowth.positions = [];
+seedGrowth.heights = [];
+seedGrowth.directions = [];
+seedGrowth.maxHeights = [];
+seedGrowth.growthTime = [];
+
+plantWaterGrowth.positions = [];
+plantWaterGrowth.waterCount = [];
+plantWaterGrowth.lastAbsorbTime = [];
+plantWaterGrowth.growDirections = [];
+plantWaterGrowth.maxAbsorbCount = [];
+
+vineGrowth.positions = [];
+vineGrowth.lastGrowTime = [];
+vineGrowth.directions = [];
+vineGrowth.spreadCount = [];
+
+cloneElements.positions = [];
+cloneElements.lastCopyTime = [];
+cloneElements.targetElements = [];
+cloneElements.copyCount = [];
+cloneElements.maxCopyCount = [];
+
+lifeElements.positions = [];
+lifeElements.lastMoveTime = [];
+lifeElements.directions = [];
+lifeElements.hunger = [];
+lifeElements.age = [];
+lifeElements.health = [];
+
+destroyedPlants.positions = [];
+destroyedPlants.timestamps = [];
+
+flyingStones.positions = [];
+flyingStones.velocitiesX = [];
+flyingStones.velocitiesY = [];
+flyingStones.timestamps = [];
+}
+
+// 移除生长记录
+function removeGrowthRecords(index) {
+// 移除种子生长记录
+const seedIdx = seedGrowth.positions.indexOf(index);
+if (seedIdx !== -1) {
+seedGrowth.positions.splice(seedIdx, 1);
+seedGrowth.heights.splice(seedIdx, 1);
+seedGrowth.directions.splice(seedIdx, 1);
+seedGrowth.maxHeights.splice(seedIdx, 1);
+seedGrowth.growthTime.splice(seedIdx, 1);
+}
+
+// 移除植物吸水生长记录
+const plantIdx = plantWaterGrowth.positions.indexOf(index);
+if (plantIdx !== -1) {
+plantWaterGrowth.positions.splice(plantIdx, 1);
+plantWaterGrowth.waterCount.splice(plantIdx, 1);
+plantWaterGrowth.lastAbsorbTime.splice(plantIdx, 1);
+plantWaterGrowth.growDirections.splice(plantIdx, 1);
+plantWaterGrowth.maxAbsorbCount.splice(plantIdx, 1);
+}
+
+// 移除藤蔓生长记录
+const vineIdx = vineGrowth.positions.indexOf(index);
+if (vineIdx !== -1) {
+vineGrowth.positions.splice(vineIdx, 1);
+vineGrowth.lastGrowTime.splice(vineIdx, 1);
+vineGrowth.directions.splice(vineIdx, 1);
+vineGrowth.spreadCount.splice(vineIdx, 1);
+}
+
+// 移除克隆元素记录
+const cloneIdx = cloneElements.positions.indexOf(index);
+if (cloneIdx !== -1) {
+cloneElements.positions.splice(cloneIdx, 1);
+cloneElements.lastCopyTime.splice(cloneIdx, 1);
+cloneElements.targetElements.splice(cloneIdx, 1);
+cloneElements.copyCount.splice(cloneIdx, 1);
+cloneElements.maxCopyCount.splice(cloneIdx, 1);
+}
+
+// 移除生命元素记录
+const lifeIdx = lifeElements.positions.indexOf(index);
+if (lifeIdx !== -1) {
+lifeElements.positions.splice(lifeIdx, 1);
+lifeElements.lastMoveTime.splice(lifeIdx, 1);
+lifeElements.directions.splice(lifeIdx, 1);
+lifeElements.hunger.splice(lifeIdx, 1);
+lifeElements.age.splice(lifeIdx, 1);
+lifeElements.health.splice(lifeIdx, 1);
+}
+}
 
 let isDrawing = false;
-function getGridPos(evt) {
-    const rect = canvas.getBoundingClientRect();
-    const [cx,cy] = evt.touches&&evt.touches.length ? [evt.touches[0].clientX,evt.touches[0].clientY] : [evt.clientX,evt.clientY];
-    return { x:Math.floor((cx-rect.left)/rect.width*width), y:Math.floor((cy-rect.top)/rect.height*height) };
-}
-function paint(evt) {
-    if(!isDrawing) return;
-    const {x,y} = getGridPos(evt);
-    const r = parseInt(document.getElementById('brushSize').value);
-    for(let dy=-r; dy<=r; dy++) for(let dx=-r; dx<=r; dx++) if(dx*dx+dy*dy<=r*r) {
-        const px=x+dx, py=y+dy;
-        if(!inBounds(px,py)) continue;
-        const i=idx(px,py);
-        if(currentElement.isEraser) grid[i]=0;
-        else if(grid[i]===0||currentElement.type===TYPES.SOLID) { if(Math.random()>0.1) grid[i]=currentElement.id; }
-    }
-}
-canvas.addEventListener('mousedown',e=>{isDrawing=true; paint(e);});
-window.addEventListener('mouseup',()=>isDrawing=false);
-canvas.addEventListener('mousemove',paint);
-canvas.addEventListener('touchstart',e=>{isDrawing=true; paint(e); e.preventDefault();},{passive:false});
-window.addEventListener('touchend',()=>isDrawing=false);
-canvas.addEventListener('touchmove',e=>{paint(e); e.preventDefault();},{passive:false});
 
-function selectElement(key) { currentElement=ELEMENTS[key]; updateUI(); toggleSheet(false); }
-function updateUI() { document.querySelectorAll('.chip').forEach(chip=>{ chip.classList.toggle('active', chip.dataset.key===getKeyByValue(currentElement)); }); }
-function getKeyByValue(obj) { return Object.keys(ELEMENTS).find(k=>ELEMENTS[k]===obj); }
-function toggleSheet(open) { document.getElementById('more-sheet').classList.toggle('open',open); document.getElementById('backdrop').classList.toggle('open',open); }
+function getGridPos(evt) {
+const rect = canvas.getBoundingClientRect();
+const [cx, cy] = evt.touches && evt.touches.length ? [evt.touches[0].clientX, evt.touches[0].clientY] : [evt.clientX, evt.clientY];
+return {
+x: Math.floor((cx - rect.left) / rect.width * width),
+y: Math.floor((cy - rect.top) / rect.height * height)
+};
+}
+
+function paint(evt) {
+if (!isDrawing || isPaused) return;
+const { x, y } = getGridPos(evt);
+const r = parseInt(document.getElementById('brushSize').value);
+for (let dy = -r; dy <= r; dy++) {
+for (let dx = -r; dx <= r; dx++) {
+if (dx * dx + dy * dy <= r * r) {
+const px = x + dx, py = y + dy;
+if (!inBounds(px, py)) continue;
+const i = idx(px, py);
+if (currentElement.isEraser) {
+grid[i] = 0;
+removeGrowthRecords(i);
+markAsDestroyed(i);
+if (temperatureSystemEnabled) {
+temperatures[i] = ambientTemperature;
+}
+} else {
+if (grid[i] === 0) {
+grid[i] = currentElement.id;
+if (temperatureSystemEnabled) {
+temperatures[i] = currentElement.defaultTemp || ambientTemperature;
+}
+}
+}
+}
+}
+}
+}
+
+canvas.addEventListener('mousedown', e => { isDrawing = true; paint(e); });
+window.addEventListener('mouseup', () => isDrawing = false);
+canvas.addEventListener('mousemove', paint);
+canvas.addEventListener('touchstart', e => { isDrawing = true; paint(e); e.preventDefault(); }, { passive: false });
+window.addEventListener('touchend', () => isDrawing = false);
+canvas.addEventListener('touchmove', e => { paint(e); e.preventDefault(); }, { passive: false });
+
+window.addEventListener('beforeunload', saveToLocalStorage);
+setInterval(saveToLocalStorage, 10000);
+
+function selectElement(key) {
+currentElement = ELEMENTS[key];
+updateUI();
+toggleSheet(false);
+}
+
+function updateUI() {
+document.querySelectorAll('.chip').forEach(chip => {
+chip.classList.toggle('active', chip.dataset.key === getKeyByValue(currentElement));
+});
+}
+
+function getKeyByValue(obj) {
+return Object.keys(ELEMENTS).find(k => ELEMENTS[k] === obj);
+}
+
+function toggleSheet(open) {
+document.getElementById('more-sheet').classList.toggle('open', open);
+document.getElementById('backdrop').classList.toggle('open', open);
+}
 
 function initUI() {
-    const quickBar=document.getElementById('quick-bar');
-    const allGrid=document.getElementById('all-elements-grid');
-    const quickKeys=['SAND','WATER','STONE','DUST','ERASER'];
-    quickKeys.forEach(key=>{
-        const el=ELEMENTS[key];
-        const btn=document.createElement('button'); btn.className='chip'; btn.dataset.key=key; btn.innerText=el.name;
-        btn.onclick=e=>{selectElement(key);}; if(key==='SAND') btn.classList.add('active'); quickBar.appendChild(btn);
-    });
-    Object.keys(ELEMENTS).forEach(key=>{
-        if(key==='AIR') return; const el=ELEMENTS[key];
-        const card=document.createElement('div'); card.className='element-card'; card.onclick=e=>{selectElement(key);};
-        const dot=document.createElement('div'); dot.className='element-color-dot';
-        if(el.isEraser) { dot.style.background='#fff'; dot.style.border='2px solid #ccc'; dot.style.backgroundImage='linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)'; dot.style.backgroundSize='10px 10px'; dot.style.backgroundPosition='0 0, 5px 5px'; }
-        else dot.style.backgroundColor=`rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
-        const name=document.createElement('span'); name.style.fontSize='14px'; name.innerText=el.name;
-        card.appendChild(dot); card.appendChild(name); allGrid.appendChild(card);
-    });
+const quickBar = document.getElementById('quick-bar');
+const allGrid = document.getElementById('all-elements-grid');
+// 将超酸、基岩、玻璃、生命添加到快速栏
+const quickKeys = ['SAND', 'WATER', 'STONE', 'WALL', 'ICE', 'LAVA', 'FIRE', 'STEAM', 'SUPER_ACID', 'BEDROCK', 'GLASS', 'LIFE', 'CLONE', 'ERASER'];
+quickKeys.forEach(key => {
+const el = ELEMENTS[key];
+const btn = document.createElement('button');
+btn.className = 'chip';
+btn.dataset.key = key;
+btn.innerText = el.name;
+btn.onclick = e => { selectElement(key); };
+if (key === 'SAND') btn.classList.add('active');
+quickBar.appendChild(btn);
+});
+Object.keys(ELEMENTS).forEach(key => {
+if (key === 'AIR') return;
+const el = ELEMENTS[key];
+const card = document.createElement('div');
+card.className = 'element-card';
+card.onclick = e => { selectElement(key); };
+const dot = document.createElement('div');
+dot.className = 'element-color-dot';
+if (el.isEraser) {
+dot.style.background = '#fff';
+dot.style.border = '2px solid #ccc';
+dot.style.backgroundImage = 'linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)';
+dot.style.backgroundSize = '10px 10px';
+dot.style.backgroundPosition = '0 0, 5px 5px';
+} else {
+if (el.id === ELEMENTS.LAVA.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+dot.style.boxShadow = `0 0 8px rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.9)`;
+} else if (el.id === ELEMENTS.FLOWER.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+dot.style.boxShadow = `0 0 6px rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.8)`;
+} else if (el.id === ELEMENTS.VINE.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.7)`;
+dot.style.border = '1px solid rgba(0,0,0,0.2)';
+} else if (el.id === ELEMENTS.LEAF.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.8)`;
+dot.style.border = '1px solid rgba(0,0,0,0.1)';
+} else if (el.id === ELEMENTS.CLONE.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+dot.style.boxShadow = `0 0 6px rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.8)`;
+dot.style.animation = 'pulse 2s infinite';
+} else if (el.id === ELEMENTS.SUPER_ACID.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+dot.style.boxShadow = `0 0 6px rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.8)`;
+dot.style.animation = 'pulse 1.5s infinite';
+} else if (el.id === ELEMENTS.BEDROCK.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+// 基岩有特殊纹理
+dot.style.backgroundImage = 'linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%), linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%)';
+dot.style.backgroundSize = '6px 6px';
+dot.style.backgroundPosition = '0 0, 3px 3px';
+} else if (el.id === ELEMENTS.GLASS.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.7)`;
+// 玻璃有反光效果
+dot.style.boxShadow = 'inset 0 0 10px rgba(255,255,255,0.5), 0 0 5px rgba(200,220,240,0.8)';
+} else if (el.id === ELEMENTS.LIFE.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+dot.style.boxShadow = `0 0 6px rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.8)`;
+dot.style.animation = 'pulse 1.2s infinite';
+} else if (el.id === ELEMENTS.STEAM.id) {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},0.8)`;
+dot.style.boxShadow = '0 0 6px rgba(220,240,255,0.6)';
+dot.style.animation = 'pulse 1.8s infinite';
+} else {
+dot.style.backgroundColor = `rgba(${el.color[0]},${el.color[1]},${el.color[2]},1)`;
+}
+}
+const name = document.createElement('span');
+name.style.fontSize = '14px';
+name.innerText = el.name;
+card.appendChild(dot);
+card.appendChild(name);
+allGrid.appendChild(card);
+});
+
+// 添加CSS动画
+const style = document.createElement('style');
+style.textContent = `
+@keyframes pulse {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+`;
+document.head.appendChild(style);
 }
 
-window.addEventListener('load',()=>{ initGame(); initUI(); });
+window.addEventListener('load', () => {
+initGame();
+initUI();
+loadSavedState();
+});
 </script>
 </body>
 </html>
