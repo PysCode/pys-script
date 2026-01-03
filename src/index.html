@@ -46,7 +46,7 @@ canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 
 <body>
 <header>
-<div style="display:flex; align-items:center; gap:12px;"><span>Sand - Spiel</span></div>
+<div style="display:flex; align-items:center; gap:12px;"><span>𝗦𝗮𝗻𝗱 · 𝗦𝗽𝗶𝗲𝗹</span></div>
 <div class="control-buttons">
 <button class="icon-btn" onclick="togglePause()" title="暂停/继续">
 <svg viewBox="0 0 24 24" id="pauseIcon"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
@@ -67,8 +67,8 @@ canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 
 <div class="controls-area">
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-<span style="font-size:12px; opacity:.7">笔刷大小</span>
-<input type="range" class="brush-size-slider" min="1" max="10" value="3" id="brushSize">
+<span style="font-size:12px; opacity:.7">笔刷</span>
+<input type="range" class="brush-size-slider" min="1" max="15" value="3" id="brushSize">
 </div>
 
 <div class="temp-settings">
@@ -85,7 +85,7 @@ canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 
 <div class="temp-slider-container">
 <span class="temp-label">环境温度</span>
-<input type="range" min="-273" max="5000" value="20" class="brush-size-slider" id="ambientTemp">
+<input type="range" min="-273" max="2000" value="20" class="brush-size-slider" id="ambientTemp">
 <span class="temp-value" id="ambientTempValue">20°C</span>
 </div>
 </div>
