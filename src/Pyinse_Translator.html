@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pys 单词助手</title>
 <style>
+* {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 body {
 font-family: Arial, sans-serif;
 background-color: #f9f9f9;
@@ -95,6 +102,56 @@ padding: 10px;
 text-align: center;
 color: #888;
 }
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 40px;
+            color: white ;
+display: block;
+background-color: #333;
+border: 1px solid #ddd;
+border-radius: 4px;
+padding: 7px;
+font-weight: 5000;
+min-width:60px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+        
+        .copy-btn.copied {
+            background-color: #2196F3;
+        }
+        
+        .copy-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #word {
+            margin: 0;
+            padding-right: 80px; /* 为按钮留出空间 */
+        }
+        
+        /* 复制图标 */
+        .copy-icon::before {
+            content: "⎘复制";
+        }
+        
+        .copy-btn.copied .copy-icon::before {
+            content: "保存啦";
+text-align: center;
+        }
+
 .word-display {
 display: block;
 margin-top: 20px;
@@ -767,7 +824,7 @@ height: 100%;
 background-color: #fff;
 z-index: 1001;
 transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-transform: translateY(-100%);
+transform: translateY(-110%);
 }
 .learn-overlay.active {
 transform: translateY(0);
@@ -1123,6 +1180,10 @@ body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 </div>
 
 <div class="word-display" id="word-display">
+        <button class="copy-btn" onclick="copyWordContent()" title="复制">
+            <span class="copy-icon"></span>
+            <span class="btn-text"></span>
+        </button>
 <button class="favorite" id="favorite-button">☆</button>
 <h2 id="word">-</h2>
 <p id="pronunciation">音标: /-/</p>
@@ -1209,7 +1270,7 @@ body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 <h2-help>1. 使用搜索功能</h2-help>
 <ol-help>
 <li-help>在页面顶部的搜索框中输入单词或释义。例如，输入“a”或“字母表中的字母”。</li-help>
-<li-help>搜索结果会实时显示在搜索框下方的列表中。如果没有找到匹配的单词，会显示“暂无相关词汇”。如果搜索框为空，会显示历史记录中的最近搜索内容。</li-help>
+<li-help>搜索结果会实时显示在搜索框下方的列表中，点击回车键 如果有相符单词 则直接显示该内容。如果没有找到匹配的单词，会显示“暂无相关词汇”。如果搜索框为空，会显示历史记录中的最近搜索内容。</li-help>
 <li-help>点击搜索结果中的单词，查看该单词的详细信息。</li-help>
 </ol-help>
 </div>
@@ -1217,7 +1278,7 @@ body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 <div class="section-help">
 <h2-help>2. 查看单词详细信息</h2-help>
 <ol-help>
-<li-help>在搜索结果中点击一个单词，单词的详细信息会显示在页面中间的“单词显示”区域（关于单词的拼写“a”用于/a/ /s/两种音，“α”则仅只有/a/的发音；a与α混用，只在数字或部分区域使用，具体发音见音标说明）</li-help>
+<li-help>在搜索结果中点击一个单词，单词的详细信息会显示在页面中间的“单词显示”区域，可点击右上角复制或收藏该单词</li-help>
 <li-help>单词详细信息包括：
 <ul-help>
 <li-help>音标：单词的音标。</li-help>
@@ -1379,7 +1440,7 @@ body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 </tr>
 </thead>
 <tbody>
-<tr><td>a</td><td>α a</td><td>a</td></tr>
+<tr><td>a</td><td>a</td><td>a</td></tr>
 <tr><td>b</td><td>b</td><td>b</td></tr>
 <tr><td>c</td><td>g</td><td>c</td></tr>
 <tr><td>ĉ</td><td>ĝ</td><td>g</td></tr>
@@ -1399,14 +1460,16 @@ body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 <tr><td>q</td><td>q</td><td>q</td></tr>
 <tr><td>r</td><td>r г</td><td>r</td></tr>
 <tr><td>s</td><td>s a</td><td>s</td></tr>
-<tr><td>sh</td><td>â</td><td>ss</td></tr>
+<tr><td>sh</td><td>â α</td><td>ss</td></tr>
 <tr><td>t</td><td>t</td><td>t</td></tr>
 <tr><td>u</td><td>u</td><td>u</td></tr>
 <tr><td>v</td><td>v</td><td>v</td></tr>
 <tr><td>w</td><td>w т</td><td>w u</td></tr>
-<tr><td>x</td><td>x</td><td>x</td></tr>
 <tr><td>y</td><td>y</td><td>y</td></tr>
 <tr><td>z</td><td>и</td><td>z</td></tr>
+<tr><td>ang</td><td>ā</td><td>ā</td></tr>
+<tr><td>eng</td><td>ē</td><td>ē</td></tr>
+<tr><td>ong</td><td>ō</td><td>ō</td></tr>
 <tr><td>ei</td><td>ê</td><td>e</td></tr>
 <tr><td>ie</td><td>ë</td><td>e</td></tr>
 </tbody>
@@ -1534,8 +1597,10 @@ body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 <div class="close-button" id="close-updates">◁</div>
 <div class="updates-content">
 <h2 class="updates-content">更新日志</h2>
+<div class="container-help">
 <div class="updates-list" id="updates-list">
 <!-- 更新内容将通过JS填充 -->
+</div>
 </div>
 </div>
 </div>
@@ -1612,48 +1677,54 @@ const Updated_Context = [
 { date: "2025.7.12", content: "修复已知问题" },
 { date: "2025.7.15", content: "增加音标学习功能" },
 { date: "2025.7.19", content: "添加更新日志页面" },
-{ date: "2025.7.26", content: "添加夜间模式功能" }
+{ date: "2025.7.26", content: "添加夜间模式功能" },
+{ date: "2025.1.08", content: "将单词整理后重写" },
+{ date: "2025.1.09", content: "优化操作禁止长按复制" },
+{ date: "2026.1.10", content: "添加复制功能" },
+{ date: "2026.1.11", content: "优化搜索功能" }
 ];
 
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 let history = JSON.parse(localStorage.getItem('history')) || [];
 let showSplash = localStorage.getItem('showSplash') !== 'false';
 
-let version = "1.0.2-Alpha(ver.内测)";
+let version = "1.0.5-Beta";
 aboutCon.innerHTML = "V" + version;
 
 const vocabulary = [
-{ "word": "a", "pronunciation": "/a/", "part_of_speech": "n. e.", "interpretation": "在；位于；朝；向；以；字母表中的字母", "example": " | ", "derivative": "ā" },
+{ "word": "a", "pronunciation": "/a/", "part_of_speech": "n. e.", "interpretation": "在；位于；朝；向；以；字母表中的字母", "example": "伙计，向前冲吧！| Ala, to'appo!", "derivative": "ā" },
 { "word": "ā", "pronunciation": "/ang/", "part_of_speech": "n.", "interpretation": "a的鼻音；字母表中的字母", "example": " | ", "derivative": "" },
-{ "word": "ac", "pronunciation": "/ai k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "acid", "pronunciation": "/ai k d/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "aciq", "pronunciation": "/ai k tü/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ad", "pronunciation": "/ad/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ada", "pronunciation": "/a da/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "ac", "pronunciation": "/ai k/", "part_of_speech": "n.", "interpretation": "爱", "example": "爱从不知晓自己的深度，直到别离的时刻。 | Acs umtomé ne tou, appoиétés sépas.", "derivative": "acid, aciq" },
+{ "word": "acid", "pronunciation": "/ai k d/", "part_of_speech": "vi.", "interpretation": "爱；热爱；喜爱", "example": "我爱这悠长的旅途，可以从容地想你。 | Cet lasums bin и̂e acid, née naiq tê futué.", "derivative": "ac, aciq" },
+{ "word": "aciq", "pronunciation": "/ai k tü/", "part_of_speech": "vt.", "interpretation": "爱；热爱；喜爱", "example": "我爱这悠长的旅途，可以从容地想你。 | и̂e aciq cet lasum, née naiq tê futué.", "derivative": "ac, acid" },
+{ "word": "ad", "pronunciation": "/ad/", "part_of_speech": "e.", "interpretation": "正；正在", "example": "", "derivative": "" },
+{ "word": "ada", "pronunciation": "/a da/", "part_of_speech": "e.", "interpretation": "正在；", "example": " | ", "derivative": "" },
 { "word": "ah", "pronunciation": "/a he/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ais", "pronunciation": "/ai s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "al", "pronunciation": "/ao/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "ala", "pronunciation": "/a la/", "part_of_speech": "v.n.", "interpretation": "同意；允许；让；行", "example": "我不想让花再开一遍，不想让你再来一遍…… | и̂e nê ala cet flauer tê so iecê……", "derivative": "" },
 { "word": "ānǵy", "pronunciation": "/ang gy/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ap", "pronunciation": "/ap/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "appo", "pronunciation": "/a po p/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "appoto", "pronunciation": "/a po tou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "appoto", "pronunciation": "/a po tou/", "part_of_speech": "v.", "interpretation": "去；去往；前去", "example": " | ", "derivative": "" },
 { "word": "appoиété", "pronunciation": "/a po zi ti/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ater", "pronunciation": "/a te h/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "ater", "pronunciation": "/a te h/", "part_of_speech": "e.", "interpretation": "另；另外；", "example": " | ", "derivative": "" },
 { "word": "atom", "pronunciation": "/a tou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "au", "pronunciation": "/aou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "aum", "pronunciation": "/aou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "aumō", "pronunciation": "/aou mong/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "auté", "pronunciation": "/aou ti/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "b", "pronunciation": "/b/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "auté", "pronunciation": "/aou ti/", "part_of_speech": "e.", "interpretation": "更；更加", "example": "", "derivative": "" },
+{ "word": "b", "pronunciation": "/b/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "bara", "pronunciation": "/ba ha/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "beau", "pronunciation": "/bu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "bi", "pronunciation": "/bi/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "bon", "pronunciation": "/bong/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "bōns", "pronunciation": "/bong s/", "part_of_speech": "v.", "interpretation": "死亡；杀死；去世；离世", "example": "平静面对死亡。 | Féey dóns.", "derivative": "" },
 { "word": "butu", "pronunciation": "/bu tu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "bulétin", "pronunciation": "/bu li tin/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "bum", "pronunciation": "/bu m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "bum", "pronunciation": "/bu m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "no" },
 { "word": "buy", "pronunciation": "/bai/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "c", "pronunciation": "/k/ /c/ /s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "c", "pronunciation": "/k/ /c/ /s/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "cê", "pronunciation": "/sei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "cet", "pronunciation": "/sei t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "cid", "pronunciation": "/si d/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1663,10 +1734,10 @@ const vocabulary = [
 { "word": "com", "pronunciation": "/kou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "cu", "pronunciation": "/ku/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "culon", "pronunciation": "/ku long/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "d", "pronunciation": "/d/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "τ", "pronunciation": "/de/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "dai", "pronunciation": "/dei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "daitom", "pronunciation": "/dei tou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "d", "pronunciation": "/d/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "τ", "pronunciation": "/de/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "dai", "pronunciation": "/dei/", "part_of_speech": "n.", "interpretation": "天；一天", "example": "", "derivative": "daitom" },
+{ "word": "daitom", "pronunciation": "/dei tou m/", "part_of_speech": "n.", "interpretation": "天；一天", "example": "", "derivative": "dai" },
 { "word": "de", "pronunciation": "/de/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "dé", "pronunciation": "/di/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "τed", "pronunciation": "/de t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1677,11 +1748,11 @@ const vocabulary = [
 { "word": "dom", "pronunciation": "/don m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "don", "pronunciation": "/don/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "dona", "pronunciation": "/dou na/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "e", "pronunciation": "/e/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ē", "pronunciation": "/eng/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "é", "pronunciation": "/y/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ê", "pronunciation": "/ei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ë", "pronunciation": "/ie/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "e", "pronunciation": "/e/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ē", "pronunciation": "/eng/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "é", "pronunciation": "/y/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ê", "pronunciation": "/ei/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ë", "pronunciation": "/ie/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "eau", "pronunciation": "/ou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "écris", "pronunciation": "/y ke ri s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "élon", "pronunciation": "/y long/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1698,23 +1769,30 @@ const vocabulary = [
 { "word": "étu", "pronunciation": "/y tu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "étucum", "pronunciation": "/y tu cu m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "étut", "pronunciation": "/y tu t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "f", "pronunciation": "/f/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "f", "pronunciation": "/f/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "fanc", "pronunciation": "/fan si k/", "part_of_speech": "n.", "interpretation": "吃的；食物", "example": "", "derivative": "fancid, fanciq" },
+{ "word": "fancid", "pronunciation": "/fan si d/", "part_of_speech": "v.", "interpretation": "吃；食用；进食", "example": "", "derivative": "fanc, fanciq" },
+{ "word": "fanciq", "pronunciation": "/fan si k/", "part_of_speech": "v.", "interpretation": "吃；食用；进食", "example": "", "derivative": "fanc, fancid" },
 { "word": "fas", "pronunciation": "/fa s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "fé", "pronunciation": "/fi/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "fim", "pronunciation": "/fi m/", "part_of_speech": "", "interpretation": "分钟", "example": " | ", "derivative": "" },
+{ "word": "féey", "pronunciation": "/fi ying/", "part_of_speech": "e.", "interpretation": "平静的；安静的；寂静的；静默的；无声的", "example": "无声胜有声。 | Féey no.", "derivative": "" },
+{ "word": "fim", "pronunciation": "/fi m/", "part_of_speech": "n.", "interpretation": "分钟；min", "example": "", "derivative": "fimtom" },
+{ "word": "fimtom", "pronunciation": "/fi m tou m/", "part_of_speech": "n.", "interpretation": "分钟；min", "example": "", "derivative": "fim" },
 { "word": "flom", "pronunciation": "/fu lou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "fo", "pronunciation": "/fou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "futu", "pronunciation": "/fu tu/", "part_of_speech": "n.", "interpretation": "灵活；自如；轻松；好办；容易", "example": " | ", "derivative": "" },
 { "word": "fol", "pronunciation": "/fo/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "g", "pronunciation": "/c/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ǵ", "pronunciation": "/g/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ĝ", "pronunciation": "/ch/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "g", "pronunciation": "/c/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ǵ", "pronunciation": "/g/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ĝ", "pronunciation": "/ch/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "ĝaq", "pronunciation": "/cha kü/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ǵée", "pronunciation": "/gii/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "ǵinih", "pronunciation": "/gi ni h/", "part_of_speech": "e.", "interpretation": "极端的；极度的；偏激的；尖酸刻薄", "example": "", "derivative": "tupék" },
 { "word": "ǵlam", "pronunciation": "/gla m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ǵlom", "pronunciation": "/glo m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ǵum", "pronunciation": "/gen m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "h", "pronunciation": "/h/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "j", "pronunciation": "/h/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "h", "pronunciation": "/h/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "j", "pronunciation": "/h/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "ha", "pronunciation": "/ha/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ja", "pronunciation": "/ha/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "hā", "pronunciation": "/hā/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1726,25 +1804,26 @@ const vocabulary = [
 { "word": "jesum", "pronunciation": "/he su m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "hum", "pronunciation": "/hu m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "hon", "pronunciation": "/hong/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "i", "pronunciation": "/y/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "i", "pronunciation": "/y/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "is", "pronunciation": "/y s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "im̃", "pronunciation": "/i k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "im̃иam", "pronunciation": "/i k za m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "in", "pronunciation": "/in/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "inm̃", "pronunciation": "/in k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "б", "pronunciation": "/j/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "б", "pronunciation": "/j/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "бa", "pronunciation": "/ja/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "m̃", "pronunciation": "/k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "k", "pronunciation": "/k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "l", "pronunciation": "/l/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ʜ", "pronunciation": "/l/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "m̃", "pronunciation": "/k/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "k", "pronunciation": "/k/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "l", "pronunciation": "/l/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ʜ", "pronunciation": "/l/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "la", "pronunciation": "/la/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "laito", "pronunciation": "/lei tou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "laito", "pronunciation": "/lei tou/", "part_of_speech": "v.", "interpretation": "到；到达；抵达；直到", "example": "", "derivative": "" },
 { "word": "lay", "pronunciation": "/lei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "les", "pronunciation": "/le s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ʜca", "pronunciation": "/le ka/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "léon", "pronunciation": "/li ong/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "m", "pronunciation": "/m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "m", "pronunciation": "/m/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "mala", "pronunciation": "/ma la/", "part_of_speech": "n.", "interpretation": "脑袋；头脑；脑子", "example": "", "derivative": "" },
 { "word": "mai", "pronunciation": "/mei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "man", "pronunciation": "/mong/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "manbeau", "pronunciation": "/mong bu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1756,9 +1835,10 @@ const vocabulary = [
 { "word": "mēm", "pronunciation": "/meng/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "mēsy", "pronunciation": "/meng si/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "min", "pronunciation": "/min/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "motom", "pronunciation": "/mo tou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "mool", "pronunciation": "/muo/", "part_of_speech": "n.", "interpretation": "月；月球；月亮", "example": "", "derivative": "" },
+{ "word": "motom", "pronunciation": "/mo tou m/", "part_of_speech": "n.", "interpretation": "时间月；月份", "example": "", "derivative": "" },
 { "word": "mu", "pronunciation": "/mu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "n", "pronunciation": "/n/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "n", "pronunciation": "/n/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "na", "pronunciation": "/na/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nā", "pronunciation": "/nang/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nai", "pronunciation": "/nai/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1767,30 +1847,33 @@ const vocabulary = [
 { "word": "née", "pronunciation": "/nii/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nê", "pronunciation": "/nei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nem", "pronunciation": "/ne m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "no", "pronunciation": "/no/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "no", "pronunciation": "/no/", "part_of_speech": "v.e.n.", "interpretation": "没有；消失（的）；隐秘的", "example": " | ", "derivative": "bum" },
 { "word": "nouve", "pronunciation": "/nou vu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nu", "pronunciation": "/nu/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nuê", "pronunciation": "/nu ei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "nuêlém", "pronunciation": "/nu ei li m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "num", "pronunciation": "/nu m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "numte", "pronunciation": "/nu m te/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "o", "pronunciation": "/o/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ō", "pronunciation": "/ong/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "o", "pronunciation": "/o/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "ō", "pronunciation": "/ong/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "onion", "pronunciation": "/ao ni ong/", "part_of_speech": "e.", "interpretation": "仅仅；只是；只有", "example": " | ", "derivative": "" },
 { "word": "oto", "pronunciation": "/o tou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "otoétom", "pronunciation": "/o tou ei tom/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "ous", "pronunciation": "/ou s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "ous", "pronunciation": "/ao s/", "part_of_speech": "n.", "interpretation": "时；小时；一个点；一个钟头；h", "example": "", "derivative": "oustom" },
+{ "word": "oustom", "pronunciation": "/ao s tou m/", "part_of_speech": "n.", "interpretation": "时；小时；一个点；一个钟头；h", "example": "", "derivative": "ous" },
 { "word": "out", "pronunciation": "/ao t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "p", "pronunciation": "/p/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "p", "pronunciation": "/p/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "pa", "pronunciation": "/pa/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "parce", "pronunciation": "/pa h s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "pit", "pronunciation": "/pi t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "plus", "pronunciation": "/plu s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "poloste", "pronunciation": "/plo st/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "porste", "pronunciation": "/po h st/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "q", "pronunciation": "/q/ /kü/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "qa", "pronunciation": "/qa/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "q", "pronunciation": "/q/ /kü/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "qa", "pronunciation": "/qa/ /cha/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "qatom", "pronunciation": "/cha tom/", "part_of_speech": "n.", "interpretation": "周；星期；七天", "example": "", "derivative": "" },
 { "word": "qis", "pronunciation": "/qi s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "r", "pronunciation": "/r/ /h/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "r", "pronunciation": "/r/ /h/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "rā", "pronunciation": "/rang/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "re", "pronunciation": "/he/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "ren", "pronunciation": "/ren/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1801,22 +1884,24 @@ const vocabulary = [
 { "word": "renis", "pronunciation": "/rei nis/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "rca", "pronunciation": "/y ka/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "rcas", "pronunciation": "/y ka s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "s", "pronunciation": "/s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "α", "pronunciation": "/s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "α̂", "pronunciation": "/sh/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "s", "pronunciation": "/s/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "α", "pronunciation": "/s/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "α̂", "pronunciation": "/sh/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "sa", "pronunciation": "/sa/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "αa", "pronunciation": "/sa/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "sais", "pronunciation": "/sai s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "salé", "pronunciation": "/sa li/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "αca", "pronunciation": "/s ka/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "sé", "pronunciation": "/si/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "sec", "pronunciation": "/sai k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "sectom", "pronunciation": "/sai k tou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "sec", "pronunciation": "/sai k/", "part_of_speech": "n.", "interpretation": "秒；s", "example": "", "derivative": "sectom" },
+{ "word": "sectom", "pronunciation": "/sai k tou m/", "part_of_speech": "n.", "interpretation": "秒；s", "example": "", "derivative": "sec" },
+{ "word": "sépas", "pronunciation": "/si pa s/", "part_of_speech": "v.", "interpretation": "离别；离开；远离；出去不回；出走", "example": "离别一瞬间，才知道珍惜。 | Onion sépas tê, alsum tenαen.", "derivative": "" },
 { "word": "séry", "pronunciation": "/si ri/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "si", "pronunciation": "/si/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "simp", "pronunciation": "/sim pe/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "simpʜéaα̂", "pronunciation": "/si m pli ya sh/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "simpléas", "pronunciation": "/si m pli ash/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "simploh", "pronunciation": "/si m plou sh/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "sino", "pronunciation": "/si no/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "so", "pronunciation": "/sou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "sonc", "pronunciation": "/son k/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1832,32 +1917,37 @@ const vocabulary = [
 { "word": "sumplait", "pronunciation": "/su m plei t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "suné", "pronunciation": "/su ni/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "swallo", "pronunciation": "/s wa lou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "t", "pronunciation": "/t/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "t", "pronunciation": "/t/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "tab", "pronunciation": "/ta b/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "te", "pronunciation": "/te/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "tê", "pronunciation": "/tei/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "tenα", "pronunciation": "/ten sh/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "tou", "pronunciation": "/tou/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "toulo", "pronunciation": "/tou lou/", "part_of_speech": "v.", "interpretation": "听道；聆听", "example": "", "derivative": "" },
 { "word": "tom", "pronunciation": "/tou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "tup", "pronunciation": "/tu p/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "u", "pronunciation": "/u/ /yü/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "tupék", "pronunciation": "/tu pi k/", "part_of_speech": "e.", "interpretation": "有棱角的；扎手的的；尖锐的；犀利的；极端的；难处理的；突发的；令人措不及防的；严峻的", "example": "每个人都摆出比实际上严峻的样子，似乎人人都怕让自己的感情很快地外露有损自己的尊严。 | ĝaq nāq tupék simi, walo têsmen mai parce bin bōns ac de tōsy têmai.", "derivative": "ǵinih" },
+{ "word": "u", "pronunciation": "/u/ /yü/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "um", "pronunciation": "/yü m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "umtom", "pronunciation": "/yü m tou m/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "v", "pronunciation": "/v/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "v", "pronunciation": "/v/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "va", "pronunciation": "/va/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "val", "pronunciation": "/vao/", "part_of_speech": "e.", "interpretation": "将全部；会全都；将全都；会全部", "example": "嘿你知道的，总会一无所有的！ | Hey, Tê contou ca val bum.", "derivative": "" },
 { "word": "van", "pronunciation": "/van/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "voulon", "pronunciation": "/vu long/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "w", "pronunciation": "/w/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "т", "pronunciation": "/w/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "w", "pronunciation": "/w/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "walo", "pronunciation": "/wa lou/", "part_of_speech": "v.", "interpretation": "担心；担忧；害怕；恐惧", "example": " | ", "derivative": "" },
+{ "word": "т", "pronunciation": "/w/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "тa", "pronunciation": "/wa/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "тud", "pronunciation": "/wu d/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "y", "pronunciation": "/y/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
+{ "word": "y", "pronunciation": "/y/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
 { "word": "yā", "pronunciation": "/yang/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "yél", "pronunciation": "/y o/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "yétom", "pronunciation": "/y o tom/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "и", "pronunciation": "/z/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "и̂", "pronunciation": "/zh/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
-{ "word": "и̂as", "pronunciation": "/zha s/", "part_of_speech": "", "interpretation": "世纪", "example": " | ", "derivative": "" },
+{ "word": "yél", "pronunciation": "/y o/", "part_of_speech": "n.", "interpretation": "年；周年", "example": "", "derivative": "yétom" },
+{ "word": "yétom", "pronunciation": "/y o tom/", "part_of_speech": "n.", "interpretation": "年；周年", "example": "", "derivative": "yél" },
+{ "word": "и", "pronunciation": "/z/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "и̂", "pronunciation": "/zh/", "part_of_speech": "", "interpretation": "", "example": "", "derivative": "" },
+{ "word": "и̂as", "pronunciation": "/zha s/", "part_of_speech": "n.", "interpretation": "世纪；百年", "example": " | ", "derivative": "и̂astom" },
+{ "word": "и̂astom", "pronunciation": "/zha s tou m/", "part_of_speech": "n.", "interpretation": "世纪；百年", "example": " | ", "derivative": "и̂as" },
 { "word": "и̂e", "pronunciation": "/zhe/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "и̂ero", "pronunciation": "/ zhe ho/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
 { "word": "и̂eros", "pronunciation": "/zhe ho s/", "part_of_speech": "", "interpretation": "", "example": " | ", "derivative": "" },
@@ -1935,17 +2025,44 @@ item.classList.add('active');
 });
 });
 
+// 添加字符标准化函数
+function normalizeText(text) {
+return text
+// 将各种变体统一映射到基础字母
+.replace(/[éēëê]/g, 'e')
+.replace(/[āα]/g, 'a')
+.replace(/[ō]/g, 'o')
+.replace(/[ī]/g, 'i')
+.replace(/[h]/g, 'j')
+.replace(/[j]/g, 'h')
+.replace(/[r]/g, 'h')
+.replace(/[ʜ]/g, 'l')
+.replace(/[б]/g, 'j')
+.replace(/[ǵ]/g, 'g')
+.replace(/[m̃]/g, 'm')
+.replace(/[и]/g, 'z')
+.replace(/[τ]/g, 'd')
+
+// 删除所有上标符号
+.replace(/[̂̌̄́̀̂]/g, '')
+// 转换为小写
+.toLowerCase();
+}
+
 searchInput.addEventListener('input', function () {
 const query = searchInput.value.toLowerCase();
+const normalizedQuery = normalizeText(query);
 if (query.trim() === '') {
 displayHistoryInSearchResults();
 } else {
-const results = vocabulary.filter(word =>
-word.word.toLowerCase().startsWith(query) ||
-word.interpretation.toLowerCase().includes(query) ||
-word.word.match(new RegExp(query, 'gi')) ||
-word.interpretation.match(new RegExp(query, 'gi'))
-);
+const results = vocabulary.filter(word => {
+const normalizedWord = normalizeText(word.word);
+const normalizedInterpretation = normalizeText(word.interpretation);
+return normalizedWord.startsWith(normalizedQuery) ||
+normalizedInterpretation.includes(normalizedQuery) ||
+normalizedWord.includes(normalizedQuery) ||
+normalizedInterpretation.includes(normalizedQuery);
+});
 displaySearchResults(results);
 }
 });
@@ -1989,38 +2106,74 @@ resultsList.appendChild(li);
 }
 
 function displaySearchResults(results) {
-const resultsList = searchResults.querySelector('ul');
-resultsList.innerHTML = '';
-const header = document.createElement('li');
-header.textContent = `搜索结果（${results.length}个）`;
-header.style.fontWeight = 'bold';
-header.style.marginBottom = '10px';
-resultsList.appendChild(header);
+    const resultsList = searchResults.querySelector('ul');
+    resultsList.innerHTML = '';
 
-if (results.length === 0) {
-noResults.style.display = 'block';
-return;
-}
-searchResults.classList.add('active');
-noResults.style.display = 'none';
+    const rawQuery = searchInput.value.trim();
+    const normQuery = normalizeText(rawQuery);
 
-results.forEach(result => {
-const li = document.createElement('li');
-const boldText = result.word.replace(new RegExp(searchInput.value, 'gi'), match => `<span class="bold">${match}</span>`);
-const boldInterpretation = result.interpretation.replace(new RegExp(searchInput.value, 'gi'), match => `<span class="bold">${match}</span>`);
-li.innerHTML = `
-<div style="display: flex; justify-content: space-between;">
-<span>${boldText}</span>
-<span style="color: #888; margin-left: 10px;">${result.part_of_speech} - ${boldInterpretation}</span>
-</div>
-`;
-li.addEventListener('click', () => {
-displayWordDetails(result);
-searchResults.classList.remove('active');
-});
-resultsList.appendChild(li);
-});
+    /* 1) 完全匹配（原始拼写） */
+    const fullRaw = results.filter(w => w.word === rawQuery);
+    /* 2) 完全匹配（标准化后） */
+    const fullNorm = results.filter(w => normalizeText(w.word) === normQuery && !fullRaw.includes(w));
+    /* 3) 开头匹配——仅原始拼写开头 */
+    const startRaw = results.filter(w =>
+        w.word.startsWith(rawQuery) &&
+        ![...fullRaw, ...fullNorm].includes(w)
+    );
+    /* 4) 开头匹配（标准化）放在更后 */
+    const startNorm = results.filter(w =>
+        normalizeText(w.word).startsWith(normQuery) &&
+        ![...fullRaw, ...fullNorm, ...startRaw].includes(w)
+    );
+    /* 5) 其余模糊 */
+    const fuzzy = results.filter(w =>
+        ![...fullRaw, ...fullNorm, ...startRaw, ...startNorm].includes(w)
+    );
+
+    const ordered = [...fullRaw, ...fullNorm, ...startRaw, ...startNorm, ...fuzzy];
+
+    const header = document.createElement('li');
+    header.textContent = `搜索匹配到 ${ordered.length} 个单词`;
+    header.style.fontWeight = 'bold';
+    header.style.marginBottom = '10px';
+    resultsList.appendChild(header);
+
+    if (ordered.length === 0) {
+        noResults.style.display = 'block';
+        return;
+    }
+    searchResults.classList.add('active');
+    noResults.style.display = 'none';
+
+    ordered.forEach(result => {
+        const li = document.createElement('li');
+        const wordHighlight = result.word.replace(
+            new RegExp(`(${rawQuery})`, 'gi'),
+            '<span class="bold">$1</span>'
+        );
+        const interpretationHighlight = result.interpretation.replace(
+            new RegExp(`(${rawQuery})`, 'gi'),
+            '<span class="bold">$1</span>'
+        );
+
+        li.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+            <span>${wordHighlight}</span>
+            <span style="color: #888; margin-left: 10px;">
+                ${result.part_of_speech} - ${interpretationHighlight}
+            </span>
+        </div>`;
+        li._word = result;
+        li.addEventListener('click', () => {
+            displayWordDetails(result);
+            searchResults.classList.remove('active');
+        });
+        resultsList.appendChild(li);
+    });
 }
+
+
 
 function displayWordDetails(word) {
 wordDisplay.style.display = 'block';
@@ -2372,6 +2525,58 @@ fadeOutSplashScreen();
 splashScreen.style.display = "none";
 }
 
+async function copyWordContent() {
+const wordElement = document.getElementById('word');
+const content = wordElement.textContent.trim();
+const button = event.target.closest('.copy-btn');
+
+// 如果内容是"-"，则不复制
+if (content === '-') {
+button.style.backgroundColor = '#f44336';
+button.disabled = true;
+setTimeout(() => {
+button.style.backgroundColor = '';
+button.disabled = false;
+}, 1000);
+return;
+}
+
+try {
+// 使用现代的 Clipboard API
+await navigator.clipboard.writeText(content);
+// 显示复制成功状态
+button.classList.add('copied');
+// 2秒后恢复原状
+setTimeout(() => {
+button.classList.remove('copied');
+}, 2000);
+} catch (err) {
+console.error('复制失败:', err);
+// 降级方案
+const textArea = document.createElement('textarea');
+textArea.value = content;
+textArea.style.position = 'fixed';
+textArea.style.left = '-999999px';
+document.body.appendChild(textArea);
+textArea.focus();
+textArea.select();
+
+try {
+document.execCommand('copy');
+button.classList.add('copied');
+setTimeout(() => {
+button.classList.remove('copied');
+}, 2000);
+} catch (fallbackErr) {
+button.style.backgroundColor = '#f44336';
+setTimeout(() => {
+button.style.backgroundColor = '';
+}, 1000);
+}
+document.body.removeChild(textArea);
+}
+}
+
 // 每日单词功能
 const dailyWordDisplay = document.getElementById('daily-word-display');
 const dailyFavoriteButton = document.getElementById('daily-favorite-button');
@@ -2527,53 +2732,86 @@ displayDailyWord();
 //检测系统夜间模式
 /* ---------- 夜间模式：开关优先 + 系统监测为辅 ---------- */
 (function () {
-    const STORAGE_KEY = 'darkMode';          // 保存开关状态
-    const LOCK_KEY = 'darkModeLocked';       // 是否已手动锁定
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
+const STORAGE_KEY = 'darkMode'; // 保存开关状态
+const LOCK_KEY = 'darkModeLocked'; // 是否已手动锁定
+const darkModeToggle = document.getElementById('dark-mode-toggle');
 
-    /* 工具：设置 DOM 主题 + 开关状态 */
-    function applyDark(enabled) {
-        document.body.classList.toggle('dark-mode', enabled);
-        if (darkModeToggle) darkModeToggle.checked = enabled;
-        localStorage.setItem(STORAGE_KEY, enabled);
-    }
+/* 工具：设置 DOM 主题 + 开关状态 */
+function applyDark(enabled) {
+document.body.classList.toggle('dark-mode', enabled);
+if (darkModeToggle) darkModeToggle.checked = enabled;
+localStorage.setItem(STORAGE_KEY, enabled);
+}
 
-    /* 首次进入 */
-    function init() {
-        const locked = localStorage.getItem(LOCK_KEY) === 'true';
-        if (locked) {
-            // 用户曾经手动设置过，完全听开关
-            const saved = localStorage.getItem(STORAGE_KEY) === 'true';
-            applyDark(saved);
-        } else {
-            // 从未手动设置 → 以系统主题为初始值，并写入锁定
-            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            applyDark(systemDark);
-            localStorage.setItem(LOCK_KEY, 'true'); // 锁定，以后不再被系统覆盖
-        }
-    }
+/* 首次进入 */
+function init() {
+const locked = localStorage.getItem(LOCK_KEY) === 'true';
+if (locked) {
+// 用户曾经手动设置过，完全听开关
+const saved = localStorage.getItem(STORAGE_KEY) === 'true';
+applyDark(saved);
+} else {
+// 从未手动设置 → 以系统主题为初始值，并写入锁定
+const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+applyDark(systemDark);
+localStorage.setItem(LOCK_KEY, 'true'); // 锁定，以后不再被系统覆盖
+}
+}
 
-    /* 手动开关事件：锁定模式立即生效 */
-    if (darkModeToggle) {
-        darkModeToggle.addEventListener('change', () => {
-            const checked = darkModeToggle.checked;
-            applyDark(checked);
-            localStorage.setItem(LOCK_KEY, 'true'); // 只要手动拨过就永久锁定
-        });
-    }
+/* 手动开关事件：锁定模式立即生效 */
+if (darkModeToggle) {
+darkModeToggle.addEventListener('change', () => {
+const checked = darkModeToggle.checked;
+applyDark(checked);
+localStorage.setItem(LOCK_KEY, 'true'); // 只要手动拨过就永久锁定
+});
+}
 
-    /* 系统变化监听：仅“未锁定”阶段才跟随（实际已被 init 锁定，保险用） */
-    if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-            if (localStorage.getItem(LOCK_KEY) !== 'true') {
-                applyDark(e.matches);
-                localStorage.setItem(LOCK_KEY, 'true');
-            }
-        });
-    }
+/* 系统变化监听：仅“未锁定”阶段才跟随（实际已被 init 锁定，保险用） */
+if (window.matchMedia) {
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+if (localStorage.getItem(LOCK_KEY) !== 'true') {
+applyDark(e.matches);
+localStorage.setItem(LOCK_KEY, 'true');
+}
+});
+}
 
-    init(); // 启动
+init(); // 启动
 })();
+
+/* ---------- 回车直接搜索：优先完全匹配，否则用结果列表第一条 ---------- */
+searchInput.addEventListener('keydown', e => {
+if (e.key !== 'Enter') return;
+e.preventDefault();
+
+const key = searchInput.value.trim();
+if (!key) return; // 空输入直接忽略
+
+// 标准化搜索词
+const normalizedKey = normalizeText(key);
+
+// 优先精确匹配（也使用标准化后的结果）
+let target = vocabulary.find(item => 
+normalizeText(item.word) === normalizedKey
+);
+
+if (!target) {
+// 精确未命中，且结果面板已展开且有真实条目，则拿第一条
+const firstReal = searchResults.querySelector('ul li:not(.no-results):not([style*="font-weight:bold"])');
+if (firstReal && firstReal._word) { // 之前绑定过 _word 数据
+target = firstReal._word;
+}
+}
+
+if (target) {
+displayWordDetails(target); // 展开详情
+searchResults.classList.remove('active'); // 关闭面板
+}
+/* 仍无匹配则什么都不做，用户继续输入 */
+});
+
+
 </script>
 
 </html>
