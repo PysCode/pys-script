@@ -1,3 +1,11 @@
+<p id="temp">加载中…</p>
+<script>
+  // 动态检测浏览器语言
+  document.getElementById('temp').textContent =
+    navigator.language.startsWith('zh') ? '你好' : 'Hello';
+</script>
+
+
 # Pys-Script (1.0)
 ---
 
