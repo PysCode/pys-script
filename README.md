@@ -5,7 +5,7 @@
 - 我们会持续更新。
 <hr>
 
-# （一）Pys Translator
+## （一）Pys Translator
 
  一、项目概述
  - **项目名称**：Pys - Translator (1.0.5)
@@ -19,7 +19,7 @@
 <hr>
 <br>
 
-# （二） Sandspiel
+## （二） Sandspiel
  一、项目概述
  - **项目名称**：Sand - Spiel (1.0.5)
  - **创建时间**：无记录（内测软件版）
@@ -27,3 +27,7 @@
  二、进入渠道
  - **支持「安卓软件APK」「网站」方式**
  - [🔗SandSpiel 网址](https://PysCode.github.io/pys-script/src/index.html) 此网站由GithubPage支持
+
+<br>
+
+** 感谢支持 Merci! **
