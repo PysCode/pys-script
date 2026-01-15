@@ -46,7 +46,7 @@ canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 
 <body>
 <header>
-<div style="display:flex; align-items:center; gap:12px;"><span>𝗦𝗮𝗻𝗱 · 𝗦𝗽𝗶𝗲𝗹</span></div>
+<div style="display:flex; align-items:center; gap:12px;"><span>Sand - Spiel</span></div>
 <div class="control-buttons">
 <button class="icon-btn" onclick="togglePause()" title="暂停/继续">
 <svg viewBox="0 0 24 24" id="pauseIcon"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
@@ -67,8 +67,8 @@ canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 
 <div class="controls-area">
 <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-<span style="font-size:12px; opacity:.7">笔刷</span>
-<input type="range" class="brush-size-slider" min="1" max="15" value="3" id="brushSize">
+<span style="font-size:12px; opacity:.7">笔刷大小</span>
+<input type="range" class="brush-size-slider" min="1" max="10" value="3" id="brushSize">
 </div>
 
 <div class="temp-settings">
@@ -102,7 +102,7 @@ canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
 </div>
 
 <script>
-const CANVAS_SCALE = 2;
+const CANVAS_SCALE = 3;
 const TYPES = {
 EMPTY:0,
 SOLID:1,
@@ -527,8 +527,40 @@ flyingStones.velocitiesY[i] = vy;
 }
 }
 
+// 绝对零度：液体/气体强制只向下掉一格（不改 ID，不改 type）
+function postFreezeGravity() {
+    if (!temperatureSystemEnabled || ambientTemperature > -273) return;
+
+    const h = height, w = width;
+    // 从下往上扫，避免覆盖干扰
+    for (let y = h - 2; y >= 0; y--) {
+        for (let x = 0; x < w; x++) {
+            const i = idx(x, y);
+            const id = grid[i];
+            if (id === 0) continue;
+
+            const el = Object.values(ELEMENTS).find(e => e.id === id);
+            // 只处理液体/气体
+            if (!el || (el.type !== TYPES.LIQUID && el.type !== TYPES.GAS)) continue;
+
+            const below = idx(x, y + 1);
+            if (y + 1 < h && grid[below] === 0) {
+                // 直接交换，实现“只掉一格”
+                grid[i] = 0;
+                grid[below] = id;
+                // 温度也跟着走
+                temperatures[below] = temperatures[i];
+                temperatures[i] = ambientTemperature;
+            }
+        }
+    }
+}
+
+
 // ================ 温度系统函数 ================
 function updateTemperature() {
+enforceGlobalFreeze();
+
 if (!temperatureSystemEnabled) return;
     
 const transferRate = heatTransferSpeed * 0.02;
@@ -662,6 +694,7 @@ tempDisplay.textContent = temperatureSystemEnabled ?
 if (!temperatureSystemEnabled) {
 temperatures.fill(ambientTemperature);
 }
+
 }
 
 // 温度UI控制
@@ -1776,6 +1809,7 @@ const i = idx(x, y);
 const id = grid[i];
 if (id === 0) continue;
 const elem = Object.values(ELEMENTS).find(e => e.id === id);
+
 if (!elem) continue;
 
 // 检查种子是否需要开始生长
@@ -1961,6 +1995,7 @@ else if (elem.type === TYPES.HEAVY_SOLID) updateHeavySolid(x, y, i);
 }
 }
 for (let i = sparks.length - 1; i >= 0; i--) if (sparks[i].update()) sparks.splice(i, 1);
+postFreezeGravity();
 draw();
 animationId = requestAnimationFrame(update);
 }
@@ -2105,6 +2140,18 @@ frameCount = 0;
 lastTime = currentTime;
 fpsDisplay.textContent = `FPS：${fps}`;
 }
+}
+// ===== 全局急冻守护：温度系统开启且环境温度＜-50℃ 时，把水/蒸汽瞬间冻成冰 =====
+function enforceGlobalFreeze() {
+  if (!temperatureSystemEnabled || ambientTemperature >= -50) return;
+
+  for (let i = 0; i < grid.length; i++) {
+    const id = grid[i];
+    if (id === ELEMENTS.WATER.id || id === ELEMENTS.STEAM.id) {
+      grid[i] = ELEMENTS.ICE.id;            // 元素替换
+      temperatures[i] = ambientTemperature; // 温度同步，防止回变
+    }
+  }
 }
 
 function draw() {
