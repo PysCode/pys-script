@@ -29,5 +29,7 @@
  - [🔗SandSpiel 网址](https://PysCode.github.io/pys-script/src/index.html) 此网站由GithubPage支持
 
 <br>
+<hr>
+<br>
 
-** 感谢支持 Merci! **
+## 感谢支持 Merci! 
