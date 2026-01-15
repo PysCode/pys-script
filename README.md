@@ -1,35 +1,26 @@
-# Pys - Script (1.0)
-<hr>
+# Pys-Script (1.0)
+---
 
-- **PYS-script** 是 **PYS Code Studios** 旗下的一个程序类合集。用于收录各种该工作室的程序内容。
-- 我们会持续更新。
-<hr>
+**PYS-script** 是 **PYS Code Studios** 旗下程序合集，持续更新。  
+*A program collection by PYS Code Studios, continuously updated.*
 
-## （一）Pys Translator
+---
 
- 一、项目概述
- - **项目名称**：Pys - Translator (1.0.5)
- - **创建时间**：2025/07/12（内测软件版）
- - **完成时间**：未完成（-/-/-）
- 二、进入渠道
- - **支持「安卓软件APK」「网站」方式**
- - [🔗PysTranslator 网址](https://PysCode.github.io/pys-script/src/Pyinse_Translator.html) 此网站由GithubPage支持
+## ① Pys-Translator
+- **名称 | Name**: Pys-Translator (1.0.5)  
+- **创建 | Created**: 2025-07-12 (内测 | Closed Beta)  
+- **状态 | Status**: 未完成 | Ongoing  
+- [🔗 进入网站 | Visit](https://PysCode.github.io/pys-script/src/Pyinse_Translator.html "在 GitHub Pages 打开 | Open on GitHub Pages")
 
-<br>
-<hr>
-<br>
+---
 
-## （二） Sandspiel
- 一、项目概述
- - **项目名称**：Sand - Spiel (1.0.5)
- - **创建时间**：无记录（内测软件版）
- - **完成时间**：未完成（-/-/-）
- 二、进入渠道
- - **支持「安卓软件APK」「网站」方式**
- - [🔗SandSpiel 网址](https://PysCode.github.io/pys-script/src/index.html) 此网站由GithubPage支持
+## ② Sand-Spiel
+- **名称 | Name**: Sand-Spiel (1.0.5)  
+- **创建 | Created**: 无记录 | No date (内测 | Closed Beta)  
+- **状态 | Status**: 未完成 | Ongoing  
+- [🔗 进入网站 | Visit](https://PysCode.github.io/pys-script/src/index.html "在 GitHub Pages 打开 | Open on GitHub Pages")
 
-<br>
-<hr>
-<br>
+---
 
-## 感谢支持 Merci! 
+## 感谢支持 | Merci!
+*Thank you for your support!*
