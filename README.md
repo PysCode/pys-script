@@ -6,7 +6,7 @@
 
 ---
 
-## ① Pys-Translator
+## ① Pys-Translator (PhyinseLinq)
 - **名称 | Name**: Pys-Translator (1.0.5)  
 - **创建 | Created**: 2025-07-12 (内测 | Closed Beta)  
 - **状态 | Status**: 未完成 | Ongoing  
