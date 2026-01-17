@@ -1143,6 +1143,197 @@ transform: translateX(26px);
 body.dark-mode .set-slider { background-color: #555; }
 body.dark-mode input:checked + .set-slider { background-color: #4da6ff; }
 
+
+/* ========== 横屏/大屏模式 (屏幕宽度 >= 1024px) ========== */
+@media screen and (min-width: 1024px) {
+  /* 隐藏菜单按钮 */
+  .toggle-sidebar {
+    display: none !important;
+  }
+  
+  /* 主容器左侧留出侧边栏空间 */
+  .container {
+    width: calc(100% - 290px); /* 侧边栏宽度250px + 边距40px */
+    margin-left: 290px; /* 侧边栏右侧留出40px间距 */
+    margin-right: 20px;
+    transition: none; /* 移除过渡效果 */
+  }
+  
+  /* 侧边栏始终显示 */
+  .sidebar {
+    left: 0 !important;
+    width: 250px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: none; /* 移除滑动动画 */
+  }
+  
+  /* 隐藏遮罩层 */
+  .overlay {
+    display: none !important;
+  }
+  
+  /* 搜索结果位置调整 */
+  .search-results {
+    width: calc(100% - 20px); /* 稍微缩小以匹配容器 */
+  }
+  
+  /* 开屏动画调整 */
+  .splash-screen .date-container {
+    font-size: 4.5em; /* 大屏下增大日期字体 */
+  }
+  
+  .word-container {
+    padding: 60px;
+    margin-top: 120px;
+    margin-left: 50px;
+  }
+  
+  .word {
+    font-size: 4em;
+  }
+  
+  /* 单词显示区域调整 */
+  .word-display, 
+  .daily-word-display,
+  .game-display {
+    padding: 25px;
+  }
+  
+  /* 学习区导航栏位置修正 */
+  .learn-nav {
+    left: 0; /* 大屏模式下学习区导航栏从左侧开始 */
+  }
+  
+  /* 学习区内容容器调整 */
+  .learn-content-wrapper {
+    margin-top: 70px; /* 增加顶部间距 */
+    padding: 30px;
+  }
+  
+  /* 收藏卡片布局优化 */
+  .favorites-cards {
+    justify-content: flex-start;
+  }
+  
+  .favorite-card {
+    width: 300px; /* 大屏下卡片更宽 */
+  }
+  
+  /* 帮助页面容器调整 */
+  .container-help {
+    height: 85vh;
+    padding: 30px;
+  }
+  
+  h1-help {
+    font-size: 32px;
+  }
+  
+  .section-help h2-help {
+    font-size: 24px;
+  }
+  
+  /* 表格在大屏下显示更多内容 */
+  .letter-table,
+  .phonetic-table {
+    font-size: 16px;
+  }
+  
+  .letter-table th, 
+  .letter-table td,
+  .phonetic-table th, 
+  .phonetic-table td {
+    padding: 12px;
+  }
+  
+  /* 游戏区域调整 */
+  .game-display .options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .game-display .option {
+    margin-bottom: 0;
+  }
+  
+  /* 每日单词布局优化 */
+  .daily-word-content {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .daily-word-left {
+    flex: 0 0 200px;
+  }
+  
+  .daily-word-right {
+    flex: 1;
+  }
+  
+  /* 设置页面调整 */
+  .settings-content {
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* 更新日志优化 */
+  .updates-list {
+    max-width: 800px;
+  }
+}
+
+/* ========== 超大屏幕优化 (屏幕宽度 >= 1440px) ========== */
+@media screen and (min-width: 1440px) {
+  /* 侧边栏稍宽 */
+  .sidebar {
+    width: 280px;
+  }
+  
+  /* 主容器左侧留出更多空间 */
+  .container {
+    width: calc(100% - 320px);
+    margin-left: 320px;
+    max-width: 1200px;
+  }
+  
+  /* 单词卡片更大 */
+  .favorite-card {
+    width: 320px;
+  }
+  
+  /* 学习区导航项更多间距 */
+  .learn-nav-item {
+    padding: 0 25px;
+  }
+  
+  /* 游戏选项三列布局 */
+  .game-display .options {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* 每日单词显示更大 */
+  .daily-word-left {
+    flex: 0 0 250px;
+  }
+  
+  #daily-word {
+    font-size: 28px;
+  }
+}
+
+/* ========== 横屏/大屏夜间模式优化 ========== */
+@media screen and (min-width: 1024px) {
+  body.dark-mode .sidebar {
+    background-color: #111;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  body.dark-mode .container {
+    background-color: #1e1e1e;
+  }
+}
 </style>
 </head>
 <body>
